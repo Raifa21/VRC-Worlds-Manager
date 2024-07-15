@@ -25,7 +25,6 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public MainViewModel()
         {
-            _vrChatService = new VRChatService();
             FavoriteWorlds = new ObservableCollection<WorldModel>();
         }
 

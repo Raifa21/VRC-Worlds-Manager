@@ -14,7 +14,7 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public AuthenticationViewModel()
         {
-            _vrChatService = new VRChatService();
+            _vrChatService = new VRChatService("200");
             LoginCommand = new RelayCommand(async () => await LoginAsync());
         }
 

@@ -6,13 +6,14 @@ using VRChat.API.Client;
 using VRChat.API.Model;
 using VRC_Favourite_Manager.Models;
 using System.Diagnostics;
+using System.Net;
+using Windows.Media.Protection.PlayReady;
 
 namespace VRC_Favourite_Manager.Services
 {
     public class VRChatService
     {
         private readonly Configuration _config;
-        private readonly AuthenticationApi _authApi;
         private readonly ApiClient client;
         private readonly AuthenticationApi authApi;
         private readonly UsersApi userApi;
@@ -20,33 +21,37 @@ namespace VRC_Favourite_Manager.Services
 
         public VRChatService()
         {
-            // Create a configuration for us to log in
-            _config = new Configuration();
-            _config.BasePath = "https://vrchat.com/api/1";
-            _config.AddApiKey("auth", "YOUR_API_KEY");
             // Create a client to hold all our cookies :D
             client = new ApiClient();
 
             // Create an instance of the auth api so we can verify and log in
-            _authApi = new AuthenticationApi(_config);
+            authApi = new AuthenticationApi(_config);
         }
-
-        public async Task<bool> AuthenticateAsync()
+        public bool CheckAuthentication()
         {
+
             try
             {
-                VerifyAuthTokenResult result = await _authApi.VerifyAuthTokenAsync();
+                ApiResponse<CurrentUser> response = authApi.GetCurrentUserWithHttpInfo();
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    return true;
+                }
+                else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    return false;
+                }
 
-                Debug.WriteLine("VerifyAuthToken: " + result);
-                return true;
             }
-            catch (ApiException ex)
+            catch (ApiException e)
             {
-                Debug.WriteLine("Exception when calling API: " + ex.Message);
+                Debug.Print("Exception when calling AuthenticationApi.GetCurrentUser: " + e.Message);
                 return false;
             }
+
+            return false;
         }
- 
+
         public async Task<List<WorldModel>> GetFavoriteWorldsAsync(List<FavouriteModel> favoriteModels)
         {
             var favoriteWorlds = new List<WorldModel>();
@@ -74,6 +79,35 @@ namespace VRC_Favourite_Manager.Services
             }
 
             return favoriteWorlds;
+        }
+
+        public async Task<bool> LoginAsync(string username, string password)
+        {
+            Configuration config = new Configuration();
+            config.Username = username;
+            config.Password = password;
+
+            config.UserAgent = "ExampleProgram/0.0.1 Raifa";
+
+            AuthenticationApi authApi = new AuthenticationApi(client, client, config);
+
+            try
+            {
+                ApiResponse<CurrentUser> currentUserResp = authApi.GetCurrentUserWithHttpInfo();
+                if (requiresEmail2FA(currentUserResp))
+                {
+                    authApi.Verify2FAEmailCode(new TwoFactorEmailCode("123456"));
+                }
+                else
+                {
+
+                }
+            }
+            catch (ApiException ex)
+            {
+                Console.WriteLine($"Exception when calling API: {ex.Message}");
+                return false;
+            }
         }
 
         // Function that determines if the api expects email2FA from an ApiResponse
