@@ -1,0 +1,19 @@
+<!-- AuthenticationPage.xaml -->
+<Page
+    x:Class="VRC_Favourite_Manager.Views.AuthenticationPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:VRC_Favourite_Manager.Views"
+    xmlns:viewModels="using:VRC_Favourite_Manager.ViewModels">
+
+    <Page.DataContext>
+        <viewModels:AuthenticationViewModel/>
+    </Page.DataContext>
+
+    <Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="VRChat Login with API Key" FontSize="24" FontWeight="Bold" Margin="0,0,0,20"/>
+            <Button Content="Login" Command="{Binding LoginCommand}" Width="100"/>
+        </StackPanel>
+    </Grid>
+</Page>
