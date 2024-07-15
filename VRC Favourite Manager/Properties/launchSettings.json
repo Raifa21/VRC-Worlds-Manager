@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "VRC Favourite Manager (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "VRC Favourite Manager (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
