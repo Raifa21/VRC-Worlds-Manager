@@ -1,36 +1,49 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.UI.Xaml.Controls;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Microsoft.UI.Xaml.Controls;
 using VRC_Favourite_Manager.Services;
+using VRC_Favourite_Manager.Views;
 
 namespace VRC_Favourite_Manager.ViewModels
 {
     public class AuthenticationViewModel : ViewModelBase
     {
+        private readonly VRChatService _vrChatService;
+        private readonly NavigationService _navigationService;
+
+        private string _username;
+        public string Username
+        {
+            get => _username;
+            set => SetProperty(ref _username, value);
+        }
+
+        private string _password;
+        public string Password
+        {
+            get => _password;
+            set => SetProperty(ref _password, value);
+        }
+
         public ICommand LoginCommand { get; }
 
-        private readonly VRChatService _vrChatService;
-
-        public AuthenticationViewModel()
+        public AuthenticationViewModel(Frame frame)
         {
-            _vrChatService = new VRChatService("200");
+            _vrChatService = new VRChatService();
+            _navigationService = new NavigationService(frame);
             LoginCommand = new RelayCommand(async () => await LoginAsync());
         }
 
         private async Task LoginAsync()
         {
-            bool isAuthenticated = await _vrChatService.AuthenticateAsync();
-
-            if (isAuthenticated)
+            if (await _vrChatService.LoginAwait(Username, Password))
             {
                 // Navigate to main application page upon successful login
-                NavigationService.Navigate(typeof(MainPage));
+                _navigationService.Navigate(typeof(MainPage));
             }
             else
             {
-                // Handle authentication failure
-                // Display error message or handle as per your application flow
                 Debug.WriteLine("Authentication failed.");
             }
         }

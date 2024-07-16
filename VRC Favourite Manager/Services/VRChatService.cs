@@ -33,14 +33,7 @@ namespace VRC_Favourite_Manager.Services
             try
             {
                 ApiResponse<CurrentUser> response = authApi.GetCurrentUserWithHttpInfo();
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    return true;
-                }
-                else if (response.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    return false;
-                }
+                return response.StatusCode == HttpStatusCode.OK;
 
             }
             catch (ApiException e)
@@ -48,8 +41,6 @@ namespace VRC_Favourite_Manager.Services
                 Debug.Print("Exception when calling AuthenticationApi.GetCurrentUser: " + e.Message);
                 return false;
             }
-
-            return false;
         }
 
         public async Task<List<WorldModel>> GetFavoriteWorldsAsync(List<FavouriteModel> favoriteModels)
@@ -81,13 +72,13 @@ namespace VRC_Favourite_Manager.Services
             return favoriteWorlds;
         }
 
-        public async Task<bool> LoginAsync(string username, string password)
+        public async Task<bool> LoginAwait(string username, string password)
         {
             Configuration config = new Configuration();
             config.Username = username;
             config.Password = password;
 
-            config.UserAgent = "ExampleProgram/0.0.1 Raifa";
+            config.UserAgent = "VRC Favourite Manager/0.0.1 Raifa";
 
             AuthenticationApi authApi = new AuthenticationApi(client, client, config);
 
@@ -100,8 +91,9 @@ namespace VRC_Favourite_Manager.Services
                 }
                 else
                 {
-
+                    authApi.Verify2FA(new TwoFactorAuthCode("123456"));
                 }
+                return true;
             }
             catch (ApiException ex)
             {

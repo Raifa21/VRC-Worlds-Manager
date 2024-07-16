@@ -8,7 +8,7 @@ using VRC_Favourite_Manager.Services;
 
 namespace VRC_Favourite_Manager.ViewModels
 {
-    public class MainViewModel : INotifyPropertyChanged
+    public class MainViewModel : ViewModelBase
     {
         private readonly VRChatService _vrChatService;
         private ObservableCollection<WorldModel> _favoriteWorlds;
@@ -30,8 +30,6 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public async Task InitializeAsync()
         {
-            if (await _vrChatService.LoginAsync())
-            {
                 var favoriteModels = new List<FavouriteModel>
                 {
                     new FavouriteModel { id = "1", type = "world", favouriteId = "wrld_a1071eb7-e16c-4a52-bd6e-c0efdb1b5ea5" }
@@ -43,7 +41,6 @@ namespace VRC_Favourite_Manager.ViewModels
                 {
                     FavoriteWorlds.Add(world);
                 }
-            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
