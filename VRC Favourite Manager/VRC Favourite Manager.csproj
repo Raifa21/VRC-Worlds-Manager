@@ -14,8 +14,10 @@
     <DefaultLanguage>ja</DefaultLanguage>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Views\AuthenticationPage.xaml" />
+  </ItemGroup>
+  <ItemGroup>
     <Page Remove="App.xaml" />
-    <Page Remove="Views\LoginPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,9 +49,9 @@
     <None Update="App.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
-    <None Update="Views\LoginPage.xaml">
+    <Page Update="Views\AuthenticationPage.xaml">
       <Generator>MSBuild:Compile</Generator>
-    </None>
+    </Page>
   </ItemGroup>
 
   <!--

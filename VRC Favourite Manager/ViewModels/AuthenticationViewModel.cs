@@ -10,7 +10,6 @@ namespace VRC_Favourite_Manager.ViewModels
     public class AuthenticationViewModel : ViewModelBase
     {
         private readonly VRChatService _vrChatService;
-        private readonly NavigationService _navigationService;
 
         private string _username;
         public string Username
@@ -28,24 +27,10 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public ICommand LoginCommand { get; }
         // Adjusted constructor to accept NavigationService directly
-        public AuthenticationViewModel(NavigationService navigationService)
+        public AuthenticationViewModel()
         {
             _vrChatService = new VRChatService();
-            _navigationService = navigationService; // Use the passed NavigationService
-            LoginCommand = new RelayCommand(async () => await LoginAsync());
         }
 
-        private async Task LoginAsync()
-        {
-            if (await _vrChatService.LoginAwait(Username, Password))
-            {
-                // Navigate to main application page upon successful login
-                _navigationService.Navigate(typeof(MainPage));
-            }
-            else
-            {
-                Debug.WriteLine("Authentication failed.");
-            }
-        }
     }
 }

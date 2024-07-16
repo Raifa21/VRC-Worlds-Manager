@@ -8,6 +8,7 @@ using VRC_Favourite_Manager.Models;
 using System.Diagnostics;
 using System.Net;
 using Windows.Media.Protection.PlayReady;
+using VRC_Favourite_Manager.Common;
 
 namespace VRC_Favourite_Manager.Services
 {
@@ -17,19 +18,30 @@ namespace VRC_Favourite_Manager.Services
         private readonly ApiClient client;
         private readonly AuthenticationApi authApi;
         private readonly UsersApi userApi;
-        private readonly WorldsApi worldApi;
+        private readonly WorldsApi worldsApi;
 
-        public VRChatService()
+        public VRChatService(string username, string password)
         {
             // Create a client to hold all our cookies :D
             client = new ApiClient();
+            _config = new Configuration();
+            authApi = new AuthenticationApi(client,client,_config);
+            userApi = new UsersApi(client,client,_config);
+            worldsApi = new WorldsApi(client,client,_config);
 
-            // Create an instance of the auth api so we can verify and log in
-            authApi = new AuthenticationApi(_config);
         }
+
+
+        
+        /// <summary>
+        /// Checks if the user is logged in using the VRChat API, this returns Http status code 200 if logged in with user info, and 401 if not logged in
+        /// </summary>
+        /// <returns>if logged in or not</returns>
         public bool CheckAuthentication()
         {
+            _config.UserAgent = "VRC Favourite Manager/0.0.1 Raifa";
 
+            authApi = 
             try
             {
                 ApiResponse<CurrentUser> response = authApi.GetCurrentUserWithHttpInfo();
@@ -43,6 +55,13 @@ namespace VRC_Favourite_Manager.Services
             }
         }
 
+        /// <summary>
+        /// Get's the user's favourite worlds. Up to 100 worlds can be returned.
+        /// 
+        /// </summary>
+        /// <param name="favoriteModels"></param>
+        /// <returns></returns>
+        /// <exception cref="VRCNotLoggedInException">When the user is not logged in,</exception>
         public async Task<List<WorldModel>> GetFavoriteWorldsAsync(List<FavouriteModel> favoriteModels)
         {
             var favoriteWorlds = new List<WorldModel>();
@@ -62,51 +81,20 @@ namespace VRC_Favourite_Manager.Services
                             capacity = world.Capacity.ToString()
                         });
                     }
-                    catch (ApiException ex)
+                    catch (ApiException ex) when (ex.ErrorCode==401)
+                    {
+                        throw new VRCNotLoggedInException();
+                    }
+                    catch(ApiException ex)
                     {
                         Console.WriteLine("Exception when calling API: {0}", ex.Message);
+                        throw;
                     }
+
                 }
             }
 
             return favoriteWorlds;
-        }
-
-        public async Task<bool> LoginAwait(string username, string password)
-        {
-            Configuration config = new Configuration();
-            config.Username = username;
-            config.Password = password;
-
-            config.UserAgent = "VRC Favourite Manager/0.0.1 Raifa";
-
-            AuthenticationApi authApi = new AuthenticationApi(client, client, config);
-
-            try
-            {
-                ApiResponse<CurrentUser> currentUserResp = authApi.GetCurrentUserWithHttpInfo();
-                if (requiresEmail2FA(currentUserResp))
-                {
-                    authApi.Verify2FAEmailCode(new TwoFactorEmailCode("123456"));
-                }
-                else
-                {
-                    authApi.Verify2FA(new TwoFactorAuthCode("123456"));
-                }
-                return true;
-            }
-            catch (ApiException ex)
-            {
-                Console.WriteLine($"Exception when calling API: {ex.Message}");
-                return false;
-            }
-        }
-
-        // Function that determines if the api expects email2FA from an ApiResponse
-        private static bool requiresEmail2FA(ApiResponse<CurrentUser> resp)
-        {
-            // We can just use a super simple string.Contains() check
-            return resp.RawContent.Contains("emailOtp");
         }
     }
 }

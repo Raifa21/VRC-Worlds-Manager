@@ -1,0 +1,17 @@
+<Page
+    x:Class="VRC_Favourite_Manager.Views.AuthenticationPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:VRC_Favourite_Manager.Views"
+    xmlns:viewModels="using:VRC_Favourite_Manager.ViewModels"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="300">
+            <TextBlock Text="VRChat Login" FontSize="24" FontWeight="Bold" Margin="0,0,0,20" HorizontalAlignment="Center" />
+            <TextBox Header="Username" Text="{Binding Username, Mode=TwoWay}" Margin="0,0,0,10" />
+            <PasswordBox Header="Password" Password="{Binding Password, Mode=TwoWay}" Margin="0,0,0,20" />
+            <Button Content="Login" Command="{Binding LoginCommand}" />
+        </StackPanel>
+    </Grid>
+</Page>

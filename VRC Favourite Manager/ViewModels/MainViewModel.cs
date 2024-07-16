@@ -25,23 +25,23 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public MainViewModel()
         {
-            _vrChatService = new VRChatService();
+            _vrChatService
             FavoriteWorlds = new ObservableCollection<WorldModel>();
         }
 
         public async Task InitializeAsync()
         {
-                var favoriteModels = new List<FavouriteModel>
+            var favoriteModels = new List<FavouriteModel>
                 {
                     new FavouriteModel { id = "1", type = "world", favouriteId = "wrld_a1071eb7-e16c-4a52-bd6e-c0efdb1b5ea5" }
                 };
 
-                var favoriteWorlds = await _vrChatService.GetFavoriteWorldsAsync(favoriteModels);
+            var favoriteWorlds = await _vrChatService.GetFavoriteWorldsAsync(favoriteModels);
 
-                foreach (var world in favoriteWorlds)
-                {
-                    FavoriteWorlds.Add(world);
-                }
+            foreach (var world in favoriteWorlds)
+            {
+                FavoriteWorlds.Add(world);
+            }
         }
     }
 }
