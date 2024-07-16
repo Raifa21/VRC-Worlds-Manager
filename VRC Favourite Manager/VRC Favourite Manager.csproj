@@ -15,7 +15,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Page Remove="App.xaml" />
-    <Page Remove="views\AuthenticationPage.xaml" />
+    <Page Remove="Views\LoginPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,7 +47,7 @@
     <None Update="App.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
-    <None Update="Views\AuthenticationPage.xaml">
+    <None Update="Views\LoginPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
   </ItemGroup>

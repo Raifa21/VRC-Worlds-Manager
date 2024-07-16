@@ -1,4 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using VRC_Favourite_Manager.Services;
 using VRC_Favourite_Manager.Views;
 
 namespace VRC_Favourite_Manager
@@ -12,22 +14,21 @@ namespace VRC_Favourite_Manager
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
-            var rootFrame = Window.Current.Content as Microsoft.UI.Xaml.Controls.Frame;
+            Frame rootFrame = Window.Current.Content as Frame;
 
             if (rootFrame == null)
             {
-                rootFrame = new Microsoft.UI.Xaml.Controls.Frame();
+                rootFrame = new Frame();
                 Window.Current.Content = rootFrame;
-            }
 
-            if (rootFrame.Content == null)
-            {
-                // Navigate to the AuthenticationPage initially
-                rootFrame.Navigate(typeof(AuthenticationPage));
+                // Initialize NavigationService with the root frame
+                var navigationService = new NavigationService(rootFrame);
+
+                // Pass NavigationService to your AuthenticationViewModel
+                rootFrame.Navigate(typeof(LoginPage), navigationService);
             }
 
             Window.Current.Activate();
         }
-
     }
 }

@@ -27,11 +27,11 @@ namespace VRC_Favourite_Manager.ViewModels
         }
 
         public ICommand LoginCommand { get; }
-
-        public AuthenticationViewModel(Frame frame)
+        // Adjusted constructor to accept NavigationService directly
+        public AuthenticationViewModel(NavigationService navigationService)
         {
             _vrChatService = new VRChatService();
-            _navigationService = new NavigationService(frame);
+            _navigationService = navigationService; // Use the passed NavigationService
             LoginCommand = new RelayCommand(async () => await LoginAsync());
         }
 
