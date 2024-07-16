@@ -12,12 +12,22 @@ namespace VRC_Favourite_Manager
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
-            // Initialize your application here
-            // For example, navigate to your main page
-            var rootFrame = new Microsoft.UI.Xaml.Controls.Frame();
-            rootFrame.Navigate(typeof(MainPage));
-            Window.Current.Content = rootFrame;
+            var rootFrame = Window.Current.Content as Microsoft.UI.Xaml.Controls.Frame;
+
+            if (rootFrame == null)
+            {
+                rootFrame = new Microsoft.UI.Xaml.Controls.Frame();
+                Window.Current.Content = rootFrame;
+            }
+
+            if (rootFrame.Content == null)
+            {
+                // Navigate to the AuthenticationPage initially
+                rootFrame.Navigate(typeof(AuthenticationPage));
+            }
+
             Window.Current.Activate();
         }
+
     }
 }
