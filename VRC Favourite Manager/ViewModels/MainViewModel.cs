@@ -25,6 +25,7 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public MainViewModel()
         {
+            _vrChatService = new VRChatService();
             FavoriteWorlds = new ObservableCollection<WorldModel>();
         }
 
@@ -41,13 +42,6 @@ namespace VRC_Favourite_Manager.ViewModels
                 {
                     FavoriteWorlds.Add(world);
                 }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

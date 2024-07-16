@@ -14,6 +14,7 @@
     <DefaultLanguage>ja</DefaultLanguage>
   </PropertyGroup>
   <ItemGroup>
+    <Page Remove="App.xaml" />
     <Page Remove="views\AuthenticationPage.xaml" />
   </ItemGroup>
 
@@ -43,6 +44,9 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
     <None Update="Views\AuthenticationPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
