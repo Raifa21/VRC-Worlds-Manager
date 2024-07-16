@@ -16,5 +16,9 @@ namespace VRC_Favourite_Manager.Services
         {
             _frame.Navigate(sourcePageType);
         }
+        public void Navigate(Type sourcePageType, object parameter)
+        {
+            _frame.Navigate(sourcePageType, parameter);
+        }
     }
 }

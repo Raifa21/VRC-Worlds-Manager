@@ -3,8 +3,5 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:VRC_Favourite_Manager"
-    xmlns:services="using:VRC_Favourite_Manager.Services"
-    <Application.Resources>
-        <services:VRChatService x:Key="VRChatService"/>
-    </Application.Resources>
+    xmlns:services="using:VRC_Favourite_Manager.Services">
 </Application>

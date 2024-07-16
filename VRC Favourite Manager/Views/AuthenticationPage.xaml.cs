@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using VRC_Favourite_Manager.Services;
 using VRC_Favourite_Manager.ViewModels;
@@ -13,7 +14,7 @@ namespace VRC_Favourite_Manager.Views
         public AuthenticationPage()
         {
             this.InitializeComponent();
-            _vrChatService = new VRChatService();
+            _vrChatService = Application.Current.Resources["VRChatService"] as VRChatService;
             
             if(_vrChatService.CheckAuthentication())
             {

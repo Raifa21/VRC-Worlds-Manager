@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.UI.Xaml;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -25,7 +26,7 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public MainViewModel()
         {
-            _vrChatService
+            _vrChatService = Application.Current.Resources["VRChatService"] as VRChatService;
             FavoriteWorlds = new ObservableCollection<WorldModel>();
         }
 

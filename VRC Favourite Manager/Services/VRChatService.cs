@@ -22,9 +22,12 @@ namespace VRC_Favourite_Manager.Services
 
         public VRChatService(string username, string password)
         {
-            // Create a client to hold all our cookies :D
-            client = new ApiClient();
             _config = new Configuration();
+            _config.Username = username;
+            _config.Password = password;    
+            _config.UserAgent = "VRC Favourite Manager/0.0.1 Raifa";
+
+            client = new ApiClient();
             authApi = new AuthenticationApi(client,client,_config);
             userApi = new UsersApi(client,client,_config);
             worldsApi = new WorldsApi(client,client,_config);
@@ -39,9 +42,6 @@ namespace VRC_Favourite_Manager.Services
         /// <returns>if logged in or not</returns>
         public bool CheckAuthentication()
         {
-            _config.UserAgent = "VRC Favourite Manager/0.0.1 Raifa";
-
-            authApi = 
             try
             {
                 ApiResponse<CurrentUser> response = authApi.GetCurrentUserWithHttpInfo();
@@ -72,7 +72,7 @@ namespace VRC_Favourite_Manager.Services
                 {
                     try
                     {
-                        var world = await worldApi.GetWorldAsync(favorite.favouriteId);
+                        var world = await worldsApi.GetWorldAsync(favorite.favouriteId);
                         favoriteWorlds.Add(new WorldModel
                         {
                             imageUrl = world.ImageUrl,

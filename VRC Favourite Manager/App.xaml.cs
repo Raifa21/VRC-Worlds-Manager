@@ -7,32 +7,59 @@ namespace VRC_Favourite_Manager
 {
     public sealed partial class App : Application
     {
-        private readonly VRChatService _VRChatService;
+        private VRChatService _VRChatService;
+        private string username;
+        private string password;
+        private MainWindow mainWindow;
+
         public App()
         {
-            // Read config file
-            // This is a placeholder for now
-            string username = "username";
-            string password = "password";
-
-            _VRChatService = new VRChatService(username, password);
             this.InitializeComponent();
+
+            
         }
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
-            var rootFrame = new Frame();
+            ReadConfig();
+            InitialiseService();
+
+            mainWindow = new MainWindow();
+            Frame rootFrame = new Frame();
+
             if (_VRChatService.CheckAuthentication())
             {
-                rootFrame.Navigate(typeof(MainPage));
+                rootFrame.Navigate(typeof(MainPage), args.Arguments);
             }
             else
             {
-                rootFrame.Navigate(typeof(AuthenticationPage));
+                rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
             }
-            rootFrame.Navigate(typeof(AuthenticationPage));
-            Window.Current.Content = rootFrame;
-            Window.Current.Activate();
+            mainWindow.Content = rootFrame;
+            mainWindow.Activate();
+        }
+
+        /// <summary>
+        /// Reads the user's local config file to retrieve cached information.
+        /// </summary>
+        private void ReadConfig()
+        {
+            // Read config file
+            // This is a placeholder
+            this.username = "username";
+            this.password = "password";
+        }
+
+        /// <summary>
+        /// Initialises the VRChatService with the provided username and password.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        private void InitialiseService()
+        {
+            Application.Current.Resources["VRChatService"] = new VRChatService(username, password);
+
+            _VRChatService = (VRChatService)Application.Current.Resources["VRChatService"];
         }
     }
 }

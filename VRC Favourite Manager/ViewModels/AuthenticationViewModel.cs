@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -29,7 +30,7 @@ namespace VRC_Favourite_Manager.ViewModels
         // Adjusted constructor to accept NavigationService directly
         public AuthenticationViewModel()
         {
-            _vrChatService = new VRChatService();
+            _vrChatService = Application.Current.Resources["VRChatService"] as VRChatService;
         }
 
     }
