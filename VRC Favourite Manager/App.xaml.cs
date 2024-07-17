@@ -33,22 +33,31 @@ namespace VRC_Favourite_Manager
 
             mainWindow = new MainWindow();
             Frame rootFrame = new Frame();
-            ApiResponse<VerifyAuthTokenResult> response = _VRChatService.CheckAuthentication();
-            if (response.StatusCode == HttpStatusCode.Accepted )
+            try
             {
-                if (response.Data.Ok)
+                ApiResponse<VerifyAuthTokenResult> response = _VRChatService.CheckAuthentication();
+                if (response.StatusCode == HttpStatusCode.Accepted)
                 {
-                    rootFrame.Navigate(typeof(MainPage), args.Arguments);
+                    if (response.Data.Ok)
+                    {
+                        rootFrame.Navigate(typeof(MainPage), args.Arguments);
+                    }
+                    else
+                    {
+                        rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
+                    }
                 }
                 else
                 {
                     rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
                 }
             }
-            else
+            catch (System.Exception)
             {
                 rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
             }
+            
+            
             mainWindow.Content = rootFrame;
             mainWindow.Activate();
         }

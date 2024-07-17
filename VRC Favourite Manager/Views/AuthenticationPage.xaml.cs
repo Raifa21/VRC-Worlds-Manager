@@ -19,9 +19,6 @@ namespace VRC_Favourite_Manager.Views
             this.InitializeComponent();
             _vrChatService = Application.Current.Resources["VRChatService"] as VRChatService;
             
-
-            
-            _vrChatService.Login(username, password, twoFactorAuthentication);
             
         }
     }
