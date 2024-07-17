@@ -1,10 +1,12 @@
 ﻿using System.IO;
+using System.Net;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Tomlyn;
 using VRC_Favourite_Manager.Services;
 using VRC_Favourite_Manager.Views;
 using VRChat.API.Client;
+using VRChat.API.Model;
 
 namespace VRC_Favourite_Manager
 {
@@ -31,10 +33,17 @@ namespace VRC_Favourite_Manager
 
             mainWindow = new MainWindow();
             Frame rootFrame = new Frame();
-
-            if (_VRChatService.CheckAuthentication())
+            ApiResponse<VerifyAuthTokenResult> response = _VRChatService.CheckAuthentication();
+            if (response.StatusCode == HttpStatusCode.Accepted )
             {
-                rootFrame.Navigate(typeof(MainPage), args.Arguments);
+                if (response.Data.Ok)
+                {
+                    rootFrame.Navigate(typeof(MainPage), args.Arguments);
+                }
+                else
+                {
+                    rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
+                }
             }
             else
             {
@@ -49,18 +58,26 @@ namespace VRC_Favourite_Manager
         /// </summary>
         private void ReadConfig()
         {
-            var toml = Toml.ToModel(Toml.Parse(File.ReadAllText("Config.toml")));
-            if (toml.ContainsKey("auth"))
+            try
             {
-                try
+                var toml = Toml.ToModel(Toml.Parse(System.IO.File.ReadAllText("Config.toml")));
+                if (toml.ContainsKey("auth"))
                 {
-                    this.apiKey = toml["auth"].ToString();
-                }
-                catch (System.Exception)
-                {
-                    this.apiKey = "";
+                    try
+                    {
+                        this.apiKey = toml["auth"].ToString();
+                    }
+                    catch (System.Exception)
+                    {
+                        this.apiKey = "";
+                    }
                 }
             }
+            catch (FileNotFoundException)
+            {
+                this.apiKey = "";
+            }
+            
         }
 
         /// <summary>

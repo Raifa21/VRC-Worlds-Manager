@@ -11,15 +11,17 @@ namespace VRC_Favourite_Manager.Views
     public sealed partial class AuthenticationPage : Page
     {
         private readonly VRChatService _vrChatService;
+        private string username;
+        private string password;
+        private string twoFactorAuthentication;
         public AuthenticationPage()
         {
             this.InitializeComponent();
             _vrChatService = Application.Current.Resources["VRChatService"] as VRChatService;
             
-            if(_vrChatService.CheckAuthentication())
-            {
-                new NavigationService(Frame).Navigate(typeof(MainPage));
-            }
+
+            
+            _vrChatService.Login(username, password, twoFactorAuthentication);
             
         }
     }
