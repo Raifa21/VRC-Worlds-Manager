@@ -10,4 +10,8 @@ namespace VRC_Favourite_Manager.Common
     {
         
     }
+    public class VRCIncorrectCredentialsException: Exception
+    {
+        
+    }
 }

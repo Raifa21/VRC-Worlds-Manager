@@ -1,0 +1,6 @@
+﻿title = "Config file"
+
+[database]
+username = ""
+password = ""
+

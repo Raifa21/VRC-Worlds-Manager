@@ -1,7 +1,10 @@
-﻿using Microsoft.UI.Xaml;
+﻿using System.IO;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Tomlyn;
 using VRC_Favourite_Manager.Services;
 using VRC_Favourite_Manager.Views;
+using VRChat.API.Client;
 
 namespace VRC_Favourite_Manager
 {
@@ -44,10 +47,20 @@ namespace VRC_Favourite_Manager
         /// </summary>
         private void ReadConfig()
         {
-            // Read config file
-            // This is a placeholder
-            this.username = "username";
-            this.password = "password";
+            var toml = Toml.ToModel(Toml.Parse(File.ReadAllText("Config.toml")));
+            if (toml.ContainsKey("username") && toml.ContainsKey("password"))
+            {
+                try
+                {
+                    this.username = toml["username"].ToString();
+                    this.password = toml["password"].ToString();
+                }
+                catch (System.Exception)
+                {
+                    this.username = "";
+                    this.password = "";
+                }
+            }
         }
 
         /// <summary>
@@ -61,5 +74,6 @@ namespace VRC_Favourite_Manager
 
             _VRChatService = (VRChatService)Application.Current.Resources["VRChatService"];
         }
+
     }
 }
