@@ -11,8 +11,7 @@ namespace VRC_Favourite_Manager
     public sealed partial class App : Application
     {
         private VRChatService _VRChatService;
-        private string username;
-        private string password;
+        private string apiKey;
         private MainWindow mainWindow;
 
         public App()
@@ -24,8 +23,11 @@ namespace VRC_Favourite_Manager
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
-            ReadConfig();
             InitialiseService();
+
+            ReadConfig();
+            
+
 
             mainWindow = new MainWindow();
             Frame rootFrame = new Frame();
@@ -48,17 +50,15 @@ namespace VRC_Favourite_Manager
         private void ReadConfig()
         {
             var toml = Toml.ToModel(Toml.Parse(File.ReadAllText("Config.toml")));
-            if (toml.ContainsKey("username") && toml.ContainsKey("password"))
+            if (toml.ContainsKey("auth"))
             {
                 try
                 {
-                    this.username = toml["username"].ToString();
-                    this.password = toml["password"].ToString();
+                    this.apiKey = toml["auth"].ToString();
                 }
                 catch (System.Exception)
                 {
-                    this.username = "";
-                    this.password = "";
+                    this.apiKey = "";
                 }
             }
         }
@@ -66,11 +66,9 @@ namespace VRC_Favourite_Manager
         /// <summary>
         /// Initialises the VRChatService with the provided username and password.
         /// </summary>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
         private void InitialiseService()
         {
-            Application.Current.Resources["VRChatService"] = new VRChatService(username, password);
+            Application.Current.Resources["VRChatService"] = new VRChatService();
 
             _VRChatService = (VRChatService)Application.Current.Resources["VRChatService"];
         }

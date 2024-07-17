@@ -14,4 +14,8 @@ namespace VRC_Favourite_Manager.Common
     {
         
     }
+    public class VRCRequiresTwoFactorAuthException: Exception
+    {
+        
+    }
 }

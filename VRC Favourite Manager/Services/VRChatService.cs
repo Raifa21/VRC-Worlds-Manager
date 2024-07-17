@@ -28,24 +28,32 @@ namespace VRC_Favourite_Manager.Services
             _config.UserAgent = "VRC Favourite Manager/0.0.1 Raifa";
 
             client = new ApiClient();
+
+            authApi = new AuthenticationApi(client, client, _config);
+            userApi = new UsersApi(client, client, _config);
+            worldsApi = new WorldsApi(client, client, _config);
         }
 
 
+        public void SetAPIKey(string apiKey)
+        {
+            _config.AddApiKey("auth" , apiKey);
+        }
 
+        public ApiResponse<VerifyAuthTokenResult> CheckAuthentication()
+        {
+            return authApi.VerifyAuthTokenWithHttpInfo();
+        }
         
         /// <summary>
         /// Checks if the user is logged in using the VRChat API, this returns Http status code 200 if logged in with user info, and 401 if not logged in
         /// </summary>
         /// <returns>if logged in or not</returns>
-        public void CheckAuthentication(string username, string password)
+        public CurrentUser Login(string username, string password, string twoFactorAuthenticationCode)
         {
-
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
-            {
-                throw new VRCIncorrectCredentialsException();
-            }
             _config.Username = username;
             _config.Password = password;
+
             authApi = new AuthenticationApi(client, client, _config);
             userApi = new UsersApi(client, client, _config);
             worldsApi = new WorldsApi(client, client, _config);
@@ -53,24 +61,26 @@ namespace VRC_Favourite_Manager.Services
             try
             {
                 ApiResponse<CurrentUser> response = authApi.GetCurrentUserWithHttpInfo();
-                if (requiresEmail2FA(response)) // If the API wants us to send an Email OTP code
+                if (RequiresEmail2FA(response))
                 {
-                    throw 
+                    authApi.Verify2FAEmailCode(new TwoFactorEmailCode(twoFactorAuthenticationCode));
                 }
                 else
                 {
-                    // requiresEmail2FA returned false, so we use secret-based 2fa verification
-                    // authApi.VerifyRecoveryCode(new TwoFactorAuthCode("12345678")); // To Use a Recovery Code
-                    authApi.Verify2FA(new TwoFactorAuthCode("123456"));
+                    authApi.Verify2FA(new TwoFactorAuthCode(twoFactorAuthenticationCode));
                 }
+
+                return authApi.GetCurrentUser();
+
 
             }
             catch (ApiException e)
             {
-                Debug.Print("Exception when calling AuthenticationApi.GetCurrentUser: " + e.Message);
+                throw new VRCIncorrectCredentialsException();
             }
         }
-        static bool requiresEmail2FA(ApiResponse<CurrentUser> resp)
+
+        private static bool RequiresEmail2FA(ApiResponse<CurrentUser> resp)
         {
             // We can just use a super simple string.Contains() check
             if (resp.RawContent.Contains("emailOtp"))
