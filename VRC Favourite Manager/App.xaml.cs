@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Tomlyn;
 using VRC_Favourite_Manager.Services;
+using VRC_Favourite_Manager.ViewModels;
 using VRC_Favourite_Manager.Views;
 using VRChat.API.Client;
 using VRChat.API.Model;
@@ -15,7 +16,7 @@ namespace VRC_Favourite_Manager
     {
         private VRChatService _VRChatService;
         private string apiKey;
-        private MainWindow mainWindow;
+        public MainWindow mainWindow;
 
         public App()
         {
@@ -36,25 +37,35 @@ namespace VRC_Favourite_Manager
             Frame rootFrame = new Frame();
             try
             {
-                ApiResponse<VerifyAuthTokenResult> response = _VRChatService.CheckAuthentication();
-                if (response.StatusCode == HttpStatusCode.Accepted)
+                if (apiKey == "")
                 {
-                    if (response.Data.Ok)
-                    {
-                        rootFrame.Navigate(typeof(MainPage), args.Arguments);
-                    }
-                    else
-                    {
-                        rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
-                    }
+                    rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
                 }
                 else
                 {
-                    rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
+                    ApiResponse<VerifyAuthTokenResult> response = _VRChatService.CheckAuthentication();
+                    if (response.StatusCode == HttpStatusCode.Accepted)
+                    {
+                        if (response.Data.Ok)
+                        {
+                            rootFrame.Navigate(typeof(MainPage), args.Arguments);
+                        }
+                        else
+                        {
+                            Console.WriteLine("API key invalid. Redirecting to Login Page.");
+                            rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("API is not reachable. Redirecting to Login Page.");
+                        rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
+                    }
                 }
             }
             catch (System.Exception)
             {
+                Console.WriteLine("Error reading API key from config file.");
                 rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
             }
             
@@ -68,9 +79,17 @@ namespace VRC_Favourite_Manager
         /// </summary>
         private void ReadConfig()
         {
+            var configManager = new ConfigManager();
+
+            if (!configManager.ConfigExists())
+            {
+                configManager.WriteConfig("auth = \"\"");
+                this.apiKey = "";
+                return;
+            }
             try
             {
-                var toml = Toml.ToModel(Toml.Parse(System.IO.File.ReadAllText("/Config.toml")));
+                var toml = Toml.ToModel(Toml.Parse(configManager.ReadConfig()));
                 if (toml.ContainsKey("auth"))
                 {
                     try
@@ -80,18 +99,21 @@ namespace VRC_Favourite_Manager
                     catch (System.Exception)
                     {
                         Console.WriteLine("Error reading API key from config file.");
+                        configManager.WriteConfig("auth = \"\"");
                         this.apiKey = "";
                     }
                 }
                 else
                 {
                     Console.WriteLine("API key not found in config file.");
+                    configManager.WriteConfig("auth = \"\"");
                     this.apiKey = "";
                 }
             }
             catch (FileNotFoundException)
             {
                 Console.WriteLine("Config file not found.");
+                configManager.WriteConfig("auth = \"\"");
                 this.apiKey = "";
             }
             
@@ -108,4 +130,11 @@ namespace VRC_Favourite_Manager
         }
 
     }
+    public class ViewModelLocator
+    {
+        private static AuthenticationViewModel _authenticationViewModel = new AuthenticationViewModel();
+
+        public AuthenticationViewModel AuthenticationViewModel => _authenticationViewModel;
+    }
+
 }

@@ -1,3 +1,4 @@
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Threading.Tasks;
 
@@ -7,9 +8,10 @@ namespace VRC_Favourite_Manager.Views
     {
         public string OtpCode { get; private set; }
 
-        public TwoFactorAuthPopup()
+        public TwoFactorAuthPopup(XamlRoot xamlRoot)
         {
             this.InitializeComponent();
+            this.XamlRoot = xamlRoot;
         }
 
         private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)

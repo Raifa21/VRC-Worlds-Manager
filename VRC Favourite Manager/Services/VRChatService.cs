@@ -30,6 +30,9 @@ namespace VRC_Favourite_Manager.Services
             _config.UserAgent = "VRC Favourite Manager/0.0.1 Raifa";
 
             client = new ApiClient();
+
+            
+
         }
 
 
@@ -40,6 +43,7 @@ namespace VRC_Favourite_Manager.Services
 
         public ApiResponse<VerifyAuthTokenResult> CheckAuthentication()
         {
+            authApi = new AuthenticationApi(client, client, _config);
             return authApi.VerifyAuthTokenWithHttpInfo();
         }
         
@@ -112,6 +116,20 @@ namespace VRC_Favourite_Manager.Services
             }
         }
 
+        public void StoreAuth()
+        {
+            var configManager = new ConfigManager();
+            try
+            {
+                configManager.WriteConfig("auth = \"" + _config.ApiKey + "\"");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error writing API key to config file: " + e.Message);
+            }
+            
+        }
+
         /// <summary>
         /// Gets the user's favourite worlds. Up to 100 worlds can be returned.
         /// 
@@ -130,10 +148,10 @@ namespace VRC_Favourite_Manager.Services
                     var world = await worldsApi.GetWorldAsync(favorite.favouriteId);
                     favoriteWorlds.Add(new WorldModel
                     {
-                        imageUrl = world.ImageUrl,
-                        name = world.Name,
-                        recommendedCapacity = world.RecommendedCapacity.ToString(),
-                        capacity = world.Capacity.ToString()
+                        ImageUrl = world.ImageUrl,
+                        Name = world.Name,
+                        RecommendedCapacity = world.RecommendedCapacity.ToString(),
+                        Capacity = world.Capacity.ToString()
                     });
                 }
                 catch (ApiException ex) when (ex.ErrorCode==401)

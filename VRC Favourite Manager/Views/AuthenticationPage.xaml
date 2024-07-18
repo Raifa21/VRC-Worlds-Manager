@@ -4,7 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:VRC_Favourite_Manager.Views"
     xmlns:viewModels="using:VRC_Favourite_Manager.ViewModels"
-    xmlns:muxc="using:Microsoft.UI.Xaml.Controls">
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    DataContext="{Binding AuthenticationViewModel, Source={StaticResource Locator}}">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="300">
@@ -12,6 +13,7 @@
             <TextBox Header="Username" Text="{Binding Username, Mode=TwoWay}" Margin="0,0,0,10" />
             <PasswordBox Header="Password" Password="{Binding Password, Mode=TwoWay}" Margin="0,0,0,20" />
             <Button Content="Login" Command="{Binding LoginCommand}" />
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}" Margin="0,10,0,0" />
         </StackPanel>
     </Grid>
 </Page>

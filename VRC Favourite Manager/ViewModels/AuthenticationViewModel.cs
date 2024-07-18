@@ -14,11 +14,14 @@ namespace VRC_Favourite_Manager.ViewModels
     public class AuthenticationViewModel : ViewModelBase
     {
         private readonly VRChatService _vrChatService;
+        private readonly Window _mainWindow;
         private MainWindow mainWindow;
+        private string _errorMessage;
 
         public AuthenticationViewModel()
         {
             _vrChatService = Application.Current.Resources["VRChatService"] as VRChatService;
+            _mainWindow = ((App)Application.Current).mainWindow;
             LoginCommand = new RelayCommand(Login);
 
         }
@@ -38,51 +41,61 @@ namespace VRC_Favourite_Manager.ViewModels
             get => _password;
             set => SetProperty(ref _password, value);
         }
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set => SetProperty(ref _errorMessage, value);
+        }
 
         public ICommand LoginCommand { get; }
         // Adjusted constructor to accept NavigationService directly
 
         private async void Login()
         {
-            Frame rootFrame = new Frame();
-            mainWindow = new MainWindow();
+            try
+            {
+                var loginSuccessful = _vrChatService.Login(Username, Password);
+                if (!loginSuccessful) throw new VRCIncorrectCredentialsException();
+                var otpDialog = new TwoFactorAuthPopup(_mainWindow.Content.XamlRoot);
+                var result = await otpDialog.ShowAsync();
+                if (result != ContentDialogResult.Primary || string.IsNullOrEmpty(otpDialog.OtpCode))
+                {
+                    Console.WriteLine("OTP Dialog was cancelled or empty");
+                    return;
+                }
 
-            bool loginSuccessful = _vrChatService.Login(Username, Password);
-            if (!loginSuccessful) throw new VRCIncorrectCredentialsException();
-            var otpDialog = new TwoFactorAuthPopup();
-            var result = await otpDialog.ShowAsync();
-            if (result != ContentDialogResult.Primary || string.IsNullOrEmpty(otpDialog.OtpCode))
-            {
-                Console.WriteLine("OTP Dialog was cancelled or empty");
-                return;
-            }
-            if (_vrChatService.RequiresEmailotp)
-            {
-                Verify2FAEmailCodeResult otpVerified = _vrChatService.VerifyEmail2FA(otpDialog.OtpCode);
-                if (otpVerified.Verified)
+                if (_vrChatService.RequiresEmailotp)
                 {
-                    rootFrame.Navigate(typeof(MainPage));
-                    mainWindow.Content = rootFrame;
-                    mainWindow.Activate();
+                    var otpVerified = _vrChatService.VerifyEmail2FA(otpDialog.OtpCode);
+                    if (!otpVerified.Verified)
+                    {
+                        ErrorMessage = "Incorrect OTP code.";
+                        return;
+                    }
                 }
                 else
                 {
-                    throw new VRCIncorrectCredentialsException();
+                    var otpVerified = _vrChatService.Verify2FA(otpDialog.OtpCode);
+                    if (!otpVerified.Verified)
+                    {
+                        ErrorMessage = "Incorrect OTP code.";
+                        return;
+                    }
                 }
+                _vrChatService.StoreAuth();
+                var rootFrame = new Frame();
+                mainWindow = new MainWindow();
+                rootFrame.Navigate(typeof(MainPage));
+                mainWindow.Content = rootFrame;
+                mainWindow.Activate();
             }
-            else
+            catch (VRCIncorrectCredentialsException)
             {
-                Verify2FAResult otpVerified = _vrChatService.Verify2FA(otpDialog.OtpCode);
-                if (otpVerified.Verified)
-                {
-                    rootFrame.Navigate(typeof(MainPage));
-                    mainWindow.Content = rootFrame;
-                    mainWindow.Activate();
-                }
-                else
-                {
-                    throw new VRCIncorrectCredentialsException();
-                }
+                ErrorMessage = "Incorrect credentials. Please try again.";
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
             }
         }
     }

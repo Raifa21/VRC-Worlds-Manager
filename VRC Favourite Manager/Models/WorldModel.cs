@@ -8,10 +8,10 @@ namespace VRC_Favourite_Manager.Models
 {
     public class WorldModel
     {
-        public string imageUrl { get; set; }
-        public string name { get; set; }
-        public string recommendedCapacity { get; set; }
-        public string capacity { get; set; }
+        public string ImageUrl { get; set; }
+        public string Name { get; set; }
+        public string RecommendedCapacity { get; set; }
+        public string Capacity { get; set; }
     }
 
 }
