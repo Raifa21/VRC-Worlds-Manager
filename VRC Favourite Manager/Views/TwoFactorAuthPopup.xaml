@@ -1,0 +1,16 @@
+<ContentDialog
+    x:Class="VRC_Favourite_Manager.Views.TwoFactorAuthPopup"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:VRC_Favourite_Manager.Views"
+    Title="Enter OTP"
+    PrimaryButtonText="Submit"
+    SecondaryButtonText="Cancel"
+    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+    SecondaryButtonClick="ContentDialog_SecondaryButtonClick">
+
+    <StackPanel>
+        <TextBlock Text="Please enter the 2FA code sent to your email." Margin="0,0,0,10"/>
+        <TextBox x:Name="OtpTextBox" Header="OTP" />
+    </StackPanel>
+</ContentDialog>

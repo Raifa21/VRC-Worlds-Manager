@@ -20,6 +20,8 @@ namespace VRC_Favourite_Manager.Services
         private AuthenticationApi authApi;
         private UsersApi userApi;
         private WorldsApi worldsApi;
+        private ApiResponse<CurrentUser> response;
+        public bool RequiresEmailotp { get; private set; }
 
 
         public VRChatService()
@@ -28,10 +30,6 @@ namespace VRC_Favourite_Manager.Services
             _config.UserAgent = "VRC Favourite Manager/0.0.1 Raifa";
 
             client = new ApiClient();
-
-            authApi = new AuthenticationApi(client, client, _config);
-            userApi = new UsersApi(client, client, _config);
-            worldsApi = new WorldsApi(client, client, _config);
         }
 
 
@@ -46,10 +44,9 @@ namespace VRC_Favourite_Manager.Services
         }
         
         /// <summary>
-        /// Checks if the user is logged in using the VRChat API, this returns Http status code 200 if logged in with user info, and 401 if not logged in
+        /// Sets the login and password for the user. 
         /// </summary>
-        /// <returns>if logged in or not</returns>
-        public CurrentUser Login(string username, string password, string twoFactorAuthenticationCode)
+        public bool Login(string username, string password)
         {
             _config.Username = username;
             _config.Password = password;
@@ -60,17 +57,17 @@ namespace VRC_Favourite_Manager.Services
 
             try
             {
-                ApiResponse<CurrentUser> response = authApi.GetCurrentUserWithHttpInfo();
+                response = authApi.GetCurrentUserWithHttpInfo();
                 if (RequiresEmail2FA(response))
                 {
-                    authApi.Verify2FAEmailCode(new TwoFactorEmailCode(twoFactorAuthenticationCode));
+                    RequiresEmailotp = true;
+                    return true;
                 }
                 else
                 {
-                    authApi.Verify2FA(new TwoFactorAuthCode(twoFactorAuthenticationCode));
+                    RequiresEmailotp = false;
+                    return true;
                 }
-
-                return authApi.GetCurrentUser();
 
 
             }
@@ -79,6 +76,7 @@ namespace VRC_Favourite_Manager.Services
                 throw new VRCIncorrectCredentialsException();
             }
         }
+
 
         private static bool RequiresEmail2FA(ApiResponse<CurrentUser> resp)
         {
@@ -89,6 +87,29 @@ namespace VRC_Favourite_Manager.Services
             }
 
             return false;
+        }
+
+        public Verify2FAEmailCodeResult VerifyEmail2FA(string twoFactorAuthCode)
+        {
+            try
+            {
+                return authApi.Verify2FAEmailCode(new TwoFactorEmailCode(twoFactorAuthCode));
+            }
+            catch (ApiException e)
+            {
+                throw new VRCIncorrectCredentialsException();
+            }
+        }
+        public Verify2FAResult Verify2FA(string twoFactorAuthCode)
+        {
+            try
+            {
+                return authApi.Verify2FA(new TwoFactorAuthCode(twoFactorAuthCode));
+            }
+            catch (ApiException e)
+            {
+                throw new VRCIncorrectCredentialsException();
+            }
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -69,7 +70,7 @@ namespace VRC_Favourite_Manager
         {
             try
             {
-                var toml = Toml.ToModel(Toml.Parse(System.IO.File.ReadAllText("Config.toml")));
+                var toml = Toml.ToModel(Toml.Parse(System.IO.File.ReadAllText("/Config.toml")));
                 if (toml.ContainsKey("auth"))
                 {
                     try
@@ -78,12 +79,19 @@ namespace VRC_Favourite_Manager
                     }
                     catch (System.Exception)
                     {
+                        Console.WriteLine("Error reading API key from config file.");
                         this.apiKey = "";
                     }
+                }
+                else
+                {
+                    Console.WriteLine("API key not found in config file.");
+                    this.apiKey = "";
                 }
             }
             catch (FileNotFoundException)
             {
+                Console.WriteLine("Config file not found.");
                 this.apiKey = "";
             }
             
