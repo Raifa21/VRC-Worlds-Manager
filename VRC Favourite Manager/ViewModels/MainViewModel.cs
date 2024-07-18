@@ -32,10 +32,7 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public async Task InitializeAsync()
         {
-            var favoriteModels = new List<FavouriteModel>
-                {
-                    new FavouriteModel { id = "1", type = "world", favouriteId = "wrld_a1071eb7-e16c-4a52-bd6e-c0efdb1b5ea5" }
-                };
+            var favoriteModels = new List<FavouriteModel>();
 
             var favoriteWorlds = await _vrChatService.GetFavoriteWorldsAsync(favoriteModels);
 

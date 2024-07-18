@@ -10,8 +10,8 @@ namespace VRC_Favourite_Manager.Models
     {
         public string ImageUrl { get; set; }
         public string Name { get; set; }
-        public string RecommendedCapacity { get; set; }
-        public string Capacity { get; set; }
+        public int RecommendedCapacity { get; set; }
+        public int Capacity { get; set; }
     }
 
 }

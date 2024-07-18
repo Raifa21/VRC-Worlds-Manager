@@ -82,12 +82,15 @@ namespace VRC_Favourite_Manager.ViewModels
                         return;
                     }
                 }
+
+                if (!_vrChatService.confirmLogin()) throw new VRCIncorrectCredentialsException();
                 _vrChatService.StoreAuth();
                 var rootFrame = new Frame();
                 mainWindow = new MainWindow();
                 rootFrame.Navigate(typeof(MainPage));
                 mainWindow.Content = rootFrame;
                 mainWindow.Activate();
+
             }
             catch (VRCIncorrectCredentialsException)
             {
