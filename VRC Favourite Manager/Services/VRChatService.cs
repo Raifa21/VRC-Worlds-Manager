@@ -26,7 +26,9 @@ namespace VRC_Favourite_Manager.Services
 
         public VRChatService()
         {
+            System.Diagnostics.Debug.WriteLine("Creating VRChatService");
             _config = new Configuration();
+            _config.BasePath = "https://vrchat.com/api/1";
             _config.UserAgent = "VRC Favourite Manager/dev 0.0.1 Raifa";
 
             client = new ApiClient();
@@ -79,7 +81,6 @@ namespace VRC_Favourite_Manager.Services
 
         private static bool RequiresEmail2FA(ApiResponse<CurrentUser> resp)
         {
-            // We can just use a super simple string.Contains() check
             if (resp.RawContent.Contains("emailOtp"))
             {
                 return true;
@@ -117,18 +118,30 @@ namespace VRC_Favourite_Manager.Services
             response = authApi.GetCurrentUserWithHttpInfo();
             System.Diagnostics.Debug.WriteLine("Status Code: " + response.StatusCode);
             System.Diagnostics.Debug.WriteLine("Logged in as {0}", response.Data.DisplayName);
-            return response.StatusCode == HttpStatusCode.OK;
+
+            if (response.Headers.TryGetValue("Set-Cookie", out var cookies))
+            {
+                _config.ApiKey["auth"] = cookies[0];
+                return true;
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("No cookies found.");
+                return false;
+            }
         }
         public void StoreAuth()
         {
             var configManager = new ConfigManager();
-            try
+            if (_config.ApiKey.TryGetValue("auth", out string apiKey))
             {
-                configManager.WriteConfig("auth = \"" + _config.ApiKey + "\"");
+                configManager.WriteConfig("auth = \"" + apiKey + "\"");
+                System.Diagnostics.Debug.WriteLine("auth = \"" + apiKey + "\"");
+                System.Diagnostics.Debug.WriteLine("API key written to config file.");
             }
-            catch (Exception e)
+            else
             {
-                System.Diagnostics.Debug.WriteLine("Error writing API key to config file: " + e.Message);
+                System.Diagnostics.Debug.WriteLine("Error writing API key to config file.");
             }
         }
 
@@ -197,7 +210,7 @@ namespace VRC_Favourite_Manager.Services
         {
             try
             {
-                var apiInstance = new WorldsApi(client, client, _config);
+                var apiInstance = new WorldsApi(_config);
                 var worlds = await apiInstance.GetFavoritedWorldsAsync();
                 List<Models.WorldModel> favoriteWorlds = new List<Models.WorldModel>();
                 foreach (var world in worlds)
