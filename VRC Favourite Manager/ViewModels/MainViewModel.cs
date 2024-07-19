@@ -18,23 +18,19 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly VRChatService _vrChatService;
         private readonly JsonStorageService _jsonStorageService;
 
-        private ObservableCollection<WorldModel> _favoriteWorlds;
+        private HashSet<WorldModel> _favoriteWorlds;
         public ICommand RefreshCommand { get; }
 
         public MainViewModel()
         {
-            InitializeAsync();
+            
             _vrChatService = Application.Current.Resources["VRChatService"] as VRChatService;
             _jsonStorageService = new JsonStorageService();
 
-            _favoriteWorlds = new ObservableCollection<WorldModel>();
+            _favoriteWorlds = new HashSet<WorldModel>();
             RefreshCommand = new RelayCommand(async () => await RefreshWorldsAsync());
 
-
-            _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromMinutes(10);
-            _timer.Tick += async (sender, e) => await CheckForNewWorldsAsync();
-            _timer.Start();
+            InitializeAsync();
         }
 
         private async Task InitializeAsync()
@@ -55,7 +51,7 @@ namespace VRC_Favourite_Manager.ViewModels
         }
         private async Task InitialScanAsync()
         {
-            var worlds = await _vrChatService.InitialGetFavoriteWorldsAsync();
+            var worlds = await _vrChatService.GetAllFavoriteWorldsAsync();
             foreach (var world in worlds)
             {
                 _favoriteWorlds.Add(world);
@@ -64,7 +60,12 @@ namespace VRC_Favourite_Manager.ViewModels
         }
         private async Task CheckForNewWorldsAsync()
         {
-            // Implement the logic to check for new worlds here
+            var worlds = await _vrChatService.GetFavoriteWorldsAsync();
+            foreach (var world in worlds)
+            {
+                _favoriteWorlds.Add(world);
+            }
+            _jsonStorageService.SaveWorlds(_favoriteWorlds);
         }
 
         private async Task RefreshWorldsAsync()

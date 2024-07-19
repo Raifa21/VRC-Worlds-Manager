@@ -137,70 +137,89 @@ namespace VRC_Favourite_Manager.Services
         /// </summary>
         /// <returns>A list of worlds, each containing info about itself</returns>
         /// <exception cref="VRCNotLoggedInException">When the user is not logged in</exception>
-        public async Task<List<Models.WorldModel>> InitialGetFavoriteWorldsAsync()
+        /// <exception cref="VRCAPIException">When the API does not return data as expected.</exception>
+        public async Task<List<Models.WorldModel>> GetAllFavoriteWorldsAsync()
         {
             try
             {
-                var favoriteModels = await InitialGetFavoriteListAsync();
-                var favoriteWorlds = new List<Models.WorldModel>();
-
-                foreach (var favorite in favoriteModels)
-                {
-                    try
-                    {
-                        var world = await worldsApi.GetWorldAsync(favorite.FavoriteId);
-                        favoriteWorlds.Add(new WorldModel
-                        {
-                            ImageUrl = world.ImageUrl,
-                            Name = world.Name,
-                            RecommendedCapacity = world.RecommendedCapacity,
-                            Capacity = world.Capacity
-                        });
-                    }
-                    catch (ApiException ex) when (ex.ErrorCode == 401)
-                    {
-                        throw new VRCNotLoggedInException();
-                    }
-                    catch (ApiException ex)
-                    {
-                        Console.WriteLine("Exception when calling API: {0}", ex.Message);
-                        throw;
-                    }
-                }
-
-                return favoriteWorlds;
-            }
-        }
-
-
-        private async Task<List<Favorite>> InitialGetFavoriteListAsync()
-        {
-            //do pagination, max is 400 worlds
-            int pageSize = 100;
-            int currentPage = 0;
-            var apiInstance = new FavoritesApi(client, client, _config);
-            var favoriteModels = new List<Favorite>();
-            try
-            {
+                int pageSize = 100;
+                int currentPage = 0;
+                var apiInstance = new WorldsApi(client, client, _config);
                 bool hasNext = true;
+                List<LimitedWorld> worlds = new List<LimitedWorld>();
                 while (hasNext)
                 {
-                    var favorites = await apiInstance.GetFavoritesAsync(pageSize, currentPage * pageSize, "world");
-                    favoriteModels.AddRange(favorites);
-                    if (favorites.Count < pageSize)
+                    var tempFavoriteList =
+                        await apiInstance.GetFavoritedWorldsAsync(null, null, pageSize, null, pageSize * currentPage);
+                    worlds.AddRange(tempFavoriteList);
+                    if (tempFavoriteList.Count < pageSize)
                     {
                         hasNext = false;
                     }
                     currentPage++;
+                }
+
+                List<Models.WorldModel> favoriteWorlds = new List<Models.WorldModel>();
+                foreach (var world in worlds)
+                {
+                    favoriteWorlds.Add(new WorldModel
+                    {
+                        ImageUrl = world.ImageUrl,
+                        Name = world.Name,
+                        AuthorName = world.AuthorName,
+                        RecommendedCapacity = world.RecommendedCapacity,
+                        Capacity = world.Capacity
+                    });
 
                 }
+                return favoriteWorlds;
             }
-
-            catch (ApiException ex) {
+            catch (ApiException ex) when (ex.ErrorCode == 401)
+            {
+                throw new VRCNotLoggedInException();
+            }
+            catch (ApiException ex)
+            {
                 Console.WriteLine("Exception when calling API: {0}", ex.Message);
                 throw new VRCAPIException();
             }
-            return favoriteModels;
+        }
+        /// <summary>
+        ///  Returns the 60 most recently favourited worlds. 
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="VRCNotLoggedInException">When the user is not logged in</exception>
+        /// <exception cref="VRCAPIException">When the API does not return data as expected.</exception>
+        public async Task<List<Models.WorldModel>> GetFavoriteWorldsAsync()
+        {
+            try
+            {
+                var apiInstance = new WorldsApi(client, client, _config);
+                var worlds = await apiInstance.GetFavoritedWorldsAsync();
+                List<Models.WorldModel> favoriteWorlds = new List<Models.WorldModel>();
+                foreach (var world in worlds)
+                {
+                    favoriteWorlds.Add(new WorldModel
+                    {
+                        ImageUrl = world.ImageUrl,
+                        Name = world.Name,
+                        AuthorName = world.AuthorName,
+                        RecommendedCapacity = world.RecommendedCapacity,
+                        Capacity = world.Capacity
+                    });
+
+                }
+                return favoriteWorlds;
+            }
+            catch (ApiException ex) when (ex.ErrorCode == 401)
+            {
+                throw new VRCNotLoggedInException();
+            }
+            catch (ApiException ex)
+            {
+                Console.WriteLine("Exception when calling API: {0}", ex.Message);
+                throw new VRCAPIException();
+            }
         }
     }
 }
