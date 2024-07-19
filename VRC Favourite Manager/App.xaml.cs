@@ -27,6 +27,7 @@ namespace VRC_Favourite_Manager
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
+            System.Diagnostics.Debug.WriteLine("Application Started.");
             InitialiseService();
 
             ReadConfig();
@@ -52,20 +53,20 @@ namespace VRC_Favourite_Manager
                         }
                         else
                         {
-                            Console.WriteLine("API key invalid. Redirecting to Login Page.");
+                            System.Diagnostics.Debug.WriteLine("API key invalid. Redirecting to Login Page.");
                             rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
                         }
                     }
                     else
                     {
-                        Console.WriteLine("API is not reachable. Redirecting to Login Page.");
+                        System.Diagnostics.Debug.WriteLine("API is not reachable. Redirecting to Login Page.");
                         rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
                     }
                 }
             }
             catch (System.Exception)
             {
-                Console.WriteLine("Error reading API key from config file.");
+                System.Diagnostics.Debug.WriteLine("Error reading API key from config file.");
                 rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
             }
             
@@ -83,6 +84,7 @@ namespace VRC_Favourite_Manager
 
             if (!configManager.ConfigExists())
             {
+                System.Diagnostics.Debug.WriteLine("Config file not found.");
                 configManager.WriteConfig("auth = \"\"");
                 this.apiKey = "";
                 return;
@@ -98,21 +100,21 @@ namespace VRC_Favourite_Manager
                     }
                     catch (System.Exception)
                     {
-                        Console.WriteLine("Error reading API key from config file.");
+                        System.Diagnostics.Debug.WriteLine("Error reading API key from config file.");
                         configManager.WriteConfig("auth = \"\"");
                         this.apiKey = "";
                     }
                 }
                 else
                 {
-                    Console.WriteLine("API key not found in config file.");
+                    System.Diagnostics.Debug.WriteLine("API key not found in config file.");
                     configManager.WriteConfig("auth = \"\"");
                     this.apiKey = "";
                 }
             }
             catch (FileNotFoundException)
             {
-                Console.WriteLine("Config file not found.");
+                System.Diagnostics.Debug.WriteLine("Config file not found.");
                 configManager.WriteConfig("auth = \"\"");
                 this.apiKey = "";
             }

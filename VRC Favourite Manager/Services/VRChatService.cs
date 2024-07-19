@@ -27,7 +27,7 @@ namespace VRC_Favourite_Manager.Services
         public VRChatService()
         {
             _config = new Configuration();
-            _config.UserAgent = "VRC Favourite Manager/0.0.1 Raifa";
+            _config.UserAgent = "VRC Favourite Manager/dev 0.0.1 Raifa";
 
             client = new ApiClient();
         }
@@ -96,6 +96,7 @@ namespace VRC_Favourite_Manager.Services
             }
             catch (ApiException e)
             {
+                System.Diagnostics.Debug.WriteLine("Incorrect OTP code.");
                 throw new VRCIncorrectCredentialsException();
             }
         }
@@ -111,10 +112,12 @@ namespace VRC_Favourite_Manager.Services
             }
         }
 
-        public bool confirmLogin()
+        public bool ConfirmLogin()
         {
             response = authApi.GetCurrentUserWithHttpInfo();
-            return response.StatusCode == HttpStatusCode.Accepted;
+            System.Diagnostics.Debug.WriteLine("Status Code: " + response.StatusCode);
+            System.Diagnostics.Debug.WriteLine("Logged in as {0}", response.Data.DisplayName);
+            return response.StatusCode == HttpStatusCode.OK;
         }
         public void StoreAuth()
         {
@@ -125,7 +128,7 @@ namespace VRC_Favourite_Manager.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error writing API key to config file: " + e.Message);
+                System.Diagnostics.Debug.WriteLine("Error writing API key to config file: " + e.Message);
             }
         }
 
@@ -180,7 +183,7 @@ namespace VRC_Favourite_Manager.Services
             }
             catch (ApiException ex)
             {
-                Console.WriteLine("Exception when calling API: {0}", ex.Message);
+                System.Diagnostics.Debug.WriteLine("Exception when calling API: {0}", ex.Message);
                 throw new VRCAPIException();
             }
         }
@@ -217,7 +220,7 @@ namespace VRC_Favourite_Manager.Services
             }
             catch (ApiException ex)
             {
-                Console.WriteLine("Exception when calling API: {0}", ex.Message);
+                System.Diagnostics.Debug.WriteLine("Exception when calling API: {0}", ex.Message);
                 throw new VRCAPIException();
             }
         }

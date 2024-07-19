@@ -55,12 +55,16 @@ namespace VRC_Favourite_Manager.ViewModels
             try
             {
                 var loginSuccessful = _vrChatService.Login(Username, Password);
-                if (!loginSuccessful) throw new VRCIncorrectCredentialsException();
+                if (!loginSuccessful)
+                {
+                    System.Diagnostics.Debug.WriteLine("Login failed.");
+                    throw new VRCIncorrectCredentialsException();
+                }
                 var otpDialog = new TwoFactorAuthPopup(_mainWindow.Content.XamlRoot);
                 var result = await otpDialog.ShowAsync();
                 if (result != ContentDialogResult.Primary || string.IsNullOrEmpty(otpDialog.OtpCode))
                 {
-                    Console.WriteLine("OTP Dialog was cancelled or empty");
+                    System.Diagnostics.Debug.WriteLine("OTP Dialog was cancelled or empty");
                     return;
                 }
 
@@ -83,7 +87,7 @@ namespace VRC_Favourite_Manager.ViewModels
                     }
                 }
 
-                if (!_vrChatService.confirmLogin()) throw new VRCIncorrectCredentialsException();
+                if (!_vrChatService.ConfirmLogin()) throw new VRCIncorrectCredentialsException();
                 _vrChatService.StoreAuth();
                 var rootFrame = new Frame();
                 mainWindow = new MainWindow();
