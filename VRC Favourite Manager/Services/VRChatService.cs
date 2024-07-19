@@ -53,8 +53,6 @@ namespace VRC_Favourite_Manager.Services
             _config.Password = password;
 
             authApi = new AuthenticationApi(client, client, _config);
-            userApi = new UsersApi(client, client, _config);
-            worldsApi = new WorldsApi(client, client, _config);
 
             try
             {
@@ -134,41 +132,75 @@ namespace VRC_Favourite_Manager.Services
 
 
         /// <summary>
-        /// Gets the user's favourite worlds. Up to 100 worlds can be returned.
+        /// Called initially when the user does not have any saved worlds. Looks through all favourited worlds and returns them.
         /// 
         /// </summary>
-        /// <param name="favoriteModels">A list of favourited worlds by the user</param>
-        /// <returns></returns>
+        /// <returns>A list of worlds, each containing info about itself</returns>
         /// <exception cref="VRCNotLoggedInException">When the user is not logged in</exception>
-        public async Task<List<WorldModel>> GetFavoriteWorldsAsync(List<FavouriteModel> favoriteModels)
+        public async Task<List<Models.WorldModel>> InitialGetFavoriteWorldsAsync()
         {
-            var favoriteWorlds = new List<WorldModel>();
-
-            foreach (var favorite in favoriteModels)
+            try
             {
-                try
+                var favoriteModels = await InitialGetFavoriteListAsync();
+                var favoriteWorlds = new List<Models.WorldModel>();
+
+                foreach (var favorite in favoriteModels)
                 {
-                    var world = await worldsApi.GetWorldAsync(favorite.favouriteId);
-                    favoriteWorlds.Add(new WorldModel
+                    try
                     {
-                        ImageUrl = world.ImageUrl,
-                        Name = world.Name,
-                        RecommendedCapacity = world.RecommendedCapacity,
-                        Capacity = world.Capacity
-                    });
+                        var world = await worldsApi.GetWorldAsync(favorite.FavoriteId);
+                        favoriteWorlds.Add(new WorldModel
+                        {
+                            ImageUrl = world.ImageUrl,
+                            Name = world.Name,
+                            RecommendedCapacity = world.RecommendedCapacity,
+                            Capacity = world.Capacity
+                        });
+                    }
+                    catch (ApiException ex) when (ex.ErrorCode == 401)
+                    {
+                        throw new VRCNotLoggedInException();
+                    }
+                    catch (ApiException ex)
+                    {
+                        Console.WriteLine("Exception when calling API: {0}", ex.Message);
+                        throw;
+                    }
                 }
-                catch (ApiException ex) when (ex.ErrorCode==401)
+
+                return favoriteWorlds;
+            }
+        }
+
+
+        private async Task<List<Favorite>> InitialGetFavoriteListAsync()
+        {
+            //do pagination, max is 400 worlds
+            int pageSize = 100;
+            int currentPage = 0;
+            var apiInstance = new FavoritesApi(client, client, _config);
+            var favoriteModels = new List<Favorite>();
+            try
+            {
+                bool hasNext = true;
+                while (hasNext)
                 {
-                    throw new VRCNotLoggedInException();
-                }
-                catch(ApiException ex)
-                {
-                    Console.WriteLine("Exception when calling API: {0}", ex.Message);
-                    throw;
+                    var favorites = await apiInstance.GetFavoritesAsync(pageSize, currentPage * pageSize, "world");
+                    favoriteModels.AddRange(favorites);
+                    if (favorites.Count < pageSize)
+                    {
+                        hasNext = false;
+                    }
+                    currentPage++;
+
                 }
             }
 
-            return favoriteWorlds;
+            catch (ApiException ex) {
+                Console.WriteLine("Exception when calling API: {0}", ex.Message);
+                throw new VRCAPIException();
+            }
+            return favoriteModels;
         }
     }
 }

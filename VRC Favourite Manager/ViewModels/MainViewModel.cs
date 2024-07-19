@@ -55,7 +55,7 @@ namespace VRC_Favourite_Manager.ViewModels
         }
         private async Task InitialScanAsync()
         {
-            var worlds = await _vrChatService.GetFavoriteWorldsAsync();
+            var worlds = await _vrChatService.InitialGetFavoriteWorldsAsync();
             foreach (var world in worlds)
             {
                 _favoriteWorlds.Add(world);

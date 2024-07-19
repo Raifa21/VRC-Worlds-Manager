@@ -18,4 +18,8 @@ namespace VRC_Favourite_Manager.Common
     {
         
     }
+    public class VRCAPIException: Exception
+    {
+        
+    }
 }
