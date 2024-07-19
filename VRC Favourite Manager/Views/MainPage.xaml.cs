@@ -10,7 +10,7 @@ namespace VRC_Favourite_Manager.Views
         {
             this.InitializeComponent();
 
-            _vrChatService.GetFavoriteWorldsAsync();
+            
         }
 
     }
