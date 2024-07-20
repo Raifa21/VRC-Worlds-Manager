@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Net;
 using Windows.Media.Protection.PlayReady;
 using VRC_Favourite_Manager.Common;
+using System.Linq;
 
 namespace VRC_Favourite_Manager.Services
 {
@@ -21,6 +22,7 @@ namespace VRC_Favourite_Manager.Services
         private UsersApi userApi;
         private WorldsApi worldsApi;
         private ApiResponse<CurrentUser> response;
+        private bool gotApi = false;
         public bool RequiresEmailotp { get; private set; }
 
 
@@ -59,6 +61,23 @@ namespace VRC_Favourite_Manager.Services
             try
             {
                 response = authApi.GetCurrentUserWithHttpInfo();
+                if (response.Headers.TryGetValue("Set-Cookie", out var cookies))
+                {
+                    var authCookieHeader = cookies.FirstOrDefault();
+                    if (authCookieHeader != null)
+                    {
+                        var authCookie = authCookieHeader.Split(';')[0];
+                        authCookie = authCookie.Replace("auth=", "");
+                        System.Diagnostics.Debug.WriteLine("Current auth token:");
+                        System.Diagnostics.Debug.WriteLine(authCookie);
+                        _config.AddApiKey("auth",authCookie);
+                        this.gotApi = true;
+                    }
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Cannot obtain cookie: not logged in yet!");
+                }
                 if (RequiresEmail2FA(response))
                 {
                     RequiresEmailotp = true;
@@ -69,6 +88,7 @@ namespace VRC_Favourite_Manager.Services
                     RequiresEmailotp = false;
                     return true;
                 }
+
 
 
             }
@@ -91,45 +111,68 @@ namespace VRC_Favourite_Manager.Services
 
         public Verify2FAEmailCodeResult VerifyEmail2FA(string twoFactorAuthCode)
         {
+            var apiInstance = new AuthenticationApi(_config);
             try
             {
-                return authApi.Verify2FAEmailCode(new TwoFactorEmailCode(twoFactorAuthCode));
+                System.Diagnostics.Debug.WriteLine("Attempting to verify email OTP code.");
+                var apiResponse = apiInstance.Verify2FAEmailCodeWithHttpInfo(new TwoFactorEmailCode(twoFactorAuthCode));
+                System.Diagnostics.Debug.WriteLine("Email OTP code verified.");
+                if (apiResponse.Headers.TryGetValue("Set-Cookie", out var cookies))
+                {
+                    var authCookieHeader = cookies.FirstOrDefault();
+                    if (authCookieHeader != null)
+                    {
+                        var authCookie = authCookieHeader.Split(';')[0];
+                        authCookie = authCookie.Replace("twoFactorAuth=", "");
+                        System.Diagnostics.Debug.WriteLine("Current auth token:");
+                        System.Diagnostics.Debug.WriteLine(authCookie);
+                        _config.AddApiKey("twoFactorAuth", authCookie);
+                        return apiResponse.Data;
+                    }
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Failed to obtain cookie");
+                }
             }
-            catch (ApiException e)
+            catch (ApiException)
             {
                 System.Diagnostics.Debug.WriteLine("Incorrect OTP code.");
                 throw new VRCIncorrectCredentialsException();
             }
+            throw new VRCIncorrectCredentialsException();
         }
         public Verify2FAResult Verify2FA(string twoFactorAuthCode)
         {
+            var apiInstance = new AuthenticationApi(_config);
             try
             {
-                return authApi.Verify2FA(new TwoFactorAuthCode(twoFactorAuthCode));
+                var apiResponse = authApi.Verify2FAWithHttpInfo(new TwoFactorAuthCode(twoFactorAuthCode));
+                if (apiResponse.Headers.TryGetValue("Set-Cookie", out var cookies))
+                {
+                    var authCookieHeader = cookies.FirstOrDefault();
+                    if (authCookieHeader != null)
+                    {
+                        var authCookie = authCookieHeader.Split(';')[0];
+                        authCookie = authCookie.Replace("twoFactorAuth=", "");
+                        System.Diagnostics.Debug.WriteLine("Current auth token:");
+                        System.Diagnostics.Debug.WriteLine(authCookie);
+                        _config.AddApiKey("twoFactorAuth", authCookie);
+                        return apiResponse.Data;
+                    }
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Cannot obtain cookie");
+                }
             }
-            catch (ApiException e)
+            catch (ApiException)
             {
                 throw new VRCIncorrectCredentialsException();
             }
+            throw new VRCIncorrectCredentialsException();
         }
 
-        public bool ConfirmLogin()
-        {
-            response = authApi.GetCurrentUserWithHttpInfo();
-            System.Diagnostics.Debug.WriteLine("Status Code: " + response.StatusCode);
-            System.Diagnostics.Debug.WriteLine("Logged in as {0}", response.Data.DisplayName);
-
-            if (response.Headers.TryGetValue("Set-Cookie", out var cookies))
-            {
-                _config.ApiKey["auth"] = cookies[0];
-                return true;
-            }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine("No cookies found.");
-                return false;
-            }
-        }
         public void StoreAuth()
         {
             var configManager = new ConfigManager();
@@ -142,6 +185,16 @@ namespace VRC_Favourite_Manager.Services
             else
             {
                 System.Diagnostics.Debug.WriteLine("Error writing API key to config file.");
+            }
+            if (_config.ApiKey.TryGetValue("twoFactorAuth", out string twoFactorAuthKey))
+            {
+                configManager.WriteConfig("twoFactorAuth = \"" + twoFactorAuthKey + "\"");
+                System.Diagnostics.Debug.WriteLine("twoFactorAuth = \"" + twoFactorAuthKey + "\"");
+                System.Diagnostics.Debug.WriteLine("2FA key written to config file.");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("Error writing 2FA key to config file.");
             }
         }
 

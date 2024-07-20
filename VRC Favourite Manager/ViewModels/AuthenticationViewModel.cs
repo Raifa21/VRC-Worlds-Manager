@@ -62,14 +62,16 @@ namespace VRC_Favourite_Manager.ViewModels
                 }
                 var otpDialog = new TwoFactorAuthPopup(_mainWindow.Content.XamlRoot);
                 var result = await otpDialog.ShowAsync();
+                System.Diagnostics.Debug.WriteLine($"OTP Dialog result: {result}");
                 if (result != ContentDialogResult.Primary || string.IsNullOrEmpty(otpDialog.OtpCode))
                 {
                     System.Diagnostics.Debug.WriteLine("OTP Dialog was cancelled or empty");
                     return;
                 }
-
+                System.Diagnostics.Debug.WriteLine($"OTP code: {otpDialog.OtpCode}");
                 if (_vrChatService.RequiresEmailotp)
                 {
+                    System.Diagnostics.Debug.WriteLine("Requires email OTP.");
                     var otpVerified = _vrChatService.VerifyEmail2FA(otpDialog.OtpCode);
                     if (!otpVerified.Verified)
                     {
@@ -86,8 +88,7 @@ namespace VRC_Favourite_Manager.ViewModels
                         return;
                     }
                 }
-
-                if (!_vrChatService.ConfirmLogin()) throw new VRCIncorrectCredentialsException();
+                System.Diagnostics.Debug.WriteLine("Login successful.");
                 _vrChatService.StoreAuth();
                 var rootFrame = new Frame();
                 mainWindow = new MainWindow();
