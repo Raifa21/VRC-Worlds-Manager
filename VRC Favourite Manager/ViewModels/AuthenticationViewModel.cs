@@ -71,7 +71,6 @@ namespace VRC_Favourite_Manager.ViewModels
                 System.Diagnostics.Debug.WriteLine($"OTP code: {otpDialog.OtpCode}");
                 if (_vrChatService.RequiresEmailotp)
                 {
-                    System.Diagnostics.Debug.WriteLine("Requires email OTP.");
                     var otpVerified = _vrChatService.VerifyEmail2FA(otpDialog.OtpCode);
                     if (!otpVerified.Verified)
                     {

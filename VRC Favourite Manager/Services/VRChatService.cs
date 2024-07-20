@@ -15,7 +15,6 @@ namespace VRC_Favourite_Manager.Services
 {
     public class VRChatService
     {
-        //is not readonly as config can be re-assigned
         private readonly Configuration _config;
         private readonly ApiClient client;
         private AuthenticationApi authApi;
@@ -25,21 +24,20 @@ namespace VRC_Favourite_Manager.Services
         private bool gotApi = false;
         public bool RequiresEmailotp { get; private set; }
 
-
         public VRChatService()
         {
             System.Diagnostics.Debug.WriteLine("Creating VRChatService");
-            _config = new Configuration();
-            _config.BasePath = "https://vrchat.com/api/1";
-            _config.UserAgent = "VRC Favourite Manager/dev 0.0.1 Raifa";
-
+            _config = new Configuration
+            {
+                BasePath = "https://vrchat.com/api/1",
+                UserAgent = "VRC Favourite Manager/dev 0.0.1 Raifa"
+            };
             client = new ApiClient();
         }
 
-
         public void SetAPIKey(string apiKey)
         {
-            _config.AddApiKey("auth" , apiKey);
+            _config.AddApiKey("auth", apiKey);
         }
 
         public ApiResponse<VerifyAuthTokenResult> CheckAuthentication()
@@ -47,10 +45,7 @@ namespace VRC_Favourite_Manager.Services
             authApi = new AuthenticationApi(client, client, _config);
             return authApi.VerifyAuthTokenWithHttpInfo();
         }
-        
-        /// <summary>
-        /// Sets the login and password for the user. 
-        /// </summary>
+
         public bool Login(string username, string password)
         {
             _config.Username = username;
@@ -67,10 +62,10 @@ namespace VRC_Favourite_Manager.Services
                     if (authCookieHeader != null)
                     {
                         var authCookie = authCookieHeader.Split(';')[0];
-                        authCookie = authCookie.Replace("auth=", "");
+                        authCookie = authCookie.Replace("authcookie=", ""); // Ensure this matches the actual cookie name
                         System.Diagnostics.Debug.WriteLine("Current auth token:");
                         System.Diagnostics.Debug.WriteLine(authCookie);
-                        _config.AddApiKey("auth",authCookie);
+                        _config.AddApiKey("auth", authCookie);
                         this.gotApi = true;
                     }
                 }
@@ -88,45 +83,34 @@ namespace VRC_Favourite_Manager.Services
                     RequiresEmailotp = false;
                     return true;
                 }
-
-
-
             }
             catch (ApiException e)
             {
+                System.Diagnostics.Debug.WriteLine("Login failed: " + e.Message);
                 throw new VRCIncorrectCredentialsException();
             }
         }
 
-
         private static bool RequiresEmail2FA(ApiResponse<CurrentUser> resp)
         {
-            if (resp.RawContent.Contains("emailOtp"))
-            {
-                return true;
-            }
-
-            return false;
+            return resp.RawContent.Contains("emailOtp");
         }
 
         public Verify2FAEmailCodeResult VerifyEmail2FA(string twoFactorAuthCode)
         {
-            var apiInstance = new AuthenticationApi(_config);
             try
             {
-                System.Diagnostics.Debug.WriteLine("Attempting to verify email OTP code.");
-                var apiResponse = apiInstance.Verify2FAEmailCodeWithHttpInfo(new TwoFactorEmailCode(twoFactorAuthCode));
-                System.Diagnostics.Debug.WriteLine("Email OTP code verified.");
+                var apiResponse = authApi.Verify2FAEmailCodeWithHttpInfo(new TwoFactorEmailCode(twoFactorAuthCode));
                 if (apiResponse.Headers.TryGetValue("Set-Cookie", out var cookies))
                 {
                     var authCookieHeader = cookies.FirstOrDefault();
                     if (authCookieHeader != null)
                     {
                         var authCookie = authCookieHeader.Split(';')[0];
-                        authCookie = authCookie.Replace("twoFactorAuth=", "");
+                        authCookie = authCookie.Replace("authcookie=", ""); // Ensure this matches the actual cookie name
                         System.Diagnostics.Debug.WriteLine("Current auth token:");
                         System.Diagnostics.Debug.WriteLine(authCookie);
-                        _config.AddApiKey("twoFactorAuth", authCookie);
+                        _config.AddApiKey("auth", authCookie);
                         return apiResponse.Data;
                     }
                 }
@@ -135,16 +119,16 @@ namespace VRC_Favourite_Manager.Services
                     System.Diagnostics.Debug.WriteLine("Failed to obtain cookie");
                 }
             }
-            catch (ApiException)
+            catch (ApiException e)
             {
-                System.Diagnostics.Debug.WriteLine("Incorrect OTP code.");
+                System.Diagnostics.Debug.WriteLine("Incorrect OTP code: " + e.Message);
                 throw new VRCIncorrectCredentialsException();
             }
             throw new VRCIncorrectCredentialsException();
         }
+
         public Verify2FAResult Verify2FA(string twoFactorAuthCode)
         {
-            var apiInstance = new AuthenticationApi(_config);
             try
             {
                 var apiResponse = authApi.Verify2FAWithHttpInfo(new TwoFactorAuthCode(twoFactorAuthCode));
@@ -154,10 +138,10 @@ namespace VRC_Favourite_Manager.Services
                     if (authCookieHeader != null)
                     {
                         var authCookie = authCookieHeader.Split(';')[0];
-                        authCookie = authCookie.Replace("twoFactorAuth=", "");
+                        authCookie = authCookie.Replace("authcookie=", ""); // Ensure this matches the actual cookie name
                         System.Diagnostics.Debug.WriteLine("Current auth token:");
                         System.Diagnostics.Debug.WriteLine(authCookie);
-                        _config.AddApiKey("twoFactorAuth", authCookie);
+                        _config.AddApiKey("auth", authCookie);
                         return apiResponse.Data;
                     }
                 }
@@ -166,14 +150,15 @@ namespace VRC_Favourite_Manager.Services
                     System.Diagnostics.Debug.WriteLine("Cannot obtain cookie");
                 }
             }
-            catch (ApiException)
+            catch (ApiException e)
             {
+                System.Diagnostics.Debug.WriteLine("2FA Verification failed: " + e.Message);
                 throw new VRCIncorrectCredentialsException();
             }
             throw new VRCIncorrectCredentialsException();
         }
 
-        public void StoreAuth()
+    public void StoreAuth()
         {
             var configManager = new ConfigManager();
             if (_config.ApiKey.TryGetValue("auth", out string apiKey))
