@@ -157,38 +157,7 @@ namespace VRC_Favourite_Manager.Services
                 throw new VRCIncorrectCredentialsException();
             }
             throw new VRCIncorrectCredentialsException();
-        }
-        private void PrintConfig()
-        {
-            Console.WriteLine("Configuration Details:");
-
-            // Print all properties
-            foreach (PropertyInfo property in _config.GetType().GetProperties())
-            {
-                if (property.CanRead)
-                {
-                    var value = property.GetValue(_config, null);
-                    System.Diagnostics.Debug.WriteLine($"{property.Name}: {value}");
-                }
-            }
-
-            // Print all fields including the _apiKey field
-            foreach (FieldInfo field in _config.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance))
-            {
-                var value = field.GetValue(_config);
-                if (field.Name == "_apiKey" && value is ConcurrentDictionary<string, string> apiKeyDictionary)
-                {
-                    System.Diagnostics.Debug.WriteLine("_apiKey Contents:");
-                    foreach (var kvp in apiKeyDictionary)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Key: {kvp.Key}, Value: {kvp.Value}");
-                    }
-                }
-                else
-                {
-                    System.Diagnostics.Debug.WriteLine($"{field.Name}: {value}");
-                }
-            }
+        
         }
 
         public void StoreAuth()
