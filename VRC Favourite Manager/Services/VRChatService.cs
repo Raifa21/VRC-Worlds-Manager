@@ -10,6 +10,8 @@ using System.Net;
 using Windows.Media.Protection.PlayReady;
 using VRC_Favourite_Manager.Common;
 using System.Linq;
+using System.Reflection;
+using System.Collections.Concurrent;
 
 namespace VRC_Favourite_Manager.Services
 {
@@ -21,7 +23,7 @@ namespace VRC_Favourite_Manager.Services
         private UsersApi userApi;
         private WorldsApi worldsApi;
         private ApiResponse<CurrentUser> response;
-        private bool gotApi = false;
+        public bool gotApi { get; private set; }
         public bool RequiresEmailotp { get; private set; }
 
         public VRChatService()
@@ -33,11 +35,6 @@ namespace VRC_Favourite_Manager.Services
                 UserAgent = "VRC Favourite Manager/dev 0.0.1 Raifa"
             };
             client = new ApiClient();
-        }
-
-        public void SetAPIKey(string apiKey)
-        {
-            _config.AddApiKey("auth", apiKey);
         }
 
         public ApiResponse<VerifyAuthTokenResult> CheckAuthentication()
@@ -62,7 +59,7 @@ namespace VRC_Favourite_Manager.Services
                     if (authCookieHeader != null)
                     {
                         var authCookie = authCookieHeader.Split(';')[0];
-                        authCookie = authCookie.Replace("authcookie=", ""); // Ensure this matches the actual cookie name
+                        authCookie = authCookie.Replace("auth=", ""); // Ensure this matches the actual cookie name
                         System.Diagnostics.Debug.WriteLine("Current auth token:");
                         System.Diagnostics.Debug.WriteLine(authCookie);
                         _config.AddApiKey("auth", authCookie);
@@ -98,16 +95,20 @@ namespace VRC_Favourite_Manager.Services
 
         public Verify2FAEmailCodeResult VerifyEmail2FA(string twoFactorAuthCode)
         {
+            var apiInstance = new AuthenticationApi(_config);
+            var twoFactorEmailCode = new TwoFactorEmailCode(twoFactorAuthCode);
+
             try
             {
-                var apiResponse = authApi.Verify2FAEmailCodeWithHttpInfo(new TwoFactorEmailCode(twoFactorAuthCode));
+                var apiResponse = authApi.Verify2FAEmailCodeWithHttpInfo(twoFactorEmailCode);
+                System.Diagnostics.Debug.WriteLine("Email OTP code verified.");
                 if (apiResponse.Headers.TryGetValue("Set-Cookie", out var cookies))
                 {
                     var authCookieHeader = cookies.FirstOrDefault();
                     if (authCookieHeader != null)
                     {
                         var authCookie = authCookieHeader.Split(';')[0];
-                        authCookie = authCookie.Replace("authcookie=", ""); // Ensure this matches the actual cookie name
+                        authCookie = authCookie.Replace("twoFactorAuth=", ""); // Ensure this matches the actual cookie name
                         System.Diagnostics.Debug.WriteLine("Current auth token:");
                         System.Diagnostics.Debug.WriteLine(authCookie);
                         _config.AddApiKey("auth", authCookie);
@@ -157,8 +158,40 @@ namespace VRC_Favourite_Manager.Services
             }
             throw new VRCIncorrectCredentialsException();
         }
+        private void PrintConfig()
+        {
+            Console.WriteLine("Configuration Details:");
 
-    public void StoreAuth()
+            // Print all properties
+            foreach (PropertyInfo property in _config.GetType().GetProperties())
+            {
+                if (property.CanRead)
+                {
+                    var value = property.GetValue(_config, null);
+                    System.Diagnostics.Debug.WriteLine($"{property.Name}: {value}");
+                }
+            }
+
+            // Print all fields including the _apiKey field
+            foreach (FieldInfo field in _config.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance))
+            {
+                var value = field.GetValue(_config);
+                if (field.Name == "_apiKey" && value is ConcurrentDictionary<string, string> apiKeyDictionary)
+                {
+                    System.Diagnostics.Debug.WriteLine("_apiKey Contents:");
+                    foreach (var kvp in apiKeyDictionary)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Key: {kvp.Key}, Value: {kvp.Value}");
+                    }
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"{field.Name}: {value}");
+                }
+            }
+        }
+
+        public void StoreAuth()
         {
             var configManager = new ConfigManager();
             if (_config.ApiKey.TryGetValue("auth", out string apiKey))
