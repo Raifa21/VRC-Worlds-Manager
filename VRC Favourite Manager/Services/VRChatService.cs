@@ -9,6 +9,7 @@ using VRC_Favourite_Manager.Common;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Concurrent;
+using VRChat.API.Client;
 
 namespace VRC_Favourite_Manager.Services
 {
