@@ -13,6 +13,9 @@ namespace VRC_Favourite_Manager.Services
 {
     internal class VRChatAPIService
     {
+        private HttpClient _Client;
+
+        private CookieContainer _cookieContainer;
         public class Configuration
         {
             public CookieContainer CookieContainer { get; set; }
@@ -48,34 +51,34 @@ namespace VRC_Favourite_Manager.Services
             }
         }
 
-
-        private HttpClient _client;
-        private CookieContainer _cookieContainer;
         public VRChatAPIService()
         {
             _cookieContainer = new CookieContainer();
             var handler = new HttpClientHandler
             {
-                CookieContainer = _cookieContainer
+                CookieContainer = _cookieContainer,
+                UseCookies = true,
+
             };
-            _client = new HttpClient(handler);
+            _Client = new HttpClient(handler);
+            // Set initial configuration values
+            _Client.BaseAddress = new Uri("https://vrchat.com/api/1");
+            _Client.Timeout = TimeSpan.FromSeconds(10000);
+            _Client.DefaultRequestHeaders.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
         }
-
-
 
 
         public async Task<bool> VerifyAuthTokenAsync(string authToken)
         {
-            var client = new HttpClient();
-            client.Timeout = TimeSpan.FromSeconds(10000);
             var request = new HttpRequestMessage(HttpMethod.Get, "https://vrchat.com/api/1/config?auth={authToken}");
             request.Headers.Add("Accept", "application/json");
-            request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
-            var response = await client.SendAsync(request);
+            var response = await _Client.SendAsync(request);
             response.EnsureSuccessStatusCode();
             Debug.WriteLine(await response.Content.ReadAsStringAsync());
             return true;
         }
+
+        public async 
     }
 
 }

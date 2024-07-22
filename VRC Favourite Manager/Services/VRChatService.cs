@@ -9,7 +9,6 @@ using VRC_Favourite_Manager.Common;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Concurrent;
-using VRChat.API.Client;
 
 namespace VRC_Favourite_Manager.Services
 {
@@ -28,11 +27,6 @@ namespace VRC_Favourite_Manager.Services
         public VRChatService()
         {
             System.Diagnostics.Debug.WriteLine("Creating VRChatService");
-            _config = new Configuration
-            {
-                BasePath = "https://vrchat.com/api/1",
-                UserAgent = "VRC Favourite Manager/dev 0.0.1 Raifa"
-            };
             client = new ApiClient();
         }
 
