@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using VRChat.API.Api;
-using VRChat.API.Client;
-using VRChat.API.Model;
 using VRC_Favourite_Manager.Models;
 using System.Diagnostics;
 using System.Net;
