@@ -26,6 +26,8 @@ namespace VRC_Favourite_Manager.Services
         public bool gotApi { get; private set; }
         public bool RequiresEmailotp { get; private set; }
 
+        public string authToken { get; private set; }
+
         public VRChatService()
         {
             System.Diagnostics.Debug.WriteLine("Creating VRChatService");
@@ -63,6 +65,7 @@ namespace VRC_Favourite_Manager.Services
                         System.Diagnostics.Debug.WriteLine("Current auth token:");
                         System.Diagnostics.Debug.WriteLine(authCookie);
                         _config.AddApiKey("auth", authCookie);
+                        this.authToken = authCookie;
                         this.gotApi = true;
                     }
                 }
@@ -92,6 +95,54 @@ namespace VRC_Favourite_Manager.Services
         {
             return resp.RawContent.Contains("emailOtp");
         }
+
+        public void debug_VerifyEmail2FA(string twoFactorAuthCode)
+        {
+            Debug.WriteLine("Starting 2FA Verification");
+            Configuration config = new Configuration();
+            config.BasePath = "https://vrchat.com/api/1";
+            config.UserAgent = "VRC Favourite Manager/dev 0.0.1 Raifa";
+            config.AddApiKey("auth", authToken);
+            Debug.WriteLine("Created configuration");
+
+            AuthenticationApi authApi = new AuthenticationApi(config);
+            var twoFactorEmailCode = new TwoFactorEmailCode(twoFactorAuthCode); // TwoFactorEmailCode | 
+
+            Debug.WriteLine("Created 2FA Email Code object");
+            try
+            {
+                // Verify 2FA email code
+                Debug.WriteLine("Attempting to verify 2FA email code");
+                Verify2FAEmailCodeResult result = authApi.Verify2FAEmailCode(twoFactorEmailCode);
+                if (result != null)
+                {
+                    Debug.WriteLine("2FA Email code verified.");
+                }
+                else
+                {
+                    Debug.WriteLine("2FA Email code verification failed.");
+                }
+                Debug.WriteLine(result);
+            }
+            catch (ArgumentException ex)
+            {
+                Debug.WriteLine("ArgumentException when calling AuthenticationApi.Verify2FAEmailCode: " + ex.Message);
+                Debug.WriteLine("Stack Trace: " + ex.StackTrace);
+            }
+            catch (ApiException e)
+            {
+                Debug.WriteLine("ApiException when calling AuthenticationApi.Verify2FAEmailCode: " + e.Message);
+                Debug.WriteLine("Status Code: " + e.ErrorCode);
+                Debug.WriteLine(e.StackTrace);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("General Exception when calling AuthenticationApi.Verify2FAEmailCode: " + ex.Message);
+                Debug.WriteLine("Stack Trace: " + ex.StackTrace);
+            }
+        }
+
+
 
         public Verify2FAEmailCodeResult VerifyEmail2FA(string twoFactorAuthCode)
         {

@@ -72,13 +72,7 @@ namespace VRC_Favourite_Manager.ViewModels
                 if (_vrChatService.RequiresEmailotp)
                 {
                     System.Diagnostics.Debug.WriteLine("Verifying Email 2FA OTP...");
-                    var otpVerified = _vrChatService.VerifyEmail2FA(otpDialog.OtpCode);
-
-                    if (!otpVerified.Verified)
-                    {
-                        ErrorMessage = "Incorrect OTP code.";
-                        return;
-                    }
+                    _vrChatService.debug_VerifyEmail2FA(otpDialog.OtpCode);
                 }
                 else
                 {
