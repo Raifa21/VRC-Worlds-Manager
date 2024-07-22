@@ -19,7 +19,6 @@ namespace VRC_Favourite_Manager.Services
     {
         private readonly Configuration _config;
         private readonly ApiClient client;
-        private AuthenticationApi authApi;
         private UsersApi userApi;
         private WorldsApi worldsApi;
         private ApiResponse<CurrentUser> response;
@@ -41,7 +40,7 @@ namespace VRC_Favourite_Manager.Services
 
         public ApiResponse<VerifyAuthTokenResult> CheckAuthentication()
         {
-            authApi = new AuthenticationApi(client, client, _config);
+            var authApi = new MyAuthenticationAPI(client, client, _config);
             return authApi.VerifyAuthTokenWithHttpInfo();
         }
 
@@ -50,7 +49,7 @@ namespace VRC_Favourite_Manager.Services
             _config.Username = username;
             _config.Password = password;
 
-            authApi = new AuthenticationApi(client, client, _config);
+            var authApi = new MyAuthenticationAPI(client, client, _config);
 
             try
             {
@@ -105,7 +104,7 @@ namespace VRC_Favourite_Manager.Services
             config.AddApiKey("auth", authToken);
             Debug.WriteLine("Created configuration");
 
-            AuthenticationApi authApi = new AuthenticationApi(config);
+            var authApi = new MyAuthenticationAPI(client, client, config);
             var twoFactorEmailCode = new TwoFactorEmailCode(twoFactorAuthCode); // TwoFactorEmailCode | 
 
             Debug.WriteLine("Created 2FA Email Code object");
@@ -146,7 +145,7 @@ namespace VRC_Favourite_Manager.Services
 
         public Verify2FAEmailCodeResult VerifyEmail2FA(string twoFactorAuthCode)
         {
-            var apiInstance = new AuthenticationApi(_config);
+            var authApi = new MyAuthenticationAPI(client, client, _config);
             var twoFactorEmailCode = new TwoFactorEmailCode(twoFactorAuthCode);
 
             try
@@ -181,6 +180,7 @@ namespace VRC_Favourite_Manager.Services
 
         public Verify2FAResult Verify2FA(string twoFactorAuthCode)
         {
+            var authApi = new MyAuthenticationAPI(client, client, _config);
             try
             {
                 var apiResponse = authApi.Verify2FAWithHttpInfo(new TwoFactorAuthCode(twoFactorAuthCode));
