@@ -236,7 +236,42 @@ namespace VRC_Favourite_Manager.Services
 
         public async Task<bool> CreateInstanceAsync(string worldId, string instanceType)
         {
-
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://vrchat.com/api/1/instances");
+            request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
+            string type;
+            bool canRequestInvite;
+            bool inviteOnly;
+            if(instanceType == "public")
+            {
+                type = "public";
+                canRequestInvite = false;
+                inviteOnly = false;
+            }
+            else if(instanceType == "friends+")
+            {
+                type = "hidden";
+                canRequestInvite = false;
+                inviteOnly = false;
+            }
+            else if(instanceType == "friends")
+            {
+                type = "friends";
+                canRequestInvite = false;
+                inviteOnly = false;
+            }
+            else if (instanceType == "invite+")
+            {
+                type = "private";
+                canRequestInvite = true;
+                inviteOnly = false;
+            }
+            else
+            {
+                type = "private";
+                canRequestInvite = true;
+                inviteOnly = true;
+            }
+            var content = new StringContent($"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"{type}\",\n  \"region\": \"jp\",\n  \"ownerId\": \"<string>\",\n  \"queueEnabled\": false,\n  \"canRequestInvite\": {canRequestInvite},\n  \"inviteOnly\": {inviteOnly}\n}}", null, "application/json");
         }
     }
 }
