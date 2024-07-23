@@ -23,6 +23,8 @@ namespace VRC_Favourite_Manager.Services
 
         private string _authToken;
 
+        private string _twoFactorAuthToken;
+
         public class Configuration
         {
             public CookieContainer CookieContainer { get; set; }
@@ -77,11 +79,13 @@ namespace VRC_Favourite_Manager.Services
         /// <summary>
         /// Verifies if the user has provided the correct auth token.
         /// <param name="authToken">The authentication token.</param>
+        /// <param name="twoFactorAuthToken">The two factor authentication token.</param>
         /// <returns>Returns if the auth token is valid or not.</returns>
-        public async Task<bool> VerifyAuthTokenAsync(string authToken)
+        public async Task<bool> VerifyAuthTokenAsync(string authToken, string twoFactorAuthToken)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "/config?auth={authToken}");
+            var request = new HttpRequestMessage(HttpMethod.Get, "/auth");
             request.Headers.Add("Accept", "application/json");
+            request.Headers.Add("Cookie", $"auth={authToken};twoFactorAuth={twoFactorAuthToken}");
             var response = await _Client.SendAsync(request);
             response.EnsureSuccessStatusCode();
 
@@ -90,8 +94,13 @@ namespace VRC_Favourite_Manager.Services
 
             // Deserialize the response string to a JSON object.
             var authResponse = JsonSerializer.Deserialize<Models.VerifyAuthTokenResponse>(responseString);
-
-            return authResponse.ok;
+            if (authResponse.ok)
+            {
+                _authToken = authToken;
+                _twoFactorAuthToken = twoFactorAuthToken;
+                return true;
+            }
+            return false;
         }
 
 
@@ -115,14 +124,13 @@ namespace VRC_Favourite_Manager.Services
             // Pass the header to store the auth token.
             StoreAuthToken(response.Headers);
 
-
             // Check if the user requires a certain 2FA method. 
             var responseString = await response.Content.ReadAsStringAsync();
-            if (RequiresEmail2FA(responseString))
+            if (responseString.Contains("emailOtp"))
             {
                 throw new VRCRequiresTwoFactorAuthException("email");
             }
-            else if (Requires2FA(responseString))
+            else if (responseString.Contains("totp"))
             {
                 throw new VRCRequiresTwoFactorAuthException("default");
             }
@@ -148,39 +156,55 @@ namespace VRC_Favourite_Manager.Services
             return $"Basic {base64AuthString}";
         }
 
-        /// <summary>
-        /// Checks if the user requires Email 2FA to login.
-        /// </summary>
-        /// <returns>Returns if the user requires email 2FA or not.</returns>
-        private static bool RequiresEmail2FA(string response)
+
+        public async Task<bool> Authenticate2FA(string twoFactorCode, string twoFactorAuthType)
         {
-            return response.Contains("emailOtp");
+            HttpRequestMessage request; 
+            if (twoFactorAuthType == "email")
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, "/auth/twofactorauth/emailotp/verify");
+            }
+            else
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, "/auth/twofactorauth/totp/verify");
+            }
+            request.Headers.Add("Accept", "application/json");
+            request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
+            var content = new StringContent($"{{\\n  \\\"code\\\": \\\"{twoFactorCode}\\\"\\n}}", null, "application/json");
+            request.Content = content;
+            var response = await _Client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+
+            // Pass the header to store the auth token.
+            StoreAuthToken(response.Headers);
+
+            return true;
         }
 
-        /// <summary>
-        /// Checks if the user requires default 2FA to login.
-        /// </summary>
-        /// <param name="response">Returns if the user requires default 2FA or not.</param>
-        /// <returns></returns>
-        private static bool Requires2FA(string response)
-        {
-            return response.Contains("totp");
-        }
 
         /// <summary>
-        /// Retrieves and stores the auth token from the response header.
+        /// Retrieves and stores the auth token or the two factor auth token from the response header.
         /// </summary>
         /// <param name="headers">The response header obtained from /auth/user </param>
         private void StoreAuthToken(HttpResponseHeaders headers)
         {
             if(headers.TryGetValues("set-cookie", out var authValues))
             {
-                var authToken = authValues.FirstOrDefault(x => x.Contains("auth"));
+                var authToken = authValues.FirstOrDefault();
                 if (!string.IsNullOrEmpty(authToken))
                 {
-                    authToken = authToken.Split(';')[0];
-                    authToken = authToken.Replace("auth=", "");
-                    _authToken = authToken;
+                    if(authToken.Contains("twoFactorAuth"))
+                    {
+                        var twoFactorAuthToken = authToken.Split(';')[1];
+                        twoFactorAuthToken = twoFactorAuthToken.Replace("twoFactorAuth=", "");
+                        _twoFactorAuthToken = twoFactorAuthToken;
+                    }
+                    else if (authToken.Contains("auth"))
+                    {
+                        authToken = authToken.Split(';')[0];
+                        authToken = authToken.Replace("auth=", "");
+                        _authToken = authToken;
+                    }
                 }
             }
         }
