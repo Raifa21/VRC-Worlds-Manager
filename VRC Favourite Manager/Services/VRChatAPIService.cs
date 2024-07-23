@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net;
 using System.Collections.Concurrent;
+using System.Text.Encodings.Web;
 using System.Threading;
 
 namespace VRC_Favourite_Manager.Services
@@ -16,6 +17,7 @@ namespace VRC_Favourite_Manager.Services
         private HttpClient _Client;
 
         private CookieContainer _cookieContainer;
+
         public class Configuration
         {
             public CookieContainer CookieContainer { get; set; }
@@ -41,8 +43,8 @@ namespace VRC_Favourite_Manager.Services
                 {
                     new Dictionary<string, object>
                     {
-                        {"url", "https://vrchat.com/api/1"},
-                        {"description", "No description provided"},
+                        { "url", "https://vrchat.com/api/1" },
+                        { "description", "No description provided" },
                     }
                 };
                 OperationServers = new Dictionary<string, List<IReadOnlyDictionary<string, object>>>();
@@ -70,7 +72,7 @@ namespace VRC_Favourite_Manager.Services
 
         public async Task<bool> VerifyAuthTokenAsync(string authToken)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "https://vrchat.com/api/1/config?auth={authToken}");
+            var request = new HttpRequestMessage(HttpMethod.Get, "/config?auth={authToken}");
             request.Headers.Add("Accept", "application/json");
             var response = await _Client.SendAsync(request);
             response.EnsureSuccessStatusCode();
@@ -78,7 +80,39 @@ namespace VRC_Favourite_Manager.Services
             return true;
         }
 
-        public async 
-    }
+        public async Task<bool> VerifyLoginAsync(string username, string password)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "/auth/user?");
+            request.Headers.Add("Accept", "application/json");
+            request.Headers.Add("Authorization", CreateAuthString(username,password));
+            var response = await _Client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            Task<string> readTask = response.Content.ReadAsStringAsync();
+            if 
 
+        }
+
+        /// <summary>
+        /// Generates a auth string according to VRC's API requirements.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <returns>The encoded authorization string.</returns>
+        private static string CreateAuthString(string username, string password)
+        {
+            var encodedUsername = WebUtility.UrlEncode(username);
+            var encodedPassword = WebUtility.UrlEncode(password);
+            var authString = $"{encodedUsername}:{encodedPassword}";
+            var base64AuthString = Convert.ToBase64String(Encoding.UTF8.GetBytes(authString));
+            Debug.WriteLine($"Basic {base64AuthString}");
+            return $"Basic {base64AuthString}";
+        }
+
+        /// <summary>
+        /// Checks if the user requires Email 2FA to login.
+        /// </summary>
+        /// <returns>Returns if the user requires Email 2FA or not.</returns>
+        private static bool requiresEmail2FA(
+
+    }
 }
