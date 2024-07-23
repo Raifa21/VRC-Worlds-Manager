@@ -16,7 +16,12 @@ namespace VRC_Favourite_Manager.Common
     }
     public class VRCRequiresTwoFactorAuthException: Exception
     {
-        
+        public string TwoFactorAuthType { get; private set; }
+
+        public VRCRequiresTwoFactorAuthException(string twoFactorAuthType)
+        {
+            TwoFactorAuthType = twoFactorAuthType;
+        }
     }
     public class VRCAPIException: Exception
     {
