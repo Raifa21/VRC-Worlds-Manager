@@ -25,41 +25,6 @@ namespace VRC_Favourite_Manager.Services
 
         private string _twoFactorAuthToken;
 
-        public class Configuration
-        {
-            public CookieContainer CookieContainer { get; set; }
-            public IWebProxy Proxy { get; set; }
-            public string UserAgent { get; set; }
-            public string BasePath { get; set; }
-            public ConcurrentDictionary<string, string> DefaultHeaders { get; set; }
-            public ConcurrentDictionary<string, string> ApiKey { get; set; }
-            public ConcurrentDictionary<string, string> ApiKeyPrefix { get; set; }
-            public List<IReadOnlyDictionary<string, object>> Servers { get; set; }
-            public Dictionary<string, List<IReadOnlyDictionary<string, object>>> OperationServers { get; set; }
-            public int Timeout { get; set; }
-
-            public Configuration()
-            {
-                Proxy = null;
-                UserAgent = "vrchatapi-csharp";
-                BasePath = "https://vrchat.com/api/1";
-                DefaultHeaders = new ConcurrentDictionary<string, string>();
-                ApiKey = new ConcurrentDictionary<string, string>();
-                ApiKeyPrefix = new ConcurrentDictionary<string, string>();
-                Servers = new List<IReadOnlyDictionary<string, object>>()
-                {
-                    new Dictionary<string, object>
-                    {
-                        { "url", "https://vrchat.com/api/1" },
-                        { "description", "No description provided" },
-                    }
-                };
-                OperationServers = new Dictionary<string, List<IReadOnlyDictionary<string, object>>>();
-                CookieContainer = new CookieContainer(); // Initialize CookieContainer
-                Timeout = 100000;
-            }
-        }
-
         public VRChatAPIService()
         {
             _cookieContainer = new CookieContainer();
@@ -74,6 +39,7 @@ namespace VRC_Favourite_Manager.Services
             _Client.BaseAddress = new Uri("https://vrchat.com/api/1");
             _Client.Timeout = TimeSpan.FromSeconds(10000);
             _Client.DefaultRequestHeaders.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
+            _Client.DefaultRequestHeaders.Add("Accept", "application/json");
         }
 
         /// <summary>
@@ -84,7 +50,6 @@ namespace VRC_Favourite_Manager.Services
         public async Task<bool> VerifyAuthTokenAsync(string authToken, string twoFactorAuthToken)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, "/auth");
-            request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Cookie", $"auth={authToken};twoFactorAuth={twoFactorAuthToken}");
             var response = await _Client.SendAsync(request);
             response.EnsureSuccessStatusCode();
@@ -114,9 +79,19 @@ namespace VRC_Favourite_Manager.Services
         /// <exception cref="VRCRequiresTwoFactorAuthException">User requires 2FA, contains a TwoFactorAuthType of either "email" or "default".</exception>
         public async Task<bool> VerifyLoginAsync(string username, string password)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "/auth/user?");
-            request.Headers.Add("Accept", "application/json");
+            var request = new HttpRequestMessage(HttpMethod.Get, "/auth/user");
             request.Headers.Add("Authorization", CreateAuthString(username,password));
+            if (!string.IsNullOrEmpty(_twoFactorAuthToken))
+            {
+                if(!string.IsNullOrEmpty(_authToken))
+                {
+                    request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
+                }
+                else
+                {
+                    request.Headers.Add("Cookie", $"twoFactorAuth={_twoFactorAuthToken}");
+                }
+            }
             var response = await _Client.SendAsync(request);
             // This throws a HttpRequestException if the status code is not a success code.
             response.EnsureSuccessStatusCode();
@@ -168,7 +143,6 @@ namespace VRC_Favourite_Manager.Services
             {
                 request = new HttpRequestMessage(HttpMethod.Post, "/auth/twofactorauth/totp/verify");
             }
-            request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
             var content = new StringContent($"{{\\n  \\\"code\\\": \\\"{twoFactorCode}\\\"\\n}}", null, "application/json");
             request.Content = content;
@@ -180,7 +154,6 @@ namespace VRC_Favourite_Manager.Services
 
             return true;
         }
-
 
         /// <summary>
         /// Retrieves and stores the auth token or the two factor auth token from the response header.
@@ -208,6 +181,23 @@ namespace VRC_Favourite_Manager.Services
                 }
             }
         }
+
+        public async Task<bool> LogoutAsync(string authToken, string twoFatorAuthToken)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Put, "/logout");
+            request.Headers.Add("Cookie", $"auth={authToken};twoFactorAuth={twoFatorAuthToken}");
+            var response = await _Client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            // Deserialize the response string to a JSON object.
+            var authResponse = JsonSerializer.Deserialize<Models.LogoutResponse>(responseString);
+            return authResponse.message == "Ok!"; 
+        }
+
+
+        public async Task<>
+
 
     }
 }

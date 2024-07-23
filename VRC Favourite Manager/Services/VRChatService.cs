@@ -14,11 +14,6 @@ namespace VRC_Favourite_Manager.Services
 {
     public class VRChatService
     {
-        private readonly Configuration _config;
-        private readonly ApiClient client;
-        private UsersApi userApi;
-        private WorldsApi worldsApi;
-        private ApiResponse<CurrentUser> response;
         public bool gotApi { get; private set; }
         public bool RequiresEmailotp { get; private set; }
 
