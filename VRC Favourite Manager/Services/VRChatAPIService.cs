@@ -234,7 +234,7 @@ namespace VRC_Favourite_Manager.Services
             return worldModels;
         }
 
-        public async Task<bool> CreateInstanceAsync(string worldId, string instanceType)
+        public async Task<string> CreateInstanceAsync(string worldId, string instanceType)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, "https://vrchat.com/api/1/instances");
             request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
@@ -272,6 +272,15 @@ namespace VRC_Favourite_Manager.Services
                 inviteOnly = true;
             }
             var content = new StringContent($"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"{type}\",\n  \"region\": \"jp\",\n  \"ownerId\": \"<string>\",\n  \"queueEnabled\": false,\n  \"canRequestInvite\": {canRequestInvite},\n  \"inviteOnly\": {inviteOnly}\n}}", null, "application/json");
+            request.Content = content;
+            var response = await _Client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            var createInstanceResponse = JsonSerializer.Deserialize<Models.CreateInstanceResponse>(responseString);
+            if(InviteSelf(createInstanceResponse.))
+
+
         }
     }
 }
