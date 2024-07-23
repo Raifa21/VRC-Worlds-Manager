@@ -182,6 +182,12 @@ namespace VRC_Favourite_Manager.Services
             }
         }
 
+        /// <summary>
+        /// Clears the authentication cookie.
+        /// </summary>
+        /// <param name="authToken"></param>
+        /// <param name="twoFatorAuthToken"></param>
+        /// <returns></returns>
         public async Task<bool> LogoutAsync(string authToken, string twoFatorAuthToken)
         {
             var request = new HttpRequestMessage(HttpMethod.Put, "/logout");
@@ -195,9 +201,42 @@ namespace VRC_Favourite_Manager.Services
             return authResponse.message == "Ok!"; 
         }
 
+        /// <summary>
+        /// Obtains the user's favorite worlds. 
+        /// </summary>
+        /// <param name="n">The number of worlds to return. This application will default to 100.</param>
+        /// <param name="offset">Offset to allow pagination of worlds.</param>
+        /// <returns>A list of worlds, sorted by date added to favorites. </returns>
+        public async Task<List<Models.WorldModel>> GetFavoriteWorldsAsync(int n, int offset)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/favorites?type=world&n={n}&offset={offset}");
+            request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
+            var response = await _Client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync();
+            var responseWorlds = JsonSerializer.Deserialize<List<Models.ListFavoriteWorldsResponse>>(responseString);
+            var worldModels = new List<Models.WorldModel>();
+            foreach (var world in responseWorlds)
+            {
+                var worldModel = new Models.WorldModel
+                {
+                    ThumbnailImageUrl = world.ThumbnailImageUrl,
+                    WorldName = world.Name,
+                    WorldId = world.Id,
+                    AuthorName = world.AuthorName,
+                    AuthorId = world.AuthorId,
+                    RecommendedCapacity = world.RecommendedCapacity,
+                    Capacity = world.Capacity,
+                    LastUpdate = world.UpdatedAt,
+                };
+                worldModels.Add(worldModel);
+            }
+            return worldModels;
+        }
 
-        public async Task<>
+        public async Task<bool> CreateInstanceAsync(string worldId, string instanceType)
+        {
 
-
+        }
     }
 }

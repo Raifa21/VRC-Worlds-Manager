@@ -15,7 +15,7 @@ namespace VRC_Favourite_Manager.Models
         public string AuthorId { get; set; }
         public int RecommendedCapacity { get; set; }
         public int Capacity { get; set; }
-        public string LastUpdate { get; set; }
+        public DateTime LastUpdate { get; set; }
     }
 
 }
