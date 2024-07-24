@@ -65,6 +65,7 @@ namespace VRC_Favourite_Manager.Services
                 _twoFactorAuthToken = twoFactorAuthToken;
                 return true;
             }
+
             return false;
         }
 
@@ -80,10 +81,10 @@ namespace VRC_Favourite_Manager.Services
         public async Task<bool> VerifyLoginAsync(string username, string password)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, "/auth/user");
-            request.Headers.Add("Authorization", CreateAuthString(username,password));
+            request.Headers.Add("Authorization", CreateAuthString(username, password));
             if (!string.IsNullOrEmpty(_twoFactorAuthToken))
             {
-                if(!string.IsNullOrEmpty(_authToken))
+                if (!string.IsNullOrEmpty(_authToken))
                 {
                     request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
                 }
@@ -92,6 +93,7 @@ namespace VRC_Favourite_Manager.Services
                     request.Headers.Add("Cookie", $"twoFactorAuth={_twoFactorAuthToken}");
                 }
             }
+
             var response = await _Client.SendAsync(request);
             // This throws a HttpRequestException if the status code is not a success code.
             response.EnsureSuccessStatusCode();
@@ -134,7 +136,7 @@ namespace VRC_Favourite_Manager.Services
 
         public async Task<bool> Authenticate2FA(string twoFactorCode, string twoFactorAuthType)
         {
-            HttpRequestMessage request; 
+            HttpRequestMessage request;
             if (twoFactorAuthType == "email")
             {
                 request = new HttpRequestMessage(HttpMethod.Post, "/auth/twofactorauth/emailotp/verify");
@@ -143,8 +145,10 @@ namespace VRC_Favourite_Manager.Services
             {
                 request = new HttpRequestMessage(HttpMethod.Post, "/auth/twofactorauth/totp/verify");
             }
+
             request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
-            var content = new StringContent($"{{\\n  \\\"code\\\": \\\"{twoFactorCode}\\\"\\n}}", null, "application/json");
+            var content = new StringContent($"{{\\n  \\\"code\\\": \\\"{twoFactorCode}\\\"\\n}}", null,
+                "application/json");
             request.Content = content;
             var response = await _Client.SendAsync(request);
             response.EnsureSuccessStatusCode();
@@ -161,12 +165,12 @@ namespace VRC_Favourite_Manager.Services
         /// <param name="headers">The response header obtained from /auth/user </param>
         private void StoreAuthToken(HttpResponseHeaders headers)
         {
-            if(headers.TryGetValues("set-cookie", out var authValues))
+            if (headers.TryGetValues("set-cookie", out var authValues))
             {
                 var authToken = authValues.FirstOrDefault();
                 if (!string.IsNullOrEmpty(authToken))
                 {
-                    if(authToken.Contains("twoFactorAuth"))
+                    if (authToken.Contains("twoFactorAuth"))
                     {
                         var twoFactorAuthToken = authToken.Split(';')[1];
                         twoFactorAuthToken = twoFactorAuthToken.Replace("twoFactorAuth=", "");
@@ -187,7 +191,7 @@ namespace VRC_Favourite_Manager.Services
         /// </summary>
         /// <param name="authToken"></param>
         /// <param name="twoFatorAuthToken"></param>
-        /// <returns></returns>
+        /// <returns>If the user has successfully logged out or not.</returns>
         public async Task<bool> LogoutAsync(string authToken, string twoFatorAuthToken)
         {
             var request = new HttpRequestMessage(HttpMethod.Put, "/logout");
@@ -198,7 +202,7 @@ namespace VRC_Favourite_Manager.Services
 
             // Deserialize the response string to a JSON object.
             var authResponse = JsonSerializer.Deserialize<Models.LogoutResponse>(responseString);
-            return authResponse.message == "Ok!"; 
+            return authResponse.message == "Ok!";
         }
 
         /// <summary>
@@ -231,55 +235,99 @@ namespace VRC_Favourite_Manager.Services
                 };
                 worldModels.Add(worldModel);
             }
+
             return worldModels;
         }
 
+        /// <summary>
+        /// Creates an instance of a world, and creates an invite for the user.
+        /// </summary>
+        /// <param name="worldId">An ID which represents the world to be created.</param>
+        /// <param name="instanceType">The instance type of the instance being created. Allowed parameters are: "public","friends+","friends","invite+","invite".</param>
+        /// <returns>Returns the instanceId of the instance which was created.</returns>
+        /// <exception cref="VRCNotLoggedInException">When the authentication tokens fails to authenticate the user.</exception>
         public async Task<string> CreateInstanceAsync(string worldId, string instanceType)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://vrchat.com/api/1/instances");
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Post, "https://vrchat.com/api/1/instances");
+                request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
+
+                string type;
+                bool canRequestInvite;
+                bool inviteOnly;
+                switch (instanceType)
+                {
+                    case "public":
+                        type = "public";
+                        canRequestInvite = false;
+                        inviteOnly = false;
+                        break;
+                    case "friends+":
+                        type = "hidden";
+                        canRequestInvite = false;
+                        inviteOnly = false;
+                        break;
+                    case "friends":
+                        type = "friends";
+                        canRequestInvite = false;
+                        inviteOnly = false;
+                        break;
+                    case "invite+":
+                        type = "private";
+                        canRequestInvite = true;
+                        inviteOnly = false;
+                        break;
+                    default:
+                        type = "private";
+                        canRequestInvite = false;
+                        inviteOnly = true;
+                        break;
+                }
+
+                var content = new StringContent(
+                    $"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"{type}\",\n  \"region\": \"jp\",\n  \"ownerId\": \"<string>\",\n  \"queueEnabled\": false,\n  \"canRequestInvite\": {canRequestInvite},\n  \"inviteOnly\": {inviteOnly}\n}}",
+                    null, "application/json");
+                request.Content = content;
+                var response = await _Client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+
+                var responseString = await response.Content.ReadAsStringAsync();
+                var createInstanceResponse = JsonSerializer.Deserialize<Models.CreateInstanceResponse>(responseString);
+
+                InviteSelfAsync(createInstanceResponse.WorldId, createInstanceResponse.InstanceId);
+                return createInstanceResponse.InstanceId;
+            }
+            catch (HttpRequestException)
+            {
+                throw new VRCNotLoggedInException();
+            }
+        }
+
+        /// <summary>
+        /// Invites the user to the instance provided.
+        /// </summary>
+        /// <param name="worldId"></param>
+        /// <param name="instanceId"></param>
+        /// <exception cref="VRCFailedToCreateInviteException">When the invite has failed to be created.</exception>
+        private async void InviteSelfAsync(string worldId, string instanceId)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, $"https://vrchat.com/api/1/instances/{worldId}:{instanceId}/invite");
             request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
-            string type;
-            bool canRequestInvite;
-            bool inviteOnly;
-            if(instanceType == "public")
-            {
-                type = "public";
-                canRequestInvite = false;
-                inviteOnly = false;
-            }
-            else if(instanceType == "friends+")
-            {
-                type = "hidden";
-                canRequestInvite = false;
-                inviteOnly = false;
-            }
-            else if(instanceType == "friends")
-            {
-                type = "friends";
-                canRequestInvite = false;
-                inviteOnly = false;
-            }
-            else if (instanceType == "invite+")
-            {
-                type = "private";
-                canRequestInvite = true;
-                inviteOnly = false;
-            }
-            else
-            {
-                type = "private";
-                canRequestInvite = true;
-                inviteOnly = true;
-            }
-            var content = new StringContent($"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"{type}\",\n  \"region\": \"jp\",\n  \"ownerId\": \"<string>\",\n  \"queueEnabled\": false,\n  \"canRequestInvite\": {canRequestInvite},\n  \"inviteOnly\": {inviteOnly}\n}}", null, "application/json");
+            var content =
+                new StringContent(
+                    $"{{\n  \"worldId\": \"{worldId}\",\n  \"instanceId\": \"{instanceId}\",\n  \"userId\": \"<string>\"\n}}",
+                    null, "application/json");
             request.Content = content;
             var response = await _Client.SendAsync(request);
             response.EnsureSuccessStatusCode();
-
+            
             var responseString = await response.Content.ReadAsStringAsync();
-            var createInstanceResponse = JsonSerializer.Deserialize<Models.CreateInstanceResponse>(responseString);
-            if(InviteSelf(createInstanceResponse.))
-
+            var inviteResponse = JsonSerializer.Deserialize<Models.SendSelfInviteResponse>(responseString);
+            if (inviteResponse.Status_code != 200)
+            {
+                throw new VRCFailedToCreateInviteException();
+            }
 
         }
     }

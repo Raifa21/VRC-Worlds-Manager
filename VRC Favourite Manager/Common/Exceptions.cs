@@ -27,4 +27,12 @@ namespace VRC_Favourite_Manager.Common
     {
         
     }
+    public class VRCFailedToCreateInviteException: Exception
+    {
+        
+    }
+    public class VRCFailedToCreateInstanceException: Exception
+    {
+        
+    }
 }
