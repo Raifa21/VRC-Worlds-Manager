@@ -13,14 +13,14 @@ namespace VRC_Favourite_Manager.ViewModels
 {
     public class AuthenticationViewModel : ViewModelBase
     {
-        private readonly VRChatService _vrChatService;
+        private readonly VRChatAPIService _vrChatAPIService;
         private readonly Window _mainWindow;
         private MainWindow mainWindow;
         private string _errorMessage;
 
         public AuthenticationViewModel()
         {
-            _vrChatService = Application.Current.Resources["VRChatService"] as VRChatService;
+            _vrChatAPIService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
             _mainWindow = ((App)Application.Current).mainWindow;
             LoginCommand = new RelayCommand(Login);
 
@@ -54,44 +54,20 @@ namespace VRC_Favourite_Manager.ViewModels
         {
             try
             {
-                var loginSuccessful = _vrChatService.Login(Username, Password);
-                if (!loginSuccessful)
-                {
-                    System.Diagnostics.Debug.WriteLine("Login failed.");
-                    throw new VRCIncorrectCredentialsException();
-                }
+                _vrChatAPIService.VerifyLoginAsync(Username, Password);
+                System.Diagnostics.Debug.WriteLine("Login successful.");
+            }
+            catch (VRCRequiresTwoFactorAuthException e)
+            {
                 var otpDialog = new TwoFactorAuthPopup(_mainWindow.Content.XamlRoot);
                 var result = await otpDialog.ShowAsync();
-                System.Diagnostics.Debug.WriteLine($"OTP Dialog result: {result}");
                 if (result != ContentDialogResult.Primary || string.IsNullOrEmpty(otpDialog.OtpCode))
                 {
                     System.Diagnostics.Debug.WriteLine("OTP Dialog was cancelled or empty");
                     return;
                 }
-                System.Diagnostics.Debug.WriteLine($"OTP code: {otpDialog.OtpCode}");
-                if (_vrChatService.RequiresEmailotp)
-                {
-                    System.Diagnostics.Debug.WriteLine("Verifying Email 2FA OTP...");
-                    _vrChatService.debug_VerifyEmail2FA(otpDialog.OtpCode);
-                }
-                else
-                {
-                    System.Diagnostics.Debug.WriteLine("Verifying 2FA OTP...");
-                    var otpVerified = _vrChatService.Verify2FA(otpDialog.OtpCode);
 
-                    if (!otpVerified.Verified)
-                    {
-                        ErrorMessage = "Incorrect OTP code.";
-                        return;
-                    }
-                }
-                System.Diagnostics.Debug.WriteLine("Login successful.");
-                _vrChatService.StoreAuth();
-                var rootFrame = new Frame();
-                mainWindow = new MainWindow();
-                rootFrame.Navigate(typeof(MainPage));
-                mainWindow.Content = rootFrame;
-                mainWindow.Activate();
+                _vrChatAPIService.Authenticate2FAAsync(otpDialog.OtpCode, e.TwoFactorAuthType);
 
             }
             catch (VRCIncorrectCredentialsException)
@@ -103,5 +79,16 @@ namespace VRC_Favourite_Manager.ViewModels
                 ErrorMessage = $"An unexpected error occurred: {ex.Message}";
             }
         }
+
+        private void 
+        private void DisplayMainView()
+        {
+            var rootFrame = new Frame();
+            mainWindow = new MainWindow();
+            rootFrame.Navigate(typeof(MainPage));
+            mainWindow.Content = rootFrame;
+            mainWindow.Activate();
+        }
+
     }
 }

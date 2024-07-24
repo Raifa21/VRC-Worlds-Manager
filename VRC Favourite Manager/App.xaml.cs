@@ -14,7 +14,7 @@ namespace VRC_Favourite_Manager
 {
     public sealed partial class App : Application
     {
-        private VRChatService _VRChatService;
+        private VRChatAPIService _VRChatAPIService;
         private string apiKey;
         public MainWindow mainWindow;
 
@@ -122,13 +122,14 @@ namespace VRC_Favourite_Manager
         }
 
         /// <summary>
-        /// Initialises the VRChatService with the provided username and password.
+        /// Initialise VRChatAPIService as singleton.
         /// </summary>
         private void InitialiseService()
         {
-            Application.Current.Resources["VRChatService"] = new VRChatService();
 
-            _VRChatService = (VRChatService)Application.Current.Resources["VRChatService"];
+            Application.Current.Resources["VRChatAPIService"] = new VRChatAPIService();
+
+            _VRChatAPIService = (VRChatAPIService)Application.Current.Resources["VRChatAPIService"];
         }
 
     }

@@ -15,7 +15,16 @@ using System.Text.Json;
 
 namespace VRC_Favourite_Manager.Services
 {
-    internal class VRChatAPIService
+    public interface IVRChatAPIService
+    {
+        Task<bool> VerifyAuthTokenAsync(string authToken, string twoFactorAuthToken);
+        void VerifyLoginAsync(string username, string password);
+        Task<bool> Authenticate2FAAsync(string twoFactorCode, string twoFactorAuthType);
+        Task<bool> LogoutAsync(string authToken, string twoFatorAuthToken);
+        Task<List<Models.WorldModel>> GetFavoriteWorldsAsync(int n, int offset);
+        Task<string> CreateInstanceAsync(string worldId, string instanceType);
+    }
+    public class VRChatAPIService : IVRChatAPIService
     {
         private HttpClient _Client;
 
@@ -76,44 +85,46 @@ namespace VRC_Favourite_Manager.Services
         /// </summary>
         /// <param name="username"></param>
         /// <param name="password"></param>
-        /// <returns>Returns if the user has successfully logged in or not.</returns>
         /// <exception cref="VRCRequiresTwoFactorAuthException">User requires 2FA, contains a TwoFactorAuthType of either "email" or "default".</exception>
-        public async Task<bool> VerifyLoginAsync(string username, string password)
+        public async void VerifyLoginAsync(string username, string password)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "/auth/user");
-            request.Headers.Add("Authorization", CreateAuthString(username, password));
-            if (!string.IsNullOrEmpty(_twoFactorAuthToken))
+            try
             {
-                if (!string.IsNullOrEmpty(_authToken))
+                var request = new HttpRequestMessage(HttpMethod.Get, "/auth/user");
+                request.Headers.Add("Authorization", CreateAuthString(username, password));
+                if (!string.IsNullOrEmpty(_twoFactorAuthToken))
                 {
-                    request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
+                    if (!string.IsNullOrEmpty(_authToken))
+                    {
+                        request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
+                    }
+                    else
+                    {
+                        request.Headers.Add("Cookie", $"twoFactorAuth={_twoFactorAuthToken}");
+                    }
                 }
-                else
+
+                var response = await _Client.SendAsync(request);
+                // This throws a HttpRequestException if the status code is not a success code.
+                response.EnsureSuccessStatusCode();
+
+                // Pass the header to store the auth token.
+                StoreAuthToken(response.Headers);
+
+                // Check if the user requires a certain 2FA method. 
+                var responseString = await response.Content.ReadAsStringAsync();
+                if (responseString.Contains("emailOtp"))
                 {
-                    request.Headers.Add("Cookie", $"twoFactorAuth={_twoFactorAuthToken}");
+                    throw new VRCRequiresTwoFactorAuthException("email");
+                }
+                else if (responseString.Contains("totp"))
+                {
+                    throw new VRCRequiresTwoFactorAuthException("default");
                 }
             }
-
-            var response = await _Client.SendAsync(request);
-            // This throws a HttpRequestException if the status code is not a success code.
-            response.EnsureSuccessStatusCode();
-
-            // Pass the header to store the auth token.
-            StoreAuthToken(response.Headers);
-
-            // Check if the user requires a certain 2FA method. 
-            var responseString = await response.Content.ReadAsStringAsync();
-            if (responseString.Contains("emailOtp"))
+            catch (HttpRequestException)
             {
-                throw new VRCRequiresTwoFactorAuthException("email");
-            }
-            else if (responseString.Contains("totp"))
-            {
-                throw new VRCRequiresTwoFactorAuthException("default");
-            }
-            else
-            {
-                return true;
+                throw new VRCIncorrectCredentialsException();
             }
         }
 
@@ -134,7 +145,7 @@ namespace VRC_Favourite_Manager.Services
         }
 
 
-        public async Task<bool> Authenticate2FA(string twoFactorCode, string twoFactorAuthType)
+        public async Task<bool> Authenticate2FAAsync(string twoFactorCode, string twoFactorAuthType)
         {
             HttpRequestMessage request;
             if (twoFactorAuthType == "email")

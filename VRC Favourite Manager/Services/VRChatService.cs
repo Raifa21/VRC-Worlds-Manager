@@ -9,78 +9,37 @@ using VRC_Favourite_Manager.Common;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Concurrent;
+using System.Net.Http;
+using Microsoft.UI.Xaml;
+using VRChat.API.Api;
+using VRChat.API.Client;
+using VRChat.API.Model;
+
 
 namespace VRC_Favourite_Manager.Services
 {
     public class VRChatService
     {
-        public bool gotApi { get; private set; }
-        public bool RequiresEmailotp { get; private set; }
-
-        public string authToken { get; private set; }
-
+        public readonly VRChatAPIService _VRChatApiService;
+        public bool RequiresEmailOtp { get; private set; }
+        public string AuthToken { get; private set; }
         public VRChatService()
         {
             System.Diagnostics.Debug.WriteLine("Creating VRChatService");
-            client = new ApiClient();
+            _VRChatApiService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
+
         }
 
-        public ApiResponse<VerifyAuthTokenResult> CheckAuthentication()
+        public async Task<bool> CheckAuthenticationAsync(string authToken, string twoFactorAuthToken)
         {
-            var authApi = new MyAuthenticationAPI(client, client, _config);
-            return authApi.VerifyAuthTokenWithHttpInfo();
+            return await _VRChatApiService.VerifyAuthTokenAsync(authToken, twoFactorAuthToken);
         }
 
-        public bool Login(string username, string password)
+        public async void LoginAsync(string username, string password)
         {
-            _config.Username = username;
-            _config.Password = password;
-
-            var authApi = new MyAuthenticationAPI(client, client, _config);
-
-            try
-            {
-                response = authApi.GetCurrentUserWithHttpInfo();
-                if (response.Headers.TryGetValue("Set-Cookie", out var cookies))
-                {
-                    var authCookieHeader = cookies.FirstOrDefault();
-                    if (authCookieHeader != null)
-                    {
-                        var authCookie = authCookieHeader.Split(';')[0];
-                        authCookie = authCookie.Replace("auth=", ""); // Ensure this matches the actual cookie name
-                        System.Diagnostics.Debug.WriteLine("Current auth token:");
-                        System.Diagnostics.Debug.WriteLine(authCookie);
-                        _config.AddApiKey("auth", authCookie);
-                        this.authToken = authCookie;
-                        this.gotApi = true;
-                    }
-                }
-                else
-                {
-                    System.Diagnostics.Debug.WriteLine("Cannot obtain cookie: not logged in yet!");
-                }
-                if (RequiresEmail2FA(response))
-                {
-                    RequiresEmailotp = true;
-                    return true;
-                }
-                else
-                {
-                    RequiresEmailotp = false;
-                    return true;
-                }
-            }
-            catch (ApiException e)
-            {
-                System.Diagnostics.Debug.WriteLine("Login failed: " + e.Message);
-                throw new VRCIncorrectCredentialsException();
-            }
+            _VRChatApiService.VerifyLoginAsync(username, password);
         }
 
-        private static bool RequiresEmail2FA(ApiResponse<CurrentUser> resp)
-        {
-            return resp.RawContent.Contains("emailOtp");
-        }
 
         public void debug_VerifyEmail2FA(string twoFactorAuthCode)
         {
