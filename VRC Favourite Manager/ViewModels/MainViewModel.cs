@@ -3,12 +3,12 @@ using Microsoft.UI.Xaml;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
-using VRChat.API.Model;
 
 namespace VRC_Favourite_Manager.ViewModels
 {
@@ -19,33 +19,52 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly JsonStorageService _jsonStorageService;
 
         private HashSet<WorldModel> _favoriteWorlds;
+
+        private ObservableCollection<WorldModel> _worlds;
+        public ObservableCollection<WorldModel> Worlds
+        {
+            get => _worlds;
+            set
+            {
+                _worlds = value;
+                OnPropertyChanged(nameof(Worlds));
+            }
+        }
+
         public ICommand RefreshCommand { get; }
 
         public MainViewModel()
         {
-            
+
+            Worlds = new ObservableCollection<WorldModel>();
+
             _vrChatAPIService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
             _jsonStorageService = new JsonStorageService();
 
             _favoriteWorlds = new HashSet<WorldModel>();
             RefreshCommand = new RelayCommand(async () => await RefreshWorldsAsync());
 
-            InitializeAsync();
+            var task = InitializeAsync();
         }
 
         private async Task InitializeAsync()
         {
             if (_jsonStorageService.ConfigExists())
             {
+                Debug.WriteLine("Loading worlds from file");
                 var worlds = _jsonStorageService.LoadWorlds();
                 foreach (var world in worlds)
                 {
                     _favoriteWorlds.Add(world);
                 }
+                Debug.WriteLine("Found " + _favoriteWorlds.Count + " worlds");
+                Debug.WriteLine("Checking for new worlds");
                 await CheckForNewWorldsAsync();
+                Debug.WriteLine("Done checking for new worlds");
             }
             else
             {
+                Debug.WriteLine("No config file found, scanning for worlds");
                 await InitialScanAsync();
             }
         }
@@ -56,6 +75,7 @@ namespace VRC_Favourite_Manager.ViewModels
             while (hasMore)
             {
                 var worlds = await _vrChatAPIService.GetFavoriteWorldsAsync(100, page*100);
+                Debug.WriteLine($"Got {worlds.Count} worlds");
                 foreach (var world in worlds)
                 {
                     _favoriteWorlds.Add(world);
@@ -84,6 +104,13 @@ namespace VRC_Favourite_Manager.ViewModels
         private async Task RefreshWorldsAsync()
         {
             await CheckForNewWorldsAsync();
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

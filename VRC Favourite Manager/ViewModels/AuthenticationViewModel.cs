@@ -54,7 +54,7 @@ namespace VRC_Favourite_Manager.ViewModels
         {
             try
             {
-                _vrChatAPIService.VerifyLoginAsync(Username, Password);
+                await _vrChatAPIService.VerifyLoginAsync(Username, Password);
                 System.Diagnostics.Debug.WriteLine("Login successful.");
                 DisplayMainView();
             }

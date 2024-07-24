@@ -27,9 +27,10 @@
             <muxc:GridView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel>
-                        <Image Source="{Binding ImageUrl}" Width="100" Height="100"/>
-                        <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+                        <Image Source="{Binding ThumbnailImageUrl}" Width="100" Height="100"/>
+                        <TextBlock Text="{Binding WorldName}" FontWeight="Bold"/>
                         <TextBlock Text="Capacity: {Binding Capacity}"/>
+                        <TextBlock Text="Author: {Binding AuthorName}"/>
                     </StackPanel>
                 </DataTemplate>
             </muxc:GridView.ItemTemplate>

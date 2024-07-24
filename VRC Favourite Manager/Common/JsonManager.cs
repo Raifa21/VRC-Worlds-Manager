@@ -4,7 +4,7 @@ using System.IO;
 using System.Text.Json;
 using VRC_Favourite_Manager.Models;
 
-namespace VRC_Favourite_Manager.Services
+namespace VRC_Favourite_Manager
 {
     public class JsonStorageService
     {

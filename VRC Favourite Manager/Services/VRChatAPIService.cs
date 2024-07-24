@@ -13,13 +13,14 @@ using System.Threading;
 using VRC_Favourite_Manager.Common;
 using System.Text.Json;
 using Tomlyn;
+using Windows.Media.Protection.PlayReady;
 
 namespace VRC_Favourite_Manager.Services
 {
     public interface IVRChatAPIService
     {
         Task<bool> VerifyAuthTokenAsync(string authToken, string twoFactorAuthToken);
-        void VerifyLoginAsync(string username, string password);
+        Task<bool> VerifyLoginAsync(string username, string password);
         Task<bool> Authenticate2FAAsync(string twoFactorCode, string twoFactorAuthType);
         Task<bool> LogoutAsync(string authToken, string twoFatorAuthToken);
         Task<List<Models.WorldModel>> GetFavoriteWorldsAsync(int n, int offset);
@@ -45,11 +46,6 @@ namespace VRC_Favourite_Manager.Services
 
             };
             _Client = new HttpClient(handler);
-            // Set initial configuration values
-            _Client.BaseAddress = new Uri("https://vrchat.com/api/1");
-            _Client.Timeout = TimeSpan.FromSeconds(10000);
-            _Client.DefaultRequestHeaders.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
-            _Client.DefaultRequestHeaders.Add("Accept", "application/json");
         }
 
         /// <summary>
@@ -59,7 +55,9 @@ namespace VRC_Favourite_Manager.Services
         /// <returns>Returns if the auth token is valid or not.</returns>
         public async Task<bool> VerifyAuthTokenAsync(string authToken, string twoFactorAuthToken)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "/auth");
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://vrchat.com/api/1/auth");
+            request.Headers.Add("Accept", "application/json");
+            request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
             request.Headers.Add("Cookie", $"auth={authToken};twoFactorAuth={twoFactorAuthToken}");
             var response = await _Client.SendAsync(request);
 
@@ -87,12 +85,15 @@ namespace VRC_Favourite_Manager.Services
         /// </summary>
         /// <param name="username"></param>
         /// <param name="password"></param>
+        /// <returns>If the user has successfully logged in or not</returns>
         /// <exception cref="VRCRequiresTwoFactorAuthException">User requires 2FA, contains a TwoFactorAuthType of either "email" or "default".</exception>
-        public async void VerifyLoginAsync(string username, string password)
+        public async Task<bool> VerifyLoginAsync(string username, string password)
         {
             try
             {
-                var request = new HttpRequestMessage(HttpMethod.Get, "/auth/user");
+                var request = new HttpRequestMessage(HttpMethod.Get, "https://vrchat.com/api/1/auth/user?");
+                request.Headers.Add("Accept", "application/json");
+                request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
                 request.Headers.Add("Authorization", CreateAuthString(username, password));
                 Debug.WriteLine(request.RequestUri);
                 if (!string.IsNullOrEmpty(_twoFactorAuthToken))
@@ -141,9 +142,13 @@ namespace VRC_Favourite_Manager.Services
                 {
                     throw new VRCRequiresTwoFactorAuthException("default");
                 }
+                else {
+                    return true;
+                }
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
+                Debug.WriteLine("Error: " + e.Message);
                 throw new VRCIncorrectCredentialsException();
             }
         }
@@ -172,16 +177,17 @@ namespace VRC_Favourite_Manager.Services
                 HttpRequestMessage request;
                 if (twoFactorAuthType == "email")
                 {
-                    request = new HttpRequestMessage(HttpMethod.Post, "/auth/twofactorauth/emailotp/verify");
+                    request = new HttpRequestMessage(HttpMethod.Post, "https://vrchat.com/api/1/auth/twofactorauth/emailotp/verify");
                 }
                 else
                 {
-                    request = new HttpRequestMessage(HttpMethod.Post, "/auth/twofactorauth/totp/verify");
+                    request = new HttpRequestMessage(HttpMethod.Post, "https://vrchat.com/api/1/auth/twofactorauth/totp/verify");
                 }
+                request.Headers.Add("Accept", "application/json");
+                request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
+                request.Headers.Add("Cookie", $"auth={_authToken}");
+                var content = new StringContent($"{{\n  \"code\": \"{twoFactorCode}\"\n}}", Encoding.UTF8, "application/json");
 
-                request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
-                var content = new StringContent($"{{\\n  \\\"code\\\": \\\"{twoFactorCode}\\\"\\n}}", null,
-                    "application/json");
                 request.Content = content;
                 var response = await _Client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
@@ -191,8 +197,9 @@ namespace VRC_Favourite_Manager.Services
 
                 return true;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
+                Debug.WriteLine("Error: " + e.Message);
                 return false;
             }
         }
@@ -235,7 +242,9 @@ namespace VRC_Favourite_Manager.Services
         /// <returns>If the user has successfully logged out or not.</returns>
         public async Task<bool> LogoutAsync(string authToken, string twoFatorAuthToken)
         {
-            var request = new HttpRequestMessage(HttpMethod.Put, "/logout");
+            var request = new HttpRequestMessage(HttpMethod.Put, "https://vrchat.com/api/1/logout");
+            request.Headers.Add("Accept", "application/json");
+            request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
             request.Headers.Add("Cookie", $"auth={authToken};twoFactorAuth={twoFatorAuthToken}");
             var response = await _Client.SendAsync(request);
             response.EnsureSuccessStatusCode();
@@ -254,7 +263,9 @@ namespace VRC_Favourite_Manager.Services
         /// <returns>A list of worlds, sorted by date added to favorites. </returns>
         public async Task<List<Models.WorldModel>> GetFavoriteWorldsAsync(int n, int offset)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"/favorites?type=world&n={n}&offset={offset}");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://vrchat.com/api/1/favorites?type=world&n={n}&offset={offset}");
+            request.Headers.Add("Accept", "application/json");
+            request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
             request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
             var response = await _Client.SendAsync(request);
             response.EnsureSuccessStatusCode();
@@ -292,6 +303,8 @@ namespace VRC_Favourite_Manager.Services
             try
             {
                 var request = new HttpRequestMessage(HttpMethod.Post, "https://vrchat.com/api/1/instances");
+                request.Headers.Add("Accept", "application/json");
+                request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
                 request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
 
                 string type;
@@ -354,6 +367,8 @@ namespace VRC_Favourite_Manager.Services
         private async void InviteSelfAsync(string worldId, string instanceId)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, $"https://vrchat.com/api/1/instances/{worldId}:{instanceId}/invite");
+            request.Headers.Add("Accept", "application/json");
+            request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
             request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
             var content =
                 new StringContent(
