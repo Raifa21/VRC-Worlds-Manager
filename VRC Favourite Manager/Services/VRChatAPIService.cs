@@ -12,6 +12,7 @@ using System.Text.Encodings.Web;
 using System.Threading;
 using VRC_Favourite_Manager.Common;
 using System.Text.Json;
+using Tomlyn;
 
 namespace VRC_Favourite_Manager.Services
 {
@@ -74,7 +75,6 @@ namespace VRC_Favourite_Manager.Services
                 _twoFactorAuthToken = twoFactorAuthToken;
                 return true;
             }
-
             return false;
         }
 
@@ -147,27 +147,34 @@ namespace VRC_Favourite_Manager.Services
 
         public async Task<bool> Authenticate2FAAsync(string twoFactorCode, string twoFactorAuthType)
         {
-            HttpRequestMessage request;
-            if (twoFactorAuthType == "email")
+            try
             {
-                request = new HttpRequestMessage(HttpMethod.Post, "/auth/twofactorauth/emailotp/verify");
+                HttpRequestMessage request;
+                if (twoFactorAuthType == "email")
+                {
+                    request = new HttpRequestMessage(HttpMethod.Post, "/auth/twofactorauth/emailotp/verify");
+                }
+                else
+                {
+                    request = new HttpRequestMessage(HttpMethod.Post, "/auth/twofactorauth/totp/verify");
+                }
+
+                request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
+                var content = new StringContent($"{{\\n  \\\"code\\\": \\\"{twoFactorCode}\\\"\\n}}", null,
+                    "application/json");
+                request.Content = content;
+                var response = await _Client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+
+                // Pass the header to store the auth token.
+                StoreAuthToken(response.Headers);
+
+                return true;
             }
-            else
+            catch (HttpRequestException)
             {
-                request = new HttpRequestMessage(HttpMethod.Post, "/auth/twofactorauth/totp/verify");
+                return false;
             }
-
-            request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
-            var content = new StringContent($"{{\\n  \\\"code\\\": \\\"{twoFactorCode}\\\"\\n}}", null,
-                "application/json");
-            request.Content = content;
-            var response = await _Client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-
-            // Pass the header to store the auth token.
-            StoreAuthToken(response.Headers);
-
-            return true;
         }
 
         /// <summary>
@@ -176,6 +183,7 @@ namespace VRC_Favourite_Manager.Services
         /// <param name="headers">The response header obtained from /auth/user </param>
         private void StoreAuthToken(HttpResponseHeaders headers)
         {
+            var configManager = new ConfigManager();
             if (headers.TryGetValues("set-cookie", out var authValues))
             {
                 var authToken = authValues.FirstOrDefault();
@@ -186,12 +194,14 @@ namespace VRC_Favourite_Manager.Services
                         var twoFactorAuthToken = authToken.Split(';')[1];
                         twoFactorAuthToken = twoFactorAuthToken.Replace("twoFactorAuth=", "");
                         _twoFactorAuthToken = twoFactorAuthToken;
+                        configManager.WriteToConfig("twoFactorAuth", twoFactorAuthToken);
                     }
                     else if (authToken.Contains("auth"))
                     {
                         authToken = authToken.Split(';')[0];
                         authToken = authToken.Replace("auth=", "");
                         _authToken = authToken;
+                        configManager.WriteToConfig("auth", authToken);
                     }
                 }
             }

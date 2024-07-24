@@ -15,7 +15,8 @@ namespace VRC_Favourite_Manager
     public sealed partial class App : Application
     {
         private VRChatAPIService _VRChatAPIService;
-        private string apiKey;
+        private string authToken;
+        private string twoFactorAuthToken;
         public MainWindow mainWindow;
 
         public App()
@@ -25,7 +26,7 @@ namespace VRC_Favourite_Manager
             
         }
 
-        protected override void OnLaunched(LaunchActivatedEventArgs args)
+        protected override async void OnLaunched(LaunchActivatedEventArgs args)
         {
             System.Diagnostics.Debug.WriteLine("Application Started.");
             InitialiseService();
@@ -38,28 +39,19 @@ namespace VRC_Favourite_Manager
             Frame rootFrame = new Frame();
             try
             {
-                if (apiKey == "")
+                if (string.IsNullOrEmpty(authToken) || string.IsNullOrEmpty(twoFactorAuthToken))
                 {
                     rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
                 }
                 else
                 {
-                    ApiResponse<VerifyAuthTokenResult> response = _VRChatService.CheckAuthentication();
-                    if (response.StatusCode == HttpStatusCode.Accepted)
+                    if (await _VRChatAPIService.VerifyAuthTokenAsync(authToken, twoFactorAuthToken))
                     {
-                        if (response.Data.Ok)
-                        {
-                            rootFrame.Navigate(typeof(MainPage), args.Arguments);
-                        }
-                        else
-                        {
-                            System.Diagnostics.Debug.WriteLine("API key invalid. Redirecting to Login Page.");
-                            rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
-                        }
+                        rootFrame.Navigate(typeof(MainPage), args.Arguments);
                     }
                     else
                     {
-                        System.Diagnostics.Debug.WriteLine("API is not reachable. Redirecting to Login Page.");
+                        System.Diagnostics.Debug.WriteLine("Error verifying API key.");
                         rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
                     }
                 }
@@ -85,38 +77,31 @@ namespace VRC_Favourite_Manager
             if (!configManager.ConfigExists())
             {
                 System.Diagnostics.Debug.WriteLine("Config file not found.");
-                configManager.WriteConfig("auth = \"\"");
-                this.apiKey = "";
                 return;
             }
             try
             {
                 var toml = Toml.ToModel(Toml.Parse(configManager.ReadConfig()));
-                if (toml.ContainsKey("auth"))
+                if (toml.ContainsKey("auth") && toml.ContainsKey("twoFactorAuth"))
                 {
                     try
                     {
-                        this.apiKey = toml["auth"].ToString();
+                        this.authToken = toml["auth"].ToString();
+                        this.twoFactorAuthToken = toml["twoFactorAuth"].ToString();
                     }
                     catch (System.Exception)
                     {
                         System.Diagnostics.Debug.WriteLine("Error reading API key from config file.");
-                        configManager.WriteConfig("auth = \"\"");
-                        this.apiKey = "";
                     }
                 }
                 else
                 {
                     System.Diagnostics.Debug.WriteLine("API key not found in config file.");
-                    configManager.WriteConfig("auth = \"\"");
-                    this.apiKey = "";
                 }
             }
             catch (FileNotFoundException)
             {
                 System.Diagnostics.Debug.WriteLine("Config file not found.");
-                configManager.WriteConfig("auth = \"\"");
-                this.apiKey = "";
             }
             
         }

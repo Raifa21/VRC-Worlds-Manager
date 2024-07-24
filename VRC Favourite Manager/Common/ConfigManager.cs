@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Tomlyn;
 
 namespace VRC_Favourite_Manager
 {
@@ -15,11 +16,6 @@ namespace VRC_Favourite_Manager
             _configFilePath = Path.Combine(appFolder, "Config.toml");
         }
 
-        public void WriteConfig(string content)
-        {
-            File.WriteAllText(_configFilePath, content);
-        }
-
         public string ReadConfig()
         {
             return File.ReadAllText(_configFilePath);
@@ -28,6 +24,28 @@ namespace VRC_Favourite_Manager
         public bool ConfigExists()
         {
             return File.Exists(_configFilePath);
+        }
+
+        public void WriteToConfig(string key, string token)
+        {
+            if (!ConfigExists())
+            {
+                File.WriteAllText(_configFilePath, $"{key} = \"{token}\"");
+            }
+            else
+            {
+                var toml = Toml.ToModel(Toml.Parse(ReadConfig()));
+                if (toml.ContainsKey(key))
+                {
+                    toml[key] = token;
+                }
+                else
+                {
+                    toml.Add(key, token);
+                }
+
+                File.WriteAllText(_configFilePath, (Toml.FromModel(toml)));
+            }
         }
     }
 }

@@ -5,7 +5,7 @@ namespace VRC_Favourite_Manager.Views
 {
     public sealed partial class MainPage : Page
     {
-        private readonly VRChatService _vrChatService;
+        private readonly VRChatAPIService _vrChatAPIService;
         public MainPage()
         {
             this.InitializeComponent();

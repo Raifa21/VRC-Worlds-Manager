@@ -15,7 +15,7 @@ namespace VRC_Favourite_Manager.ViewModels
     public class MainViewModel : ViewModelBase
     {
         private readonly DispatcherTimer _timer;
-        private readonly VRChatService _vrChatService;
+        private readonly VRChatAPIService _vrChatService;
         private readonly JsonStorageService _jsonStorageService;
 
         private HashSet<WorldModel> _favoriteWorlds;
@@ -24,7 +24,7 @@ namespace VRC_Favourite_Manager.ViewModels
         public MainViewModel()
         {
             
-            _vrChatService = Application.Current.Resources["VRChatService"] as VRChatService;
+            _vrChatService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
             _jsonStorageService = new JsonStorageService();
 
             _favoriteWorlds = new HashSet<WorldModel>();

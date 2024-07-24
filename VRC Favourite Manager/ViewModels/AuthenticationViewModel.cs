@@ -56,19 +56,18 @@ namespace VRC_Favourite_Manager.ViewModels
             {
                 _vrChatAPIService.VerifyLoginAsync(Username, Password);
                 System.Diagnostics.Debug.WriteLine("Login successful.");
+                DisplayMainView();
             }
             catch (VRCRequiresTwoFactorAuthException e)
             {
-                var otpDialog = new TwoFactorAuthPopup(_mainWindow.Content.XamlRoot);
-                var result = await otpDialog.ShowAsync();
-                if (result != ContentDialogResult.Primary || string.IsNullOrEmpty(otpDialog.OtpCode))
+                if (await DoTwoFactorAuthenticationAsync(e.TwoFactorAuthType))
                 {
-                    System.Diagnostics.Debug.WriteLine("OTP Dialog was cancelled or empty");
-                    return;
+                    DisplayMainView();
                 }
-
-                _vrChatAPIService.Authenticate2FAAsync(otpDialog.OtpCode, e.TwoFactorAuthType);
-
+                else
+                {
+                    ErrorMessage = "Failed to authenticate with 2FA. Please try again.";
+                }
             }
             catch (VRCIncorrectCredentialsException)
             {
@@ -80,7 +79,17 @@ namespace VRC_Favourite_Manager.ViewModels
             }
         }
 
-        private void 
+        private async Task<bool> DoTwoFactorAuthenticationAsync(string twoFactorAuthType)
+        {
+            var otpDialog = new TwoFactorAuthPopup(_mainWindow.Content.XamlRoot);
+            var result = await otpDialog.ShowAsync();
+            if (result != ContentDialogResult.Primary || string.IsNullOrEmpty(otpDialog.OtpCode))
+            {
+                System.Diagnostics.Debug.WriteLine("OTP Dialog was cancelled or empty");
+            }
+            return await _vrChatAPIService.Authenticate2FAAsync(otpDialog.OtpCode, twoFactorAuthType);
+        }
+
         private void DisplayMainView()
         {
             var rootFrame = new Frame();
