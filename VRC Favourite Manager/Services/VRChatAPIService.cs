@@ -62,6 +62,8 @@ namespace VRC_Favourite_Manager.Services
             var request = new HttpRequestMessage(HttpMethod.Get, "/auth");
             request.Headers.Add("Cookie", $"auth={authToken};twoFactorAuth={twoFactorAuthToken}");
             var response = await _Client.SendAsync(request);
+
+
             response.EnsureSuccessStatusCode();
 
             // Check if verification was successful.
@@ -92,6 +94,7 @@ namespace VRC_Favourite_Manager.Services
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, "/auth/user");
                 request.Headers.Add("Authorization", CreateAuthString(username, password));
+                Debug.WriteLine(request.RequestUri);
                 if (!string.IsNullOrEmpty(_twoFactorAuthToken))
                 {
                     if (!string.IsNullOrEmpty(_authToken))
@@ -105,6 +108,23 @@ namespace VRC_Favourite_Manager.Services
                 }
 
                 var response = await _Client.SendAsync(request);
+
+
+                Console.WriteLine($"Status Code: {response.StatusCode}");
+
+                // Output the response headers
+                Console.WriteLine("Headers:");
+                foreach (var header in response.Headers)
+                {
+                    Console.WriteLine($"{header.Key}: {string.Join(", ", header.Value)}");
+                }
+
+                // Output the response content
+                var responseContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("Response Content:");
+                Console.WriteLine(responseContent);
+
+
                 // This throws a HttpRequestException if the status code is not a success code.
                 response.EnsureSuccessStatusCode();
 

@@ -10,7 +10,6 @@ namespace VRC_Favourite_Manager.Views
 {
     public sealed partial class AuthenticationPage : Page
     {
-        private readonly VRChatAPIService _vrChatAPIService;
         public string Username { get; set; }
         public string Password { get; set; }
         public string TwoFactorAuth { get; set; }
@@ -18,10 +17,5 @@ namespace VRC_Favourite_Manager.Views
         {
             this.InitializeComponent();
         }
-        public void LoginCommand()
-        {
-            _vrChatAPIService.VerifyLoginAsync(Username, Password);
-        }
-
     }
 }

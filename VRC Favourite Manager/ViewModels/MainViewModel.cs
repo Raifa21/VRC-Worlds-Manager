@@ -15,7 +15,7 @@ namespace VRC_Favourite_Manager.ViewModels
     public class MainViewModel : ViewModelBase
     {
         private readonly DispatcherTimer _timer;
-        private readonly VRChatAPIService _vrChatService;
+        private readonly VRChatAPIService _vrChatAPIService;
         private readonly JsonStorageService _jsonStorageService;
 
         private HashSet<WorldModel> _favoriteWorlds;
@@ -24,7 +24,7 @@ namespace VRC_Favourite_Manager.ViewModels
         public MainViewModel()
         {
             
-            _vrChatService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
+            _vrChatAPIService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
             _jsonStorageService = new JsonStorageService();
 
             _favoriteWorlds = new HashSet<WorldModel>();
@@ -51,19 +51,32 @@ namespace VRC_Favourite_Manager.ViewModels
         }
         private async Task InitialScanAsync()
         {
-            var worlds = await _vrChatService.GetAllFavoriteWorldsAsync();
-            foreach (var world in worlds)
+            int page = 0;
+            bool hasMore = true;
+            while (hasMore)
             {
-                _favoriteWorlds.Add(world);
+                var worlds = await _vrChatAPIService.GetFavoriteWorldsAsync(100, page*100);
+                foreach (var world in worlds)
+                {
+                    _favoriteWorlds.Add(world);
+                }
+                if (worlds.Count < 100)
+                {
+                    hasMore = false;
+                }
+                page++;
             }
             _jsonStorageService.SaveWorlds(_favoriteWorlds);
         }
         private async Task CheckForNewWorldsAsync()
         {
-            var worlds = await _vrChatService.GetFavoriteWorldsAsync();
+            var worlds = await _vrChatAPIService.GetFavoriteWorldsAsync(100,0);
             foreach (var world in worlds)
             {
-                _favoriteWorlds.Add(world);
+                if (!_favoriteWorlds.Add(world))
+                {
+                    break;
+                }
             }
             _jsonStorageService.SaveWorlds(_favoriteWorlds);
         }

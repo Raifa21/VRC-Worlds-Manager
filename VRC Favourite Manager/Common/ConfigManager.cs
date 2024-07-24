@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using Tomlyn;
 
@@ -28,6 +29,7 @@ namespace VRC_Favourite_Manager
 
         public void WriteToConfig(string key, string token)
         {
+            Debug.WriteLine($"Writing to config: {key} = {token}");
             if (!ConfigExists())
             {
                 File.WriteAllText(_configFilePath, $"{key} = \"{token}\"");
