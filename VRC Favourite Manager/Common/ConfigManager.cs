@@ -49,5 +49,14 @@ namespace VRC_Favourite_Manager
                 File.WriteAllText(_configFilePath, (Toml.FromModel(toml)));
             }
         }
+
+        public void DeleteConfig()
+        {
+            if (ConfigExists())
+            {
+                File.Delete(_configFilePath);
+                Debug.WriteLine("Config file deleted.");
+            }
+        }
     }
 }

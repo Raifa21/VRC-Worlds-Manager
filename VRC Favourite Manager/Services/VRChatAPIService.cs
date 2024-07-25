@@ -22,7 +22,7 @@ namespace VRC_Favourite_Manager.Services
         Task<bool> VerifyAuthTokenAsync(string authToken, string twoFactorAuthToken);
         Task<bool> VerifyLoginAsync(string username, string password);
         Task<bool> Authenticate2FAAsync(string twoFactorCode, string twoFactorAuthType);
-        Task<bool> LogoutAsync(string authToken, string twoFatorAuthToken);
+        Task<bool> LogoutAsync();
         Task<List<Models.WorldModel>> GetFavoriteWorldsAsync(int n, int offset);
         Task<string> CreateInstanceAsync(string worldId, string instanceType);
     }
@@ -256,21 +256,23 @@ namespace VRC_Favourite_Manager.Services
         /// <summary>
         /// Clears the authentication cookie.
         /// </summary>
-        /// <param name="authToken"></param>
-        /// <param name="twoFactorAuthToken"></param>
         /// <returns>If the user has successfully logged out or not.</returns>
-        public async Task<bool> LogoutAsync(string authToken, string twoFactorAuthToken)
+        public async Task<bool> LogoutAsync()
         {
+            ConfigManager configManager = new ConfigManager();
             var request = new HttpRequestMessage(HttpMethod.Put, "https://vrchat.com/api/1/logout");
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
-            request.Headers.Add("Cookie", $"auth={authToken};twoFactorAuth={twoFactorAuthToken}");
+            request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
             var response = await _Client.SendAsync(request);
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
 
             // Deserialize the response string to a JSON object.
             var authResponse = JsonSerializer.Deserialize<Models.LogoutResponse>(responseString);
+            configManager.DeleteConfig();
+            Debug.WriteLine(authResponse.message);
+
             return authResponse.message == "Ok!";
         }
 
@@ -294,6 +296,7 @@ namespace VRC_Favourite_Manager.Services
             {
                 Debug.WriteLine($"{header.Key}: {string.Join(", ", header.Value)}");
             }
+            Debug.WriteLine(responseString);
             var responseWorlds = JsonSerializer.Deserialize<List<Models.ListFavoriteWorldsResponse>>(responseString);
             var worldModels = new List<Models.WorldModel>();
             foreach (var world in responseWorlds)

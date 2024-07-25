@@ -13,7 +13,7 @@ namespace VRC_Favourite_Manager.Models
         public string WorldId { get; set; }
         public string AuthorName { get; set; }
         public string AuthorId { get; set; }
-        public int RecommendedCapacity { get; set; }
+        public int? RecommendedCapacity { get; set; }
         public int Capacity { get; set; }
         public DateTime LastUpdate { get; set; }
     }

@@ -33,6 +33,8 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public ICommand RefreshCommand { get; }
 
+        public ICommand LogoutCommand { get; }
+
         public MainViewModel()
         {
 
@@ -41,6 +43,7 @@ namespace VRC_Favourite_Manager.ViewModels
             _jsonManager = new JsonManager();
             _favoriteWorlds = new HashSet<WorldModel>();
             RefreshCommand = new RelayCommand(async () => await RefreshWorldsAsync());
+            LogoutCommand = new RelayCommand(async () => await LogoutCommandAsync());
 
             var task = InitializeAsync();
         }
@@ -109,6 +112,10 @@ namespace VRC_Favourite_Manager.ViewModels
         private async Task RefreshWorldsAsync()
         {
             await CheckForNewWorldsAsync();
+        }
+        private async Task LogoutCommandAsync()
+        {
+            await _vrChatAPIService.LogoutAsync();
         }
 
         private void UpdateWorldsCollection()

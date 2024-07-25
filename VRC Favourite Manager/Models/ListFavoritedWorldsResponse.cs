@@ -13,13 +13,13 @@ namespace VRC_Favourite_Manager.Models
 
         public int Capacity { get; set; }
         
-        public int RecommendedCapacity { get; set; }
+        public int? RecommendedCapacity { get; set; }
 
         public DateTime CreatedAt { get; set; }
         
         public int Favorites { get; set; }
 
-        public int Visits { get; set; }
+        public int? Visits { get; set; }
         
         public int Heat { get; set; }
 
@@ -27,7 +27,7 @@ namespace VRC_Favourite_Manager.Models
 
         public string ImageUrl { get; set; }
 
-        public DateTime LabsPublicationDate { get; set; }
+        public string LabsPublicationDate { get; set; }
 
         public string Name { get; set; }
 
@@ -37,9 +37,9 @@ namespace VRC_Favourite_Manager.Models
 
         public int Popularity { get; set; }
 
-        public string PreviewYoutubeId { get; set; }
+        public string? PreviewYoutubeId { get; set; }
 
-        public DateTime PublicationDate { get; set; }
+        public string PublicationDate { get; set; }
 
         public string ReleaseStatus { get; set; }
         
@@ -51,7 +51,7 @@ namespace VRC_Favourite_Manager.Models
         
         public DateTime UpdatedAt { get; set; }
 
-        public List<string> UdonProducts { get; set; }
+        public List<string>? UdonProducts { get; set; }
     }
 
     public class UnityPackage
