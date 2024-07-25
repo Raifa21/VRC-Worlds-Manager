@@ -4,6 +4,7 @@ using System.Net;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Tomlyn;
+using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Services;
 using VRC_Favourite_Manager.ViewModels;
 using VRC_Favourite_Manager.Views;
@@ -47,7 +48,22 @@ namespace VRC_Favourite_Manager
                 {
                     if (await _VRChatAPIService.VerifyAuthTokenAsync(authToken, twoFactorAuthToken))
                     {
-                        rootFrame.Navigate(typeof(MainPage), args.Arguments);
+                        try
+                        {
+                            if(await _VRChatAPIService.VerifyLoginWithAuthTokenAsync(authToken,twoFactorAuthToken))
+                            {
+                                System.Diagnostics.Debug.WriteLine($"authToken: {authToken}, twoFactorAuthToken: {twoFactorAuthToken}");
+                                System.Diagnostics.Debug.WriteLine("Login successful.");
+                                rootFrame.Navigate(typeof(MainPage), args.Arguments);
+                            }
+                            
+                        }
+                        catch (VRCNotLoggedInException)
+                        {
+                            System.Diagnostics.Debug.WriteLine("Error verifying API key.");
+                            rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
+                        }
+                        
                     }
                     else
                     {

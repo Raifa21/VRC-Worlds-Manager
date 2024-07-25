@@ -4,8 +4,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:VRC_Favourite_Manager.Views"
     xmlns:viewModels="using:VRC_Favourite_Manager.ViewModels"
-    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
-    DataContext="{Binding AuthenticationViewModel, Source={StaticResource Locator}}">
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls">
+
+    <Page.DataContext>
+        <viewModels:AuthenticationViewModel/>
+    </Page.DataContext>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="1200">

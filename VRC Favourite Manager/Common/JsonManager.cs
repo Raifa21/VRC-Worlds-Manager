@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 using VRC_Favourite_Manager.Models;
@@ -16,6 +17,7 @@ namespace VRC_Favourite_Manager
             var appFolder = Path.Combine(localFolder, "VRC_Favourite_Manager");
             Directory.CreateDirectory(appFolder);
             _filePath = Path.Combine(appFolder, "worlds.json");
+            Debug.WriteLine("Config file path: " + _filePath);
         }
 
         public bool ConfigExists()
@@ -33,6 +35,7 @@ namespace VRC_Favourite_Manager
         {
             var json = JsonSerializer.Serialize(worlds);
             File.WriteAllText(_filePath, json);
+            Debug.WriteLine("File written to: " + _filePath);
         }
     }
 }

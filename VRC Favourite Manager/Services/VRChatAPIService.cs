@@ -63,7 +63,7 @@ namespace VRC_Favourite_Manager.Services
 
 
             response.EnsureSuccessStatusCode();
-
+            Debug.WriteLine("Status Code: " + response.StatusCode);
             // Check if verification was successful.
             var responseString = await response.Content.ReadAsStringAsync();
 
@@ -76,6 +76,25 @@ namespace VRC_Favourite_Manager.Services
                 return true;
             }
             return false;
+        }
+
+        public async Task<bool> VerifyLoginWithAuthTokenAsync(string authToken, string twoFactorAuthToken)
+        {
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, "https://vrchat.com/api/1/auth/user?");
+                request.Headers.Add("Accept", "application/json");
+                request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
+                request.Headers.Add("Cookie", $"auth={authToken};twoFactorAuth={twoFactorAuthToken}");
+                var response = await _Client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                return true;
+            }
+            catch (HttpRequestException e)
+            {
+                Debug.WriteLine("Error: " + e.Message);
+                throw new VRCIncorrectCredentialsException();
+            }
         }
 
 
@@ -218,7 +237,7 @@ namespace VRC_Favourite_Manager.Services
                 {
                     if (authToken.Contains("twoFactorAuth"))
                     {
-                        var twoFactorAuthToken = authToken.Split(';')[1];
+                        var twoFactorAuthToken = authToken.Split(';')[0];
                         twoFactorAuthToken = twoFactorAuthToken.Replace("twoFactorAuth=", "");
                         _twoFactorAuthToken = twoFactorAuthToken;
                         configManager.WriteToConfig("twoFactorAuth", twoFactorAuthToken);
@@ -238,14 +257,14 @@ namespace VRC_Favourite_Manager.Services
         /// Clears the authentication cookie.
         /// </summary>
         /// <param name="authToken"></param>
-        /// <param name="twoFatorAuthToken"></param>
+        /// <param name="twoFactorAuthToken"></param>
         /// <returns>If the user has successfully logged out or not.</returns>
-        public async Task<bool> LogoutAsync(string authToken, string twoFatorAuthToken)
+        public async Task<bool> LogoutAsync(string authToken, string twoFactorAuthToken)
         {
             var request = new HttpRequestMessage(HttpMethod.Put, "https://vrchat.com/api/1/logout");
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
-            request.Headers.Add("Cookie", $"auth={authToken};twoFactorAuth={twoFatorAuthToken}");
+            request.Headers.Add("Cookie", $"auth={authToken};twoFactorAuth={twoFactorAuthToken}");
             var response = await _Client.SendAsync(request);
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
@@ -263,17 +282,23 @@ namespace VRC_Favourite_Manager.Services
         /// <returns>A list of worlds, sorted by date added to favorites. </returns>
         public async Task<List<Models.WorldModel>> GetFavoriteWorldsAsync(int n, int offset)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://vrchat.com/api/1/favorites?type=world&n={n}&offset={offset}");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://vrchat.com/api/1/worlds/favorites?n={n}&offset={offset}");
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
             request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
+            Debug.WriteLine(request.RequestUri);
             var response = await _Client.SendAsync(request);
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
+            foreach (var header in response.Headers)
+            {
+                Debug.WriteLine($"{header.Key}: {string.Join(", ", header.Value)}");
+            }
             var responseWorlds = JsonSerializer.Deserialize<List<Models.ListFavoriteWorldsResponse>>(responseString);
             var worldModels = new List<Models.WorldModel>();
             foreach (var world in responseWorlds)
             {
+                Debug.WriteLine(world.Name);
                 var worldModel = new Models.WorldModel
                 {
                     ThumbnailImageUrl = world.ThumbnailImageUrl,

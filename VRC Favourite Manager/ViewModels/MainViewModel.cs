@@ -54,10 +54,15 @@ namespace VRC_Favourite_Manager.ViewModels
                 foreach (var world in worlds)
                 {
                     _favoriteWorlds.Add(world);
+                    if (!_favoriteWorlds.Add(world))
+                    {
+                        break;
+                    }
                 }
                 Debug.WriteLine("Found " + _favoriteWorlds.Count + " worlds");
                 Debug.WriteLine("Checking for new worlds");
                 await CheckForNewWorldsAsync();
+                Debug.WriteLine("Found " + _favoriteWorlds.Count + " worlds");
                 Debug.WriteLine("Done checking for new worlds");
             }
             else
