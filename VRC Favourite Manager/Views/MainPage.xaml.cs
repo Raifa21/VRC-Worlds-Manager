@@ -9,8 +9,6 @@ namespace VRC_Favourite_Manager.Views
         public MainPage()
         {
             this.InitializeComponent();
-
-            
         }
 
     }

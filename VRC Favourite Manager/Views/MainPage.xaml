@@ -5,12 +5,17 @@
     xmlns:local="using:VRC_Favourite_Manager.Views"
     xmlns:viewModels="using:VRC_Favourite_Manager.ViewModels"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
-    xmlns:models="using:VRC_Favourite_Manager.Models">
+    xmlns:models="using:VRC_Favourite_Manager.Models"
+    xmlns:converters="using:VRC_Favourite_Manager">
+
+    <Page.Resources>
+        <converters:StringFormatConverter x:Key="StringFormatConverter"/>
+    </Page.Resources>
+
 
     <Page.DataContext>
         <viewModels:MainViewModel/>
     </Page.DataContext>
-
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
@@ -29,8 +34,8 @@
                     <StackPanel>
                         <Image Source="{Binding ThumbnailImageUrl}" Width="100" Height="100"/>
                         <TextBlock Text="{Binding WorldName}" FontWeight="Bold"/>
-                        <TextBlock Text="Capacity: {Binding Capacity}"/>
-                        <TextBlock Text="Author: {Binding AuthorName}"/>
+                        <TextBlock Text="{Binding Capacity, Converter={StaticResource StringFormatConverter}, ConverterParameter='Capacity: {0}'}"/>
+                        <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='Author: {0}'}"/>
                     </StackPanel>
                 </DataTemplate>
             </muxc:GridView.ItemTemplate>

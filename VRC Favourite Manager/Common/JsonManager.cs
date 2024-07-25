@@ -6,11 +6,11 @@ using VRC_Favourite_Manager.Models;
 
 namespace VRC_Favourite_Manager
 {
-    public class JsonStorageService
+    public class JsonManager
     {
         private readonly string _filePath;
 
-        public JsonStorageService()
+        public JsonManager()
         {
             var localFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             var appFolder = Path.Combine(localFolder, "VRC_Favourite_Manager");

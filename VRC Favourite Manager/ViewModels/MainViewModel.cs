@@ -16,7 +16,7 @@ namespace VRC_Favourite_Manager.ViewModels
     {
         private readonly DispatcherTimer _timer;
         private readonly VRChatAPIService _vrChatAPIService;
-        private readonly JsonStorageService _jsonStorageService;
+        private readonly JsonManager _jsonManager;
 
         private HashSet<WorldModel> _favoriteWorlds;
 
@@ -37,10 +37,8 @@ namespace VRC_Favourite_Manager.ViewModels
         {
 
             Worlds = new ObservableCollection<WorldModel>();
-
             _vrChatAPIService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
-            _jsonStorageService = new JsonStorageService();
-
+            _jsonManager = new JsonManager();
             _favoriteWorlds = new HashSet<WorldModel>();
             RefreshCommand = new RelayCommand(async () => await RefreshWorldsAsync());
 
@@ -49,10 +47,10 @@ namespace VRC_Favourite_Manager.ViewModels
 
         private async Task InitializeAsync()
         {
-            if (_jsonStorageService.ConfigExists())
+            if (_jsonManager.ConfigExists())
             {
                 Debug.WriteLine("Loading worlds from file");
-                var worlds = _jsonStorageService.LoadWorlds();
+                var worlds = _jsonManager.LoadWorlds();
                 foreach (var world in worlds)
                 {
                     _favoriteWorlds.Add(world);
@@ -67,6 +65,8 @@ namespace VRC_Favourite_Manager.ViewModels
                 Debug.WriteLine("No config file found, scanning for worlds");
                 await InitialScanAsync();
             }
+
+            UpdateWorldsCollection();
         }
         private async Task InitialScanAsync()
         {
@@ -86,7 +86,7 @@ namespace VRC_Favourite_Manager.ViewModels
                 }
                 page++;
             }
-            _jsonStorageService.SaveWorlds(_favoriteWorlds);
+            _jsonManager.SaveWorlds(_favoriteWorlds);
         }
         private async Task CheckForNewWorldsAsync()
         {
@@ -98,7 +98,7 @@ namespace VRC_Favourite_Manager.ViewModels
                     break;
                 }
             }
-            _jsonStorageService.SaveWorlds(_favoriteWorlds);
+            _jsonManager.SaveWorlds(_favoriteWorlds);
         }
 
         private async Task RefreshWorldsAsync()
@@ -106,11 +106,14 @@ namespace VRC_Favourite_Manager.ViewModels
             await CheckForNewWorldsAsync();
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged(string propertyName)
+        private void UpdateWorldsCollection()
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            Worlds.Clear();
+            foreach (var world in _favoriteWorlds)
+            {
+                Worlds.Add(world);
+            }
         }
+
     }
 }

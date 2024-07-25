@@ -7,6 +7,6 @@
 
     <Application.Resources>
         <common:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
-        <local:ViewModelLocator x:Key="Locator"/>
+        <local:StringFormatConverter x:Key="StringFormatConverter"/>
     </Application.Resources>
 </Application>
