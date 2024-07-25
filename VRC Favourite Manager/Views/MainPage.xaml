@@ -23,23 +23,50 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="10">
-            <TextBlock Text="Worlds" FontSize="24" FontWeight="Bold"/>
-            <Button Content="Refresh" Command="{Binding RefreshCommand}" Margin="10,0,0,0"/>
-            <Button Content="Logout" Command="{Binding LogoutCommand}" Margin="10,0,0,0"/>
-        </StackPanel>
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <muxc:GridView ItemsSource="{Binding Worlds}" Grid.Row="1" Margin="10">
-            <muxc:GridView.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel>
-                        <Image Source="{Binding ThumbnailImageUrl}" Width="100" Height="100"/>
-                        <TextBlock Text="{Binding WorldName}" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding Capacity, Converter={StaticResource StringFormatConverter}, ConverterParameter='Capacity: {0}'}"/>
-                        <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='Author: {0}'}"/>
-                    </StackPanel>
-                </DataTemplate>
-            </muxc:GridView.ItemTemplate>
-        </muxc:GridView>
+            <!-- Pivot Control for switching between folders -->
+            <muxc:Pivot ItemsSource="{Binding Folders}" SelectedItem="{Binding SelectedFolder}" Grid.Row="0">
+                <muxc:Pivot.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}" />
+                    </DataTemplate>
+                </muxc:Pivot.ItemTemplate>
+
+                <!-- Pivot content template to show folder details -->
+                <muxc:Pivot.HeaderTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}" FontSize="20" FontWeight="Bold" />
+                    </DataTemplate>
+                </muxc:Pivot.HeaderTemplate>
+
+                <muxc:Pivot.Items>
+                    <muxc:PivotItem Header="Worlds">
+                        <StackPanel Orientation="Vertical" Margin="10">
+                            <TextBlock Text="Worlds" FontSize="24" FontWeight="Bold"/>
+                            <Button Content="Add Folder" Command="{Binding AddFolderCommand}" CommandParameter="NewFolder" Margin="10,0,0,0"/>
+                            <Button Content="Move World to Selected Folder" Command="{Binding MoveWorldCommand}" CommandParameter="{Binding SelectedWorld}" Margin="10,0,0,0"/>
+
+                            <muxc:GridView ItemsSource="{Binding SelectedFolder.Worlds}" Margin="10">
+                                <muxc:GridView.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <Image Source="{Binding ThumbnailImageUrl}" Width="100" Height="100"/>
+                                            <TextBlock Text="{Binding WorldName}" FontWeight="Bold"/>
+                                            <TextBlock Text="Capacity: {Binding Capacity}"/>
+                                            <TextBlock Text="Author: {Binding AuthorName}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </muxc:GridView.ItemTemplate>
+                            </muxc:GridView>
+                        </StackPanel>
+                    </muxc:PivotItem>
+                </muxc:Pivot.Items>
+            </muxc:Pivot>
+        </Grid>
     </Grid>
 </Page>

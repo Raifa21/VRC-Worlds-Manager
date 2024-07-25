@@ -292,31 +292,36 @@ namespace VRC_Favourite_Manager.Services
             var response = await _Client.SendAsync(request);
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
-            foreach (var header in response.Headers)
-            {
-                Debug.WriteLine($"{header.Key}: {string.Join(", ", header.Value)}");
-            }
             Debug.WriteLine(responseString);
-            var responseWorlds = JsonSerializer.Deserialize<List<Models.ListFavoriteWorldsResponse>>(responseString);
-            var worldModels = new List<Models.WorldModel>();
-            foreach (var world in responseWorlds)
+            try
             {
-                Debug.WriteLine(world.Name);
-                var worldModel = new Models.WorldModel
+                var responseWorlds =
+                    JsonSerializer.Deserialize<List<Models.ListFavoriteWorldsResponse>>(responseString);
+                var worldModels = new List<Models.WorldModel>();
+                foreach (var world in responseWorlds)
                 {
-                    ThumbnailImageUrl = world.ThumbnailImageUrl,
-                    WorldName = world.Name,
-                    WorldId = world.Id,
-                    AuthorName = world.AuthorName,
-                    AuthorId = world.AuthorId,
-                    RecommendedCapacity = world.RecommendedCapacity,
-                    Capacity = world.Capacity,
-                    LastUpdate = world.UpdatedAt,
-                };
-                worldModels.Add(worldModel);
+                    var worldModel = new Models.WorldModel
+                    {
+                        ThumbnailImageUrl = world.ThumbnailImageUrl,
+                        WorldName = world.Name,
+                        WorldId = world.Id,
+                        AuthorName = world.AuthorName,
+                        AuthorId = world.AuthorId,
+                        RecommendedCapacity = world.RecommendedCapacity,
+                        Capacity = world.Capacity,
+                        LastUpdate = world.UpdatedAt,
+                    };
+                    worldModels.Add(worldModel);
+                }
+
+                return worldModels;
+            }
+            catch (JsonException ex)
+            {
+                Debug.WriteLine($"Deserialization error: {ex.Message}");
+                return null;
             }
 
-            return worldModels;
         }
 
         /// <summary>

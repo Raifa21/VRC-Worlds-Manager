@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
+using System.Linq;
 
 namespace VRC_Favourite_Manager.ViewModels
 {
@@ -17,10 +18,32 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly DispatcherTimer _timer;
         private readonly VRChatAPIService _vrChatAPIService;
         private readonly JsonManager _jsonManager;
+        private FolderModel _selectedFolder;
+        private ObservableCollection<FolderModel> _folders;
 
         private HashSet<WorldModel> _favoriteWorlds;
 
         private ObservableCollection<WorldModel> _worlds;
+
+        public ObservableCollection<FolderModel> Folders
+        {
+            get => _folders;
+            set
+            {
+                _folders = value;
+                OnPropertyChanged(nameof(Folders));
+            }
+        }
+        public FolderModel SelectedFolder
+        {
+            get => _selectedFolder;
+            set
+            {
+                _selectedFolder = value;
+                OnPropertyChanged(nameof(SelectedFolder));
+            }
+        }
+
         public ObservableCollection<WorldModel> Worlds
         {
             get => _worlds;
@@ -30,6 +53,8 @@ namespace VRC_Favourite_Manager.ViewModels
                 OnPropertyChanged(nameof(Worlds));
             }
         }
+        public ICommand AddFolderCommand { get; }
+        public ICommand MoveWorldCommand { get; }
 
         public ICommand RefreshCommand { get; }
 
@@ -44,6 +69,14 @@ namespace VRC_Favourite_Manager.ViewModels
             _favoriteWorlds = new HashSet<WorldModel>();
             RefreshCommand = new RelayCommand(async () => await RefreshWorldsAsync());
             LogoutCommand = new RelayCommand(async () => await LogoutCommandAsync());
+            Folders = new ObservableCollection<FolderModel>
+            {
+                new FolderModel("Unclassified")
+            };
+            SelectedFolder = Folders.First();
+            AddFolderCommand = new RelayCommand(AddFolder());
+            MoveWorldCommand = new RelayCommand(MoveWorld());
+
 
             var task = InitializeAsync();
         }
@@ -83,7 +116,6 @@ namespace VRC_Favourite_Manager.ViewModels
             while (hasMore)
             {
                 var worlds = await _vrChatAPIService.GetFavoriteWorldsAsync(100, page*100);
-                Debug.WriteLine($"Got {worlds.Count} worlds");
                 foreach (var world in worlds)
                 {
                     _favoriteWorlds.Add(world);
@@ -109,15 +141,6 @@ namespace VRC_Favourite_Manager.ViewModels
             _jsonManager.SaveWorlds(_favoriteWorlds);
         }
 
-        private async Task RefreshWorldsAsync()
-        {
-            await CheckForNewWorldsAsync();
-        }
-        private async Task LogoutCommandAsync()
-        {
-            await _vrChatAPIService.LogoutAsync();
-        }
-
         private void UpdateWorldsCollection()
         {
             Worlds.Clear();
@@ -126,6 +149,35 @@ namespace VRC_Favourite_Manager.ViewModels
                 Worlds.Add(world);
             }
         }
+
+        private async Task RefreshWorldsAsync()
+        {
+            await CheckForNewWorldsAsync();
+        }
+        private async Task LogoutCommandAsync()
+        {
+            await _vrChatAPIService.LogoutAsync();
+        }
+        private void AddFolder(string folderName)
+        {
+            if (!Folders.Any(f => f.Name == folderName))
+            {
+                Folders.Add(new FolderModel(folderName));
+            }
+        }
+        private void MoveWorld(WorldModel world)
+        {
+            // Move the world to the selected folder
+            var unclassifiedFolder = Folders.FirstOrDefault(f => f.Name == "Unclassified");
+            if (unclassifiedFolder?.Worlds.Contains(world) == true)
+            {
+                unclassifiedFolder.Worlds.Remove(world);
+            }
+
+            SelectedFolder?.Worlds.Add(world);
+        }
+
+
 
     }
 }
