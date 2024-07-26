@@ -3,38 +3,27 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:VRC_Favourite_Manager.Views"
-    xmlns:muxc="using:Microsoft.UI.Xaml.Controls">
+    xmlns:viewModels="using:VRC_Favourite_Manager.ViewModels"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:models="using:VRC_Favourite_Manager.Models">
+
+    <Page.DataContext>
+        <viewModels:MainViewModel/>
+    </Page.DataContext>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <StackPanel Orientation="Vertical" Margin="10">
-            <TextBlock Text="Worlds" FontSize="24" FontWeight="Bold"/>
-
-            <!-- Debugging TextBlocks -->
-            <TextBlock Text="Selected Folder:" FontWeight="Bold"/>
-            <TextBlock Text="{Binding SelectedFolder.Name}"/>
-
-            <TextBlock Text="Worlds in Selected Folder:" FontWeight="Bold"/>
-            <ItemsControl ItemsSource="{Binding SelectedFolder.Worlds}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding WorldName}"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-
-            <TextBlock Text="Worlds:" FontWeight="Bold"/>
-            <muxc:GridView ItemsSource="{Binding SelectedFolder.Worlds}" Margin="10">
-                <muxc:GridView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel>
-                            <Image Source="{Binding ThumbnailImageUrl}" Width="100" Height="100"/>
-                            <TextBlock Text="{Binding WorldName}" FontWeight="Bold"/>
-                            <TextBlock Text="Capacity: {Binding Capacity}"/>
-                            <TextBlock Text="Author: {Binding AuthorName}"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </muxc:GridView.ItemTemplate>
-            </muxc:GridView>
-        </StackPanel>
+        <TextBlock Text="{Binding FolderName}" FontSize="24" FontWeight="Bold" Margin="20 10"/>
+        <muxc:GridView ItemsSource="{Binding SelectedFolder.Worlds}" Margin="10 30">
+            <muxc:GridView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="10">
+                        <Image Source="{Binding ThumbnailImageUrl}" Width="200" Height="200"/>
+                        <TextBlock Text="{Binding WorldName}" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Capacity, Converter={StaticResource StringFormatConverter}, ConverterParameter='Capacity: {0}'}"/>
+                        <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='Author: {0}'}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </muxc:GridView.ItemTemplate>
+        </muxc:GridView>
     </Grid>
 </Page>

@@ -18,6 +18,7 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly DispatcherTimer _timer;
         private readonly VRChatAPIService _vrChatAPIService;
         private readonly JsonManager _jsonManager;
+        private string _folderName;
         private FolderModel _selectedFolder;
         private ObservableCollection<FolderModel> _folders;
 
@@ -27,6 +28,7 @@ namespace VRC_Favourite_Manager.ViewModels
         private ObservableCollection<WorldModel> _worlds;
 
 
+
         public ObservableCollection<FolderModel> Folders
         {
             get => _folders;
@@ -34,6 +36,15 @@ namespace VRC_Favourite_Manager.ViewModels
             {
                 _folders = value;
                 OnPropertyChanged(nameof(Folders));
+            }
+        }
+        public string FolderName
+        {
+            get => _folderName;
+            set
+            {
+                _folderName = value;
+                OnPropertyChanged();
             }
         }
         public FolderModel SelectedFolder
@@ -56,6 +67,9 @@ namespace VRC_Favourite_Manager.ViewModels
                 OnPropertyChanged(nameof(Worlds));
             }
         }
+
+
+
         public ICommand AddFolderCommand { get; }
         public ICommand MoveWorldCommand { get; }
 
@@ -64,6 +78,8 @@ namespace VRC_Favourite_Manager.ViewModels
         public ICommand LogoutCommand { get; }
 
         public ICommand ResetCommand { get; }
+
+
 
         public MainViewModel()
         {

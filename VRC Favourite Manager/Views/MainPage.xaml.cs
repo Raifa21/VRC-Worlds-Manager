@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using VRC_Favourite_Manager.ViewModels;
+using Microsoft.UI.Xaml;
 
 namespace VRC_Favourite_Manager.Views
 {
@@ -12,43 +13,42 @@ namespace VRC_Favourite_Manager.Views
         {
             this.InitializeComponent();
             this.DataContext = new MainViewModel();
-            LoadFoldersToSelectorBar();
+            LoadFoldersToDropDownButton();
         }
 
-        private void LoadFoldersToSelectorBar()
+        private void LoadFoldersToDropDownButton()
         {
             var viewModel = (MainViewModel)this.DataContext;
 
-            foreach (var folder in viewModel.Folders)
+            for (int i = 0; i < viewModel.Folders.Count; i++)
             {
-                SelectorBar2.Items.Add(new SelectorBarItem { Text = folder.Name });
+                var folder = viewModel.Folders[i];
+                var menuFlyoutItem = new MenuFlyoutItem { Text = folder.Name, Tag = i };
+                menuFlyoutItem.Click += MenuFlyoutItem_Click;
+                FoldersFlyout.Items.Add(menuFlyoutItem);
             }
         }
 
-        private void SelectorBar2_SelectionChanged(SelectorBar sender, SelectorBarSelectionChangedEventArgs args)
+        private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
         {
-            var selectedItem = sender.SelectedItem as SelectorBarItem;
-            int currentSelectedIndex = sender.Items.IndexOf(selectedItem);
+            var menuFlyoutItem = sender as MenuFlyoutItem;
+            int selectedIndex = (int)menuFlyoutItem.Tag;
 
-            System.Type pageType = typeof(FolderPage); // Default to FolderPage
-
-            // Determine the page type based on the selected folder
             var viewModel = (MainViewModel)this.DataContext;
-            if (currentSelectedIndex < viewModel.Folders.Count)
+            if (selectedIndex < viewModel.Folders.Count)
             {
-                viewModel.SelectedFolder = viewModel.Folders[currentSelectedIndex];
-                pageType = typeof(FolderPage);
+                viewModel.SelectedFolder = viewModel.Folders[selectedIndex];
             }
 
             var slideNavigationTransitionEffect =
-                currentSelectedIndex - previousSelectedIndex > 0 ?
+                selectedIndex - previousSelectedIndex > 0 ?
                     SlideNavigationTransitionEffect.FromRight :
                     SlideNavigationTransitionEffect.FromLeft;
 
-            ContentFrame.Navigate(pageType, null, new SlideNavigationTransitionInfo()
+            ContentFrame.Navigate(typeof(FolderPage), null, new SlideNavigationTransitionInfo()
                 { Effect = slideNavigationTransitionEffect });
 
-            previousSelectedIndex = currentSelectedIndex;
+            previousSelectedIndex = selectedIndex;
         }
     }
 }

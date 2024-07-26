@@ -22,14 +22,18 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- SelectorBar for switching between folders -->
-        <muxc:SelectorBar x:Name="SelectorBar2" SelectionChanged="SelectorBar2_SelectionChanged" Grid.Row="0">
-            <muxc:SelectorBar.Items>
-                <muxc:SelectorBarItem x:Name="SelectorBarItemUnclassified" Text="Unclassified" IsSelected="True" />
-                <!-- Add additional folders dynamically -->
-                <muxc:SelectorBarItem Text="Other Folders" />
-            </muxc:SelectorBar.Items>
-        </muxc:SelectorBar>
+        <!-- DropDownButton for switching between folders -->
+        <DropDownButton Content="Folders" Grid.Row="0">
+            <DropDownButton.Flyout>
+                <MenuFlyout Placement="Bottom" x:Name="FoldersFlyout">
+                    <!-- MenuFlyoutItems will be dynamically added here -->
+                </MenuFlyout>
+            </DropDownButton.Flyout>
+        </DropDownButton>
+        <Button Content="Reset Worlds" Command="{Binding ResetCommand}" Margin="100,0,0,0"/>
+        <Button Content="Reload" Command ="{Binding RefreshCommand}" Margin="0,0,100,0"/>
+
+
 
         <!-- Frame for displaying the content of the selected folder -->
         <Frame x:Name="ContentFrame" Grid.Row="1" IsNavigationStackEnabled="False" />

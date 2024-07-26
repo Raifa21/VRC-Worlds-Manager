@@ -6,7 +6,18 @@
     xmlns:common="using:VRC_Favourite_Manager.Common">
 
     <Application.Resources>
-        <common:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
-        <local:StringFormatConverter x:Key="StringFormatConverter"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <!-- Add other resource dictionaries here if needed -->
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Existing resources -->
+            <common:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+            <local:StringFormatConverter x:Key="StringFormatConverter"/>
+
+            <!-- New resource -->
+            <SolidColorBrush x:Key="TabViewButtonBackground" Color="LightGray"/>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

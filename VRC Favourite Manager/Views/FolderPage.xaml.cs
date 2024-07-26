@@ -1,6 +1,5 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using VRC_Favourite_Manager.ViewModels;
 
 namespace VRC_Favourite_Manager.Views
 {
@@ -9,7 +8,7 @@ namespace VRC_Favourite_Manager.Views
         public FolderPage()
         {
             this.InitializeComponent();
-            this.DataContext = (MainViewModel)Application.Current.Resources["MainViewModel"];
+            this.DataContext = (Application.Current as App).MainViewModel;
         }
     }
 }
