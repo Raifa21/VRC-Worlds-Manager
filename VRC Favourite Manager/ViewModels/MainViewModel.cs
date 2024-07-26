@@ -103,7 +103,8 @@ namespace VRC_Favourite_Manager.ViewModels
                         Folders.First(f => f.Name == "Unclassified").Worlds.Add(world);
                     }
                 }
-                if(_favoriteWorlds.Count == 0)
+                PrintFolders();
+                if (_favoriteWorlds.Count == 0)
                 {
                     Debug.WriteLine("No worlds found in file");
                     await InitialScanAsync();
@@ -123,6 +124,8 @@ namespace VRC_Favourite_Manager.ViewModels
                 Debug.WriteLine("No config file found, scanning for worlds");
                 await InitialScanAsync();
             }
+
+            PrintFolders();
 
             UpdateWorldsCollection();
         }
@@ -219,6 +222,18 @@ namespace VRC_Favourite_Manager.ViewModels
                 folder.Worlds.Clear();
             }
             _jsonManager.SaveWorlds(_favoriteWorlds);
+        }
+        private void PrintFolders()
+        {
+            Debug.WriteLine("Folders and their contents:");
+            foreach (var folder in Folders)
+            {
+                Debug.WriteLine($"Folder: {folder.Name}");
+                foreach (var world in folder.Worlds)
+                {
+                    Debug.WriteLine($"  World: {world.WorldName} (ID: {world.WorldId})");
+                }
+            }
         }
 
     }

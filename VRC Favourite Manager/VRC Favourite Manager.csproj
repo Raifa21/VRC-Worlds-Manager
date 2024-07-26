@@ -16,6 +16,7 @@
   <ItemGroup>
     <None Remove="MainWindow.xaml" />
     <None Remove="Views\AuthenticationPage.xaml" />
+    <None Remove="Views\FolderPage.xaml" />
     <None Remove="Views\TwoFactorAuthPopup.xaml" />
   </ItemGroup>
   <ItemGroup>
