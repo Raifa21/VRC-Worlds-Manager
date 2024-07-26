@@ -18,6 +18,7 @@
     <None Remove="Views\AuthenticationPage.xaml" />
     <None Remove="Views\FolderPage.xaml" />
     <None Remove="Views\TwoFactorAuthPopup.xaml" />
+    <None Remove="Views\WorldDetailsPopup.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Page Remove="App.xaml" />

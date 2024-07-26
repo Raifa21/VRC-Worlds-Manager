@@ -1,0 +1,20 @@
+<!-- WorldDetailsDialog.xaml -->
+<ContentDialog
+    x:Class="VRC_Favourite_Manager.Views.WorldDetailsPopup"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:VRC_Favourite_Manager.Views"
+    Title="World Details"
+    PrimaryButtonText="Close"
+    SecondaryButtonText="Create Instance"
+    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+    SecondaryButtonClick="ContentDialog_SecondaryButtonClick">
+
+    <StackPanel>
+        <Image Source="{Binding ThumbnailImageUrl}" Width="200" Height="200"/>
+        <TextBlock Text="{Binding WorldName}" FontWeight="Bold" FontSize="20"/>
+        <TextBlock Text="Capacity: {Binding Capacity}"/>
+        <TextBlock Text="Author: {Binding AuthorName}"/>
+        <TextBlock Text="Description: {Binding Description}" TextWrapping="Wrap"/>
+    </StackPanel>
+</ContentDialog>

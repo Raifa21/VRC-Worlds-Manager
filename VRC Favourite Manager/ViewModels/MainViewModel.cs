@@ -101,6 +101,7 @@ namespace VRC_Favourite_Manager.ViewModels
                 new FolderModel("Unclassified")
             };
             SelectedFolder = Folders.First();
+            
 
             var task = InitializeAsync();
         }
