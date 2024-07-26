@@ -1,6 +1,7 @@
 // FolderPage.xaml.cs
 
 using System;
+using System.Diagnostics;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using VRC_Favourite_Manager.ViewModels;
@@ -22,6 +23,7 @@ namespace VRC_Favourite_Manager.Views
             if (selectedWorld != null)
             {
                 var dialog = new WorldDetailsPopup(selectedWorld);
+                dialog.XamlRoot = this.XamlRoot;
                 await dialog.ShowAsync();
             }
         }

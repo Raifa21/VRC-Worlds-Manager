@@ -5,7 +5,12 @@
     xmlns:local="using:VRC_Favourite_Manager.Views"
     xmlns:viewModels="using:VRC_Favourite_Manager.ViewModels"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
-    xmlns:models="using:VRC_Favourite_Manager.Models">
+    xmlns:models="using:VRC_Favourite_Manager.Models"
+    xmlns:converters="using:VRC_Favourite_Manager">
+
+    <Page.Resources>
+        <converters:StringFormatConverter x:Key="StringFormatConverter"/>
+    </Page.Resources>
 
     <Page.DataContext>
         <viewModels:MainViewModel/>
@@ -13,11 +18,18 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <TextBlock Text="{Binding FolderName}" FontSize="24" FontWeight="Bold" Margin="20 10"/>
-        <muxc:GridView ItemsSource="{Binding SelectedFolder.Worlds}" Margin="10 30">
+        <muxc:GridView ItemsSource="{Binding SelectedFolder.Worlds}" Margin="10" IsItemClickEnabled="True" ItemClick="GridView_ItemClick">
             <muxc:GridView.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Margin="10">
-                        <Image Source="{Binding ThumbnailImageUrl}" Width="200" Height="200"/>
+                    <StackPanel>
+                        <StackPanel.ContextFlyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem Text="View Details" Click="ViewDetails_Click"/>
+                                <MenuFlyoutItem Text="Move to Another Folder" Click="MoveToAnotherFolder_Click"/>
+                                <MenuFlyoutItem Text="Remove" Click="Remove_Click"/>
+                            </MenuFlyout>
+                        </StackPanel.ContextFlyout>
+                        <Image Source="{Binding ThumbnailImageUrl}" Width="100" Height="100"/>
                         <TextBlock Text="{Binding WorldName}" FontWeight="Bold"/>
                         <TextBlock Text="{Binding Capacity, Converter={StaticResource StringFormatConverter}, ConverterParameter='Capacity: {0}'}"/>
                         <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='Author: {0}'}"/>

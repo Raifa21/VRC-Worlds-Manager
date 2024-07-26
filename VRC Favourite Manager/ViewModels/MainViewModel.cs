@@ -156,7 +156,16 @@ namespace VRC_Favourite_Manager.ViewModels
                 foreach (var world in worlds)
                 {
                     _favoriteWorlds.Add(world);
-                    Folders.First(f => f.Name == "Unclassified").Worlds.Add(world);
+                    if (world.Folder == "")
+                    {
+                        Folders.First(f => f.Name == "Unclassified").Worlds.Add(world);
+                    }
+                    else
+                    {
+                        AddFolder(world.Folder);
+                        Folders.First(f => f.Name == world.Folder).Worlds.Add(world);
+                    }
+                    
                 }
                 if (worlds.Count < 100)
                 {
@@ -186,7 +195,15 @@ namespace VRC_Favourite_Manager.ViewModels
                 {
                     _favoriteWorlds.Add(world);
                     _existingWorldIds.Add(world.WorldId);
-                    Folders.First(f => f.Name == "Unclassified").Worlds.Add(world);
+                    if (world.Folder == "")
+                    {
+                        Folders.First(f => f.Name == "Unclassified").Worlds.Add(world);
+                    }
+                    else
+                    {
+                        AddFolder(world.Folder);
+                        Folders.First(f => f.Name == world.Folder).Worlds.Add(world);
+                    }
                 }
             }
             _jsonManager.SaveWorlds(_favoriteWorlds);

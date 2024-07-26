@@ -13,8 +13,8 @@
     <StackPanel>
         <Image Source="{Binding ThumbnailImageUrl}" Width="200" Height="200"/>
         <TextBlock Text="{Binding WorldName}" FontWeight="Bold" FontSize="20"/>
-        <TextBlock Text="Capacity: {Binding Capacity}"/>
-        <TextBlock Text="Author: {Binding AuthorName}"/>
-        <TextBlock Text="Description: {Binding Description}" TextWrapping="Wrap"/>
+        <TextBlock Text="{Binding Capacity, Converter={StaticResource StringFormatConverter}, ConverterParameter='Capacity: {0}'}"/>
+        <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='Author: {0}'}"/>
+        <TextBlock Text="{Binding Description}"/>
     </StackPanel>
 </ContentDialog>

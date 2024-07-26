@@ -21,6 +21,9 @@ namespace VRC_Favourite_Manager.Models
         [JsonPropertyName("created_at")]
         public DateTime CreatedAt { get; set; }
 
+        [JsonPropertyName("description")]
+        public string Description { get; set; }
+
         [JsonPropertyName("favorites")]
         public int Favorites { get; set; }
 

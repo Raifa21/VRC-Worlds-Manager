@@ -16,6 +16,10 @@ namespace VRC_Favourite_Manager.Models
         public int? RecommendedCapacity { get; set; }
         public int Capacity { get; set; }
         public DateTime LastUpdate { get; set; }
+        public string Description { get; set; }
+        public int? Visits { get; set; }
+        public int Favorites { get; set; }
+        public string Folder { get; set; }
     }
 
 }

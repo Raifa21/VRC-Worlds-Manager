@@ -310,6 +310,10 @@ namespace VRC_Favourite_Manager.Services
                         RecommendedCapacity = world.RecommendedCapacity,
                         Capacity = world.Capacity,
                         LastUpdate = world.UpdatedAt,
+                        Description = world.Description,
+                        Visits = world.Visits,
+                        Favorites = world.Favorites,
+                        Folder = ""
                     };
                     worldModels.Add(worldModel);
                 }
