@@ -10,11 +10,25 @@
     PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
     SecondaryButtonClick="ContentDialog_SecondaryButtonClick">
 
-    <StackPanel>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Close Button in the Top Right Corner -->
+        <Button Content="X"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Click="CloseButton_Click"
+                Margin="0,0,10,0"/>
+
+        <StackPanel>
         <Image Source="{Binding ThumbnailImageUrl}" Width="200" Height="200"/>
         <TextBlock Text="{Binding WorldName}" FontWeight="Bold" FontSize="20"/>
         <TextBlock Text="{Binding Capacity, Converter={StaticResource StringFormatConverter}, ConverterParameter='Capacity: {0}'}"/>
         <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='Author: {0}'}"/>
         <TextBlock Text="{Binding Description}"/>
     </StackPanel>
+    </Grid>
 </ContentDialog>

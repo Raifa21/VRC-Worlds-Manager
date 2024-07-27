@@ -14,6 +14,10 @@ namespace VRC_Favourite_Manager.Views
             this.World = world;
             this.DataContext = world;
         }
+        private void CloseButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            this.Hide();
+        }
 
         private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
