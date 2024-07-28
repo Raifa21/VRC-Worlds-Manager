@@ -14,7 +14,7 @@ namespace VRC_Favourite_Manager.Models
         public string AuthorName { get; set; }
         public string AuthorId { get; set; }
         public int Capacity { get; set; }
-        public DateTime LastUpdate { get; set; }
+        public string LastUpdate { get; set; }
         public string Description { get; set; }
         public int? Visits { get; set; }
         public int Favorites { get; set; }

@@ -9,7 +9,6 @@ namespace VRC_Favourite_Manager
         {
             if (value == null || parameter == null)
                 return value;
-
             return string.Format((string)parameter, value);
         }
 

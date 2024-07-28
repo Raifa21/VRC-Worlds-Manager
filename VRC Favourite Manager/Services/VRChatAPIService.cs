@@ -308,7 +308,7 @@ namespace VRC_Favourite_Manager.Services
                         AuthorName = world.AuthorName,
                         AuthorId = world.AuthorId,
                         Capacity = world.Capacity,
-                        LastUpdate = world.UpdatedAt,
+                        LastUpdate = world.UpdatedAt.ToString()?[..10],
                         Description = world.Description,
                         Visits = world.Visits,
                         Favorites = world.Favorites,
