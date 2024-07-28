@@ -18,15 +18,11 @@ namespace VRC_Favourite_Manager.Views
         {
             this.Hide();
         }
-
-        private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        private void CreateInstanceButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
-            // Handle close button click
-        }
-
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-            // Handle create instance button click
+            // Handle instance creation logic here
+            var world = (WorldModel)this.DataContext;
+            // Implement your logic for creating an instance
         }
     }
 }
