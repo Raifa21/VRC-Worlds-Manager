@@ -307,12 +307,12 @@ namespace VRC_Favourite_Manager.Services
                         WorldId = world.Id,
                         AuthorName = world.AuthorName,
                         AuthorId = world.AuthorId,
-                        RecommendedCapacity = world.RecommendedCapacity,
                         Capacity = world.Capacity,
                         LastUpdate = world.UpdatedAt,
                         Description = world.Description,
                         Visits = world.Visits,
                         Favorites = world.Favorites,
+                        Tags = world.Tags,
                         Folder = ""
                     };
                     worldModels.Add(worldModel);

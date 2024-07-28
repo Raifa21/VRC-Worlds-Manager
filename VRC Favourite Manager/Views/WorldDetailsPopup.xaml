@@ -5,33 +5,42 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:VRC_Favourite_Manager.Views">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-
-        <!-- Close Button in the Top Right Corner -->
-        <Button Content="X"
+    <Grid Width="500" Height="600">
+        <Button
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Click="CloseButton_Click"
-                Margin="0,0,0,0"
-                Style="{StaticResource CloseButtonStyle}"/>
+                Margin="0,-10,-10,0"
+                Style="{StaticResource CloseButtonStyle}">
+            <FontIcon Glyph="&#xE711;" />
+        </Button>
+    <Grid Margin="10,30,10,0">
 
-        <StackPanel>
-            <Image Source="{Binding ThumbnailImageUrl}" Width="200" Height="200"/>
-            <TextBlock Text="{Binding WorldName}" FontWeight="Bold" FontSize="20"/>
-            <TextBlock Text="{Binding Capacity, Converter={StaticResource StringFormatConverter}, ConverterParameter='Capacity: {0}'}"/>
-            <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='Author: {0}'}"/>
-            <TextBlock Text="{Binding Description}"/>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,0">
+            <Image Source="{Binding ThumbnailImageUrl}" Width="445" Height="auto"/>
+            <TextBlock Text="{Binding WorldName}" FontWeight="Bold" FontSize="20" Margin="0,10,0,0"/>
+            <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='By {0}'}" Margin="0,2,0,0"/>
         </StackPanel>
 
-        <Button Content="Create Instance"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Bottom"
-                Margin="20"
-                Click="CreateInstanceButton_Click"/>
+        <Grid Margin="0,330,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
+            <!-- Close Button in the Top Right Corner -->
+            <StackPanel Grid.Column="0" Margin="0,0,20,0">
+                <TextBlock Text="{Binding Description}"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+            <Button Content="Create Instance"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Bottom"
+                    Margin="20"
+                    Click="CreateInstanceButton_Click"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
     </Grid>
 </ContentDialog>
