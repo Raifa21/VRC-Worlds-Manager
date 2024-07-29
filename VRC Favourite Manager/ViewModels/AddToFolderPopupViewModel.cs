@@ -28,6 +28,7 @@ namespace VRC_Favourite_Manager.ViewModels
                 }
             }
         }
+
         public void AddFolder()
         {
             Folders.Add(new FolderModel("New Folder"));
