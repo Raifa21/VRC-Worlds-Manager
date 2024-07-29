@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net;
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text.Encodings.Web;
 using System.Threading;
@@ -300,6 +301,25 @@ namespace VRC_Favourite_Manager.Services
                 var worldModels = new List<Models.WorldModel>();
                 foreach (var world in responseWorlds)
                 {
+                    List<string> tags_replaced = new List<string>();
+                    foreach (var tag in world.Tags)
+                    {
+                        if (tag.StartsWith("system_"))
+                        {
+                            var replace = tag.Replace("system_", "");
+                            tags_replaced = tags_replaced.Append(replace).ToList();
+                        }
+                        else if (tag.StartsWith("author_tag_"))
+                        {
+                            var replace = tag.Replace("author_tag_", "");
+                            tags_replaced = tags_replaced.Append(replace).ToList();
+                        }
+                        else
+                        {
+                            tags_replaced = tags_replaced.Append(tag).ToList();
+                        }
+
+                    }
                     var worldModel = new Models.WorldModel
                     {
                         ThumbnailImageUrl = world.ThumbnailImageUrl,
@@ -308,11 +328,11 @@ namespace VRC_Favourite_Manager.Services
                         AuthorName = world.AuthorName,
                         AuthorId = world.AuthorId,
                         Capacity = world.Capacity,
-                        LastUpdate = world.UpdatedAt.ToString()?[..10],
+                        LastUpdate = world.UpdatedAt.ToString(CultureInfo.InvariantCulture)?[..10],
                         Description = world.Description,
                         Visits = world.Visits,
                         Favorites = world.Favorites,
-                        Tags = world.Tags,
+                        Tags = tags_replaced,
                         Folder = ""
                     };
                     worldModels.Add(worldModel);

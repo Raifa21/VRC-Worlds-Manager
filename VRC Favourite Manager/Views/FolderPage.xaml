@@ -29,10 +29,13 @@
                                 <MenuFlyoutItem Text="Remove" Click="Remove_Click"/>
                             </MenuFlyout>
                         </StackPanel.ContextFlyout>
-                        <Image Source="{Binding ThumbnailImageUrl}" Width="100" Height="100"/>
+                        <Viewbox Width="240" Height="180">
+                            <Grid Width="240" Height="180">
+                                <Image Source="{Binding ThumbnailImageUrl}" Stretch="Fill" Width="240" Height="180"/>
+                            </Grid>
+                        </Viewbox>
                         <TextBlock Text="{Binding WorldName}" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding Capacity, Converter={StaticResource StringFormatConverter}, ConverterParameter='Capacity: {0}'}"/>
-                        <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='Author: {0}'}"/>
+                        <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='By {0}'}"/>
                     </StackPanel>
                 </DataTemplate>
             </muxc:GridView.ItemTemplate>
