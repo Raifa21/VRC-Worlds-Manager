@@ -19,7 +19,7 @@ namespace VRC_Favourite_Manager.Models
         public int? Visits { get; set; }
         public int Favorites { get; set; }
         public List<string> Tags { get; set; }
-        public string Folder { get; set; }
+        public List<string> Folder { get; set; }
         
     }
 

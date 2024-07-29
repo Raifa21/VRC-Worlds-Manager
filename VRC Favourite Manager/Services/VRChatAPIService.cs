@@ -333,7 +333,7 @@ namespace VRC_Favourite_Manager.Services
                         Visits = world.Visits,
                         Favorites = world.Favorites,
                         Tags = tags_replaced,
-                        Folder = ""
+                        Folder = new List<string>()
                     };
                     worldModels.Add(worldModel);
                 }

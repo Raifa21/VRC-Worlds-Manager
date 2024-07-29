@@ -15,6 +15,7 @@ namespace VRC_Favourite_Manager.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
+        private World selectedWorld;
         private readonly DispatcherTimer _timer;
         private readonly VRChatAPIService _vrChatAPIService;
         private readonly JsonManager _jsonManager;
@@ -27,7 +28,18 @@ namespace VRC_Favourite_Manager.ViewModels
 
         private ObservableCollection<WorldModel> _worlds;
 
-
+        public World SelectedWorld
+        {
+            get { return selectedWorld; }
+            set
+            {
+                if (selectedWorld != value)
+                {
+                    selectedWorld = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public ObservableCollection<FolderModel> Folders
         {
@@ -156,14 +168,17 @@ namespace VRC_Favourite_Manager.ViewModels
                 foreach (var world in worlds)
                 {
                     _favoriteWorlds.Add(world);
-                    if (world.Folder == "")
+                    if (world.Folder.Count == 0)
                     {
                         Folders.First(f => f.Name == "Unclassified").Worlds.Add(world);
                     }
                     else
                     {
-                        AddFolder(world.Folder);
-                        Folders.First(f => f.Name == world.Folder).Worlds.Add(world);
+                        foreach (var folder in world.Folder)
+                        {
+                            AddFolder(folder);
+                            Folders.First(f => f.Name == folder).Worlds.Add(world);
+                        }
                     }
                     
                 }
@@ -195,14 +210,17 @@ namespace VRC_Favourite_Manager.ViewModels
                 {
                     _favoriteWorlds.Add(world);
                     _existingWorldIds.Add(world.WorldId);
-                    if (world.Folder == "")
+                    if (world.Folder.Count == 0)
                     {
                         Folders.First(f => f.Name == "Unclassified").Worlds.Add(world);
                     }
                     else
                     {
-                        AddFolder(world.Folder);
-                        Folders.First(f => f.Name == world.Folder).Worlds.Add(world);
+                        foreach (var folder in world.Folder)
+                        {
+                            AddFolder(folder);
+                            Folders.First(f => f.Name == folder).Worlds.Add(world);
+                        }
                     }
                 }
             }

@@ -1,63 +1,49 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using VRC_Favourite_Manager.Models;
 
 namespace VRC_Favourite_Manager.ViewModels
 {
     public class AddToFolderPopupViewModel : INotifyPropertyChanged
     {
-        public ObservableCollection<FolderViewModel> Folders { get; set; }
+        public ObservableCollection<FolderModel> Folders { get; set; }
+        public WorldModel SelectedWorld { get; set; }
 
-        public AddToFolderPopupViewModel()
+        public AddToFolderPopupViewModel(ObservableCollection<FolderModel> folders, WorldModel selectedWorld)
         {
-            // Load folders
-            Folders = new ObservableCollection<FolderViewModel>
-            {
-            };
+            Folders = folders;
+            SelectedWorld = selectedWorld;
+            LoadFolderSelections();
         }
 
+        private void LoadFolderSelections()
+        {
+            foreach (var folder in Folders)
+            {
+                if (SelectedWorld.Folder.Contains(folder.Name))
+                {
+                    folder.IsSelected = true;
+                }
+            }
+        }
         public void AddFolder()
         {
-            // Logic to add a new folder
-            Folders.Add(new FolderViewModel { Name = "New Folder" });
+            Folders.Add(new FolderModel("New Folder"));
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        public List<string> GetSelectedFolders()
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-    }
-
-    public class FolderViewModel : INotifyPropertyChanged
-    {
-        private string name;
-        private bool isSelected;
-
-        public string Name
-        {
-            get { return name; }
-            set
+            var selectedFolders = new List<string>();
+            foreach (var folder in Folders)
             {
-                if (name != value)
+                if (folder.IsSelected)
                 {
-                    name = value;
-                    OnPropertyChanged();
+                    selectedFolders.Add(folder.Name);
                 }
             }
-        }
-
-        public bool IsSelected
-        {
-            get { return isSelected; }
-            set
-            {
-                if (isSelected != value)
-                {
-                    isSelected = value;
-                    OnPropertyChanged();
-                }
-            }
+            return selectedFolders;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

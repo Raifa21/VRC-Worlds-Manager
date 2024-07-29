@@ -43,7 +43,8 @@ namespace VRC_Favourite_Manager.Views
             var selectedWorld = (sender as FrameworkElement).DataContext as WorldModel;
             if (selectedWorld != null)
             {
-                var addToFolderPopup = new AddToFolderPopup();
+                var viewModel = (MainViewModel)this.DataContext;
+                var addToFolderPopup = new AddToFolderPopup(viewModel.Folders, selectedWorld);
                 addToFolderPopup.XamlRoot = this.Content.XamlRoot;
                 await addToFolderPopup.ShowAsync();
             }
