@@ -37,12 +37,15 @@ namespace VRC_Favourite_Manager.Views
             }
         }
 
-        private void MoveToAnotherFolder_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        private async void MoveToAnotherFolder_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
+            Debug.WriteLine("Move to another folder clicked");
             var selectedWorld = (sender as FrameworkElement).DataContext as WorldModel;
             if (selectedWorld != null)
             {
-                // Handle moving the selected world to another folder
+                var addToFolderPopup = new AddToFolderPopup();
+                addToFolderPopup.XamlRoot = this.Content.XamlRoot;
+                await addToFolderPopup.ShowAsync();
             }
         }
 

@@ -21,7 +21,7 @@
         <muxc:GridView ItemsSource="{Binding SelectedFolder.Worlds}" Margin="10" IsItemClickEnabled="True" ItemClick="GridView_ItemClick">
             <muxc:GridView.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel>
+                    <StackPanel Margin="10"> 
                         <StackPanel.ContextFlyout>
                             <MenuFlyout>
                                 <MenuFlyoutItem Text="View Details" Click="ViewDetails_Click"/>
