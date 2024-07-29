@@ -13,9 +13,6 @@ namespace VRC_Favourite_Manager.ViewModels
             // Load folders
             Folders = new ObservableCollection<FolderViewModel>
             {
-                new FolderViewModel { Name = "Folder 1" },
-                new FolderViewModel { Name = "Folder 2" },
-                new FolderViewModel { Name = "Folder 3" }
             };
         }
 

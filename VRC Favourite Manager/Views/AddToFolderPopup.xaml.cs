@@ -11,7 +11,7 @@ namespace VRC_Favourite_Manager.Views
             this.DataContext = new AddToFolderPopupViewModel();
         }
 
-        private void CloseButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        private void CloseButton_Click(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             this.Hide();
         }
