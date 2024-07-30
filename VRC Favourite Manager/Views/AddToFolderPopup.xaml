@@ -22,7 +22,7 @@
                     <ItemsControl ItemsSource="{Binding Folders}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <ToggleButton Content="{Binding Name}" IsChecked="{Binding IsSelected}" Margin="0,0,0,10"/>
+                                <ToggleButton Content="{Binding Key}" IsChecked="{Binding Value}" Margin="0,0,0,10"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

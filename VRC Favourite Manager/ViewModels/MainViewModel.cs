@@ -10,6 +10,7 @@ using System.Windows.Input;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
 using System.Linq;
+using VRC_Favourite_Manager.Views;
 
 namespace VRC_Favourite_Manager.ViewModels
 {
@@ -104,7 +105,6 @@ namespace VRC_Favourite_Manager.ViewModels
 
             RefreshCommand = new RelayCommand(async () => await RefreshWorldsAsync());
             LogoutCommand = new RelayCommand(async () => await LogoutCommandAsync());
-            AddFolderCommand = new RelayCommand<string>(AddFolder);
             MoveWorldCommand = new RelayCommand<WorldModel>(MoveWorld);
             ResetCommand = new RelayCommand(ResetWorlds);
 
@@ -176,7 +176,10 @@ namespace VRC_Favourite_Manager.ViewModels
                     {
                         foreach (var folder in world.Folder)
                         {
-                            AddFolder(folder);
+                            if (Folders.All(f => f.Name != folder))
+                            {
+                                Folders.Add(new FolderModel(folder));
+                            }
                             Folders.First(f => f.Name == folder).Worlds.Add(world);
                         }
                     }
@@ -218,7 +221,10 @@ namespace VRC_Favourite_Manager.ViewModels
                     {
                         foreach (var folder in world.Folder)
                         {
-                            AddFolder(folder);
+                            if (Folders.All(f => f.Name != folder))
+                            {
+                                Folders.Add(new FolderModel(folder));
+                            }
                             Folders.First(f => f.Name == folder).Worlds.Add(world);
                         }
                     }
@@ -246,13 +252,6 @@ namespace VRC_Favourite_Manager.ViewModels
         private async Task LogoutCommandAsync()
         {
             await _vrChatAPIService.LogoutAsync();
-        }
-        private void AddFolder(string folderName)
-        {
-            if (!Folders.Any(f => f.Name == folderName))
-            {
-                Folders.Add(new FolderModel(folderName));
-            }
         }
         private void MoveWorld(WorldModel world)
         {

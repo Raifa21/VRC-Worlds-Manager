@@ -10,13 +10,15 @@ namespace VRC_Favourite_Manager.ViewModels
 {
     public class AddToFolderPopupViewModel : INotifyPropertyChanged
     {
+        private readonly MainViewModel _mainViewModel;
         public ObservableCollection<KeyValuePair<string,bool>> Folders { get; set; }
         public WorldModel SelectedWorld { get; set; }
 
-        public AddToFolderPopupViewModel(ObservableCollection<FolderModel> folders, WorldModel selectedWorld)
+        public AddToFolderPopupViewModel(MainViewModel mainViewModel, WorldModel selectedWorld)
         {
+            _mainViewModel = mainViewModel;
             Folders = new ObservableCollection<KeyValuePair<string, bool>>();
-            foreach (var folder in folders)
+            foreach (var folder in _mainViewModel.Folders)
             {
                 // Don't show the unclassified folder in the list
                 if (folder.Name != "Unclassified")
@@ -30,14 +32,15 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public void AddFolder()
         {
-            string NewFolderName = "New Folder";
-            int i = 1;
-            while (Folders.Any(f => f.Key == NewFolderName))
+            var newFolderName = "New Folder";
+            var i = 1;
+            while (Folders.Any(f => f.Key == newFolderName))
             {
-                NewFolderName = $"New Folder ({i})";
+                newFolderName = $"New Folder ({i})";
                 i++;
             }
-            Folders.Add(new KeyValuePair<string, bool>(NewFolderName, false));
+            Folders.Add(new KeyValuePair<string, bool>(newFolderName, false));
+            _mainViewModel.Folders.Add(new FolderModel(newFolderName));
         }
 
         public List<string> GetSelectedFolders()

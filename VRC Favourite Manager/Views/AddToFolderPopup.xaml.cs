@@ -7,10 +7,10 @@ namespace VRC_Favourite_Manager.Views
 {
     public sealed partial class AddToFolderPopup : ContentDialog
     {
-        public AddToFolderPopup(ObservableCollection<FolderModel> folders, WorldModel selectedWorld)
+        public AddToFolderPopup(MainViewModel mainViewModel, WorldModel selectedWorld)
         {
             this.InitializeComponent();
-            this.DataContext = new AddToFolderPopupViewModel(folders, selectedWorld);
+            this.DataContext = new AddToFolderPopupViewModel(mainViewModel, selectedWorld);
         }
 
 
