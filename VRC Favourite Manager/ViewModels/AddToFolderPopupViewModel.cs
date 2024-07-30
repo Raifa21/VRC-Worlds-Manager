@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using VRC_Favourite_Manager.Models;
 
@@ -10,6 +11,17 @@ namespace VRC_Favourite_Manager.ViewModels
     {
         public ObservableCollection<FolderModel> Folders { get; set; }
         public WorldModel SelectedWorld { get; set; }
+        private string _newFolderName;
+
+        public string NewFolderName
+        {
+            get => _newFolderName;
+            set
+            {
+                _newFolderName = value;
+                OnPropertyChanged();
+            }
+        }
 
         public AddToFolderPopupViewModel(ObservableCollection<FolderModel> folders, WorldModel selectedWorld)
         {
@@ -31,7 +43,28 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public void AddFolder()
         {
-            Folders.Add(new FolderModel("New Folder"));
+            if (!string.IsNullOrWhiteSpace(NewFolderName))
+            {
+                if (Folders.All(f => f.Name != NewFolderName))
+                {
+                    Folders.Add(new FolderModel(NewFolderName));
+                    NewFolderName = string.Empty; // Clear the text box after adding the folder
+                }
+                else
+                {
+                    // Handle duplicate folder name by adding a (num) suffix
+                    int i = 1;
+                    while (Folders.Any(f => f.Name == NewFolderName + $" ({i})"))
+                    {
+                        i++;
+                    }
+                    Folders.Add(new FolderModel(NewFolderName + $" ({i})"));
+                }
+            }
+            else
+            {
+                Folders.Add(new FolderModel("New Folder"));
+            }
         }
 
         public List<string> GetSelectedFolders()
