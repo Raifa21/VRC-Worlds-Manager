@@ -17,18 +17,19 @@
                 </Grid>
             </Viewbox>
             <TextBlock Text="Select Folders" FontSize="14" FontWeight="Bold" Margin="0,20,0,10"/>
+            <Grid Height="95" Margin="2,25,0,0">
+                <ScrollViewer>
+                    <ItemsControl ItemsSource="{Binding Folders}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ToggleButton Content="{Binding Name}" IsChecked="{Binding IsSelected}" Margin="0,0,0,10"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
 
-            <ItemsControl ItemsSource="{Binding Folders}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <ToggleButton Content="{Binding Name}" IsChecked="{Binding IsSelected}" Margin="0,0,0,10"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-
-            <TextBox PlaceholderText="New Folder Name" Text="{Binding NewFolderName}" Margin="0,10,0,0"/>
-            <Button Content="Add Folder" Click="AddFolderButton_Click" Margin="0,10,0,0"/>
-
+            <Button Content="Add Folder" Click="AddFolderButton_Click" Margin="0,10,0,0" />
         </StackPanel>
     </Grid>
 </ContentDialog>

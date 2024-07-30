@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using VRC_Favourite_Manager.Models;
@@ -9,62 +10,34 @@ namespace VRC_Favourite_Manager.ViewModels
 {
     public class AddToFolderPopupViewModel : INotifyPropertyChanged
     {
-        public ObservableCollection<FolderModel> Folders { get; set; }
+        public ObservableCollection<KeyValuePair<string,bool>> Folders { get; set; }
         public WorldModel SelectedWorld { get; set; }
-        private string _newFolderName;
-
-        public string NewFolderName
-        {
-            get => _newFolderName;
-            set
-            {
-                _newFolderName = value;
-                OnPropertyChanged();
-            }
-        }
 
         public AddToFolderPopupViewModel(ObservableCollection<FolderModel> folders, WorldModel selectedWorld)
         {
-            Folders = folders;
-            SelectedWorld = selectedWorld;
-            LoadFolderSelections();
-        }
-
-        private void LoadFolderSelections()
-        {
-            foreach (var folder in Folders)
+            Folders = new ObservableCollection<KeyValuePair<string, bool>>();
+            foreach (var folder in folders)
             {
-                if (SelectedWorld.Folder.Contains(folder.Name))
+                // Don't show the unclassified folder in the list
+                if (folder.Name != "Unclassified")
                 {
-                    folder.IsSelected = true;
+                    Folders.Add(new KeyValuePair<string, bool>(folder.Name, selectedWorld.Folder.Contains(folder.Name)));
                 }
             }
+            SelectedWorld = selectedWorld;
         }
+
 
         public void AddFolder()
         {
-            if (!string.IsNullOrWhiteSpace(NewFolderName))
+            string NewFolderName = "New Folder";
+            int i = 1;
+            while (Folders.Any(f => f.Key == NewFolderName))
             {
-                if (Folders.All(f => f.Name != NewFolderName))
-                {
-                    Folders.Add(new FolderModel(NewFolderName));
-                    NewFolderName = string.Empty; // Clear the text box after adding the folder
-                }
-                else
-                {
-                    // Handle duplicate folder name by adding a (num) suffix
-                    int i = 1;
-                    while (Folders.Any(f => f.Name == NewFolderName + $" ({i})"))
-                    {
-                        i++;
-                    }
-                    Folders.Add(new FolderModel(NewFolderName + $" ({i})"));
-                }
+                NewFolderName = $"New Folder ({i})";
+                i++;
             }
-            else
-            {
-                Folders.Add(new FolderModel("New Folder"));
-            }
+            Folders.Add(new KeyValuePair<string, bool>(NewFolderName, false));
         }
 
         public List<string> GetSelectedFolders()
@@ -72,9 +45,9 @@ namespace VRC_Favourite_Manager.ViewModels
             var selectedFolders = new List<string>();
             foreach (var folder in Folders)
             {
-                if (folder.IsSelected)
+                if (folder.Value)
                 {
-                    selectedFolders.Add(folder.Name);
+                    selectedFolders.Add(folder.Key);
                 }
             }
             return selectedFolders;
