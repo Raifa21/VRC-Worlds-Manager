@@ -107,11 +107,9 @@ namespace VRC_Favourite_Manager.ViewModels
             LogoutCommand = new RelayCommand(async () => await LogoutCommandAsync());
             MoveWorldCommand = new RelayCommand<WorldModel>(MoveWorld);
             ResetCommand = new RelayCommand(ResetWorlds);
+            AddFolderCommand = new RelayCommand(AddFolder);
 
-            Folders = new ObservableCollection<FolderModel>
-            {
-                new FolderModel("Unclassified")
-            };
+            Folders = new ObservableCollection<FolderModel>();
             SelectedFolder = Folders.First();
             
 
@@ -120,7 +118,19 @@ namespace VRC_Favourite_Manager.ViewModels
 
         private async Task InitializeAsync()
         {
-            if (_jsonManager.ConfigExists())
+            var savedFolders = _jsonManager.LoadFolders();
+            if (savedFolders != null)
+            {
+                Folders = new ObservableCollection<FolderModel>(savedFolders);
+            }
+            else
+            {
+                Folders = new ObservableCollection<FolderModel>
+                {
+                    new FolderModel("Unclassified")
+                };
+            }
+            if (_jsonManager.WorldConfigExists())
             {
                 Debug.WriteLine("Loading worlds from file");
                 var worlds = _jsonManager.LoadWorlds();
@@ -132,7 +142,6 @@ namespace VRC_Favourite_Manager.ViewModels
                         Folders.First(f => f.Name == "Unclassified").Worlds.Add(world);
                     }
                 }
-                PrintFolders();
                 if (_favoriteWorlds.Count == 0)
                 {
                     Debug.WriteLine("No worlds found in file");
@@ -284,6 +293,15 @@ namespace VRC_Favourite_Manager.ViewModels
                 {
                     Debug.WriteLine($"  World: {world.WorldName} (ID: {world.WorldId})");
                 }
+            }
+        }
+        public void AddFolder(string folderName)
+        {
+            if (!string.IsNullOrWhiteSpace(folderName) && !Folders.Any(f => f.Name == folderName))
+            {
+                var newFolder = new FolderModel(folderName);
+                Folders.Add(newFolder);
+                _jsonManager.SaveFolders(Folders);
             }
         }
 

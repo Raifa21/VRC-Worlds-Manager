@@ -12,8 +12,6 @@ namespace VRC_Favourite_Manager.Views
 {
     public sealed partial class FolderPage : Page
     {
-        private MainViewModel mainViewModel;
-
         public FolderPage()
         {
             this.InitializeComponent();
@@ -45,6 +43,7 @@ namespace VRC_Favourite_Manager.Views
             var selectedWorld = (sender as FrameworkElement).DataContext as WorldModel;
             if (selectedWorld != null)
             {
+                var mainViewModel = (MainViewModel)this.DataContext;
                 var addToFolderPopup = new AddToFolderPopup(mainViewModel, selectedWorld);
                 addToFolderPopup.XamlRoot = this.Content.XamlRoot;
                 await addToFolderPopup.ShowAsync();

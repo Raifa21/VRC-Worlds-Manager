@@ -40,7 +40,7 @@ namespace VRC_Favourite_Manager.ViewModels
                 i++;
             }
             Folders.Add(new KeyValuePair<string, bool>(newFolderName, false));
-            _mainViewModel.Folders.Add(new FolderModel(newFolderName));
+            _mainViewModel.AddFolder(newFolderName);
         }
 
         public List<string> GetSelectedFolders()

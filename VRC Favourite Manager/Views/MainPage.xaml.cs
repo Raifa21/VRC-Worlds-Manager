@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using VRC_Favourite_Manager.ViewModels;
@@ -33,8 +34,12 @@ namespace VRC_Favourite_Manager.Views
         {
             var menuFlyoutItem = sender as MenuFlyoutItem;
             int selectedIndex = (int)menuFlyoutItem.Tag;
-
             var viewModel = (MainViewModel)this.DataContext;
+            Debug.WriteLine($"Selected folder: {viewModel.Folders[selectedIndex].Name}");
+            foreach (var folder in viewModel.Folders)
+            {
+                Debug.WriteLine(folder.Name);
+            }
             if (selectedIndex < viewModel.Folders.Count)
             {
                 viewModel.SelectedFolder = viewModel.Folders[selectedIndex];
