@@ -16,6 +16,12 @@ namespace VRC_Favourite_Manager.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
+        private static readonly Lazy<MainViewModel> _instance =
+            new Lazy<MainViewModel>(() => new MainViewModel());
+
+        public static MainViewModel Instance => _instance.Value;
+
+
         private World selectedWorld;
         private readonly DispatcherTimer _timer;
         private readonly VRChatAPIService _vrChatAPIService;
@@ -107,28 +113,41 @@ namespace VRC_Favourite_Manager.ViewModels
             LogoutCommand = new RelayCommand(async () => await LogoutCommandAsync());
             MoveWorldCommand = new RelayCommand<WorldModel>(MoveWorld);
             ResetCommand = new RelayCommand(ResetWorlds);
-            AddFolderCommand = new RelayCommand(AddFolder);
 
             Folders = new ObservableCollection<FolderModel>();
-            SelectedFolder = Folders.First();
-            
-
             var task = InitializeAsync();
+
+
+            SelectedFolder = Folders.First();
         }
 
         private async Task InitializeAsync()
         {
-            var savedFolders = _jsonManager.LoadFolders();
-            if (savedFolders != null)
+            if (_jsonManager.FolderConfigExists())
             {
-                Folders = new ObservableCollection<FolderModel>(savedFolders);
+                var savedFolders = _jsonManager.LoadFolders();
+                if (savedFolders != null)
+                {
+                    Folders = new ObservableCollection<FolderModel>(savedFolders);
+                }
+                else
+                {
+                    Debug.WriteLine("No folder in file, creating default folders");
+                    Folders = new ObservableCollection<FolderModel>
+                    {
+                        new FolderModel("Unclassified")
+                    };
+                    _jsonManager.SaveFolders(Folders);
+                }
             }
             else
             {
+                Debug.WriteLine("No folder file found, creating default folders");
                 Folders = new ObservableCollection<FolderModel>
                 {
                     new FolderModel("Unclassified")
                 };
+                _jsonManager.SaveFolders(Folders);
             }
             if (_jsonManager.WorldConfigExists())
             {
@@ -162,8 +181,6 @@ namespace VRC_Favourite_Manager.ViewModels
                 Debug.WriteLine("No config file found, scanning for worlds");
                 await InitialScanAsync();
             }
-
-            PrintFolders();
 
             UpdateWorldsCollection();
         }
@@ -283,18 +300,6 @@ namespace VRC_Favourite_Manager.ViewModels
             }
             _jsonManager.SaveWorlds(_favoriteWorlds);
         }
-        private void PrintFolders()
-        {
-            Debug.WriteLine("Folders and their contents:");
-            foreach (var folder in Folders)
-            {
-                Debug.WriteLine($"Folder: {folder.Name}");
-                foreach (var world in folder.Worlds)
-                {
-                    Debug.WriteLine($"  World: {world.WorldName} (ID: {world.WorldId})");
-                }
-            }
-        }
         public void AddFolder(string folderName)
         {
             if (!string.IsNullOrWhiteSpace(folderName) && !Folders.Any(f => f.Name == folderName))
@@ -304,6 +309,5 @@ namespace VRC_Favourite_Manager.ViewModels
                 _jsonManager.SaveFolders(Folders);
             }
         }
-
     }
 }

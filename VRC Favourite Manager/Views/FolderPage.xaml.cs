@@ -12,9 +12,11 @@ namespace VRC_Favourite_Manager.Views
 {
     public sealed partial class FolderPage : Page
     {
-        public FolderPage()
+        private MainViewModel mainViewModel;
+        public FolderPage(MainViewModel mainViewmodel, FolderModel folder)
         {
             this.InitializeComponent();
+
         }
 
         private async void GridView_ItemClick(object sender, ItemClickEventArgs e)
@@ -43,7 +45,6 @@ namespace VRC_Favourite_Manager.Views
             var selectedWorld = (sender as FrameworkElement).DataContext as WorldModel;
             if (selectedWorld != null)
             {
-                var mainViewModel = (MainViewModel)this.DataContext;
                 var addToFolderPopup = new AddToFolderPopup(mainViewModel, selectedWorld);
                 addToFolderPopup.XamlRoot = this.Content.XamlRoot;
                 await addToFolderPopup.ShowAsync();
@@ -53,11 +54,6 @@ namespace VRC_Favourite_Manager.Views
         private void Remove_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
             var selectedWorld = (sender as FrameworkElement).DataContext as WorldModel;
-            if (selectedWorld != null)
-            {
-                var viewModel = (MainViewModel)this.DataContext;
-                viewModel.SelectedFolder.Worlds.Remove(selectedWorld);
-            }
         }
     }
 }

@@ -3,23 +3,33 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using VRC_Favourite_Manager.ViewModels;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using System.Collections.Specialized;
 
 namespace VRC_Favourite_Manager.Views
 {
     public sealed partial class MainPage : Page
     {
         int previousSelectedIndex = 0;
+        private MainViewModel viewModel;
 
         public MainPage()
         {
             this.InitializeComponent();
-            this.DataContext = new MainViewModel();
+            viewModel = new MainViewModel();
+            this.DataContext = viewModel;
+            LoadFoldersToDropDownButton();
+
+            ((INotifyCollectionChanged)viewModel.Folders).CollectionChanged += Folders_CollectionChanged;
+        }
+        private void Folders_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
             LoadFoldersToDropDownButton();
         }
 
         private void LoadFoldersToDropDownButton()
         {
-            var viewModel = (MainViewModel)this.DataContext;
+            FoldersFlyout.Items.Clear();
 
             for (int i = 0; i < viewModel.Folders.Count; i++)
             {
@@ -33,27 +43,15 @@ namespace VRC_Favourite_Manager.Views
         private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
         {
             var menuFlyoutItem = sender as MenuFlyoutItem;
-            int selectedIndex = (int)menuFlyoutItem.Tag;
-            var viewModel = (MainViewModel)this.DataContext;
-            Debug.WriteLine($"Selected folder: {viewModel.Folders[selectedIndex].Name}");
-            foreach (var folder in viewModel.Folders)
+            var index = (int)menuFlyoutItem.Tag;
+            if (index != previousSelectedIndex)
             {
-                Debug.WriteLine(folder.Name);
-            }
-            if (selectedIndex < viewModel.Folders.Count)
-            {
-                viewModel.SelectedFolder = viewModel.Folders[selectedIndex];
+                var folder = viewModel.Folders[index];
+                viewModel.SelectedFolder = folder;
+                previousSelectedIndex = index;
             }
 
-            var slideNavigationTransitionEffect =
-                selectedIndex - previousSelectedIndex > 0 ?
-                    SlideNavigationTransitionEffect.FromRight :
-                    SlideNavigationTransitionEffect.FromLeft;
 
-            ContentFrame.Navigate(typeof(FolderPage), null, new SlideNavigationTransitionInfo()
-                { Effect = slideNavigationTransitionEffect });
-
-            previousSelectedIndex = selectedIndex;
         }
     }
 }
