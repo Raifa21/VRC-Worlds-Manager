@@ -51,6 +51,14 @@ namespace VRC_Favourite_Manager.Common
                 Folders.Add(folder);
             }
             folder.Worlds.Add(world);
+            foreach (var f in Folders)
+            {
+                if (f.Name == "Unclassified")
+                {
+                    f.Worlds.Remove(world);
+                }
+            }
+
             SaveFolders();
         }
 

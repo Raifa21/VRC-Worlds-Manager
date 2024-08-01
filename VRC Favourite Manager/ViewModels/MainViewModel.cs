@@ -22,12 +22,8 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly VRChatAPIService _vrChatAPIService;
         private readonly WorldManager _worldManager;
         private readonly FolderManager _folderManager;
-        private readonly JsonManager _jsonManager;
         private string _folderName;
         private FolderModel _selectedFolder;
-
-        private HashSet<WorldModel> _favoriteWorlds;
-        private HashSet<string> _existingWorldIds;
 
         private ObservableCollection<WorldModel> _worlds;
 
@@ -69,7 +65,6 @@ namespace VRC_Favourite_Manager.ViewModels
         }
 
 
-        public ICommand AddFolderCommand { get; }
         public ICommand MoveWorldCommand { get; }
         public ICommand RefreshCommand { get; }
         public ICommand LogoutCommand { get; }
@@ -85,10 +80,6 @@ namespace VRC_Favourite_Manager.ViewModels
             Application.Current.Resources["FolderManager"] = new FolderManager(new JsonManager());
             _worldManager = Application.Current.Resources["WorldManager"] as WorldManager;
             _folderManager = Application.Current.Resources["FolderManager"] as FolderManager;
-
-            _jsonManager = new JsonManager();
-            _favoriteWorlds = new HashSet<WorldModel>();
-            _existingWorldIds = new HashSet<string>();
 
             RefreshCommand = new RelayCommand(async () => await RefreshWorldsAsync());
             LogoutCommand = new RelayCommand(async () => await LogoutCommandAsync());
