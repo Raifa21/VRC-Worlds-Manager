@@ -10,6 +10,7 @@ using System.Windows.Input;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
 using System.Linq;
+using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Views;
 
 namespace VRC_Favourite_Manager.ViewModels
@@ -24,7 +25,6 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly JsonManager _jsonManager;
         private string _folderName;
         private FolderModel _selectedFolder;
-        private ObservableCollection<FolderModel> _folders;
 
         private HashSet<WorldModel> _favoriteWorlds;
         private HashSet<string> _existingWorldIds;
@@ -44,45 +44,29 @@ namespace VRC_Favourite_Manager.ViewModels
             }
         }
 
-        public ObservableCollection<FolderModel> Folders
-        {
-            get => _folders;
-            set
-            {
-                _folders = value;
-                OnPropertyChanged(nameof(Folders));
-            }
-        }
-        public string FolderName
-        {
-            get => _folderName;
-            set
-            {
-                _folderName = value;
-                OnPropertyChanged();
-            }
-        }
+        public ObservableCollection<FolderModel> Folders => _folderManager.Folders;
+
         public FolderModel SelectedFolder
         {
             get => _selectedFolder;
             set
             {
-                _selectedFolder = value;
-                OnPropertyChanged(nameof(SelectedFolder));
-                UpdateWorldsCollection();
+                if (_selectedFolder != value)
+                {
+                    _selectedFolder = value;
+                    OnPropertyChanged();
+                }
             }
         }
-
         public ObservableCollection<WorldModel> Worlds
         {
             get => _worlds;
             set
             {
                 _worlds = value;
-                OnPropertyChanged(nameof(Worlds));
+                OnPropertyChanged();
             }
         }
-
 
 
         public ICommand AddFolderCommand { get; }
@@ -98,8 +82,6 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public MainViewModel()
         {
-
-            Worlds = new ObservableCollection<WorldModel>();
             _vrChatAPIService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
             _worldManager = Application.Current.Resources["WorldManager"] as WorldManager;
             _folderManager = Application.Current.Resources["FolderManager"] as FolderManager;
@@ -113,7 +95,7 @@ namespace VRC_Favourite_Manager.ViewModels
             MoveWorldCommand = new RelayCommand<WorldModel>(MoveWorld);
             ResetCommand = new RelayCommand(ResetWorlds);
 
-            Folders = new ObservableCollection<FolderModel>();
+
             var task = InitializeAsync();
 
 
@@ -122,32 +104,7 @@ namespace VRC_Favourite_Manager.ViewModels
 
         private async Task InitializeAsync()
         {
-            if (_jsonManager.FolderConfigExists())
-            {
-                var savedFolders = _jsonManager.LoadFolders();
-                if (savedFolders != null)
-                {
-                    Folders = new ObservableCollection<FolderModel>(savedFolders);
-                }
-                else
-                {
-                    Debug.WriteLine("No folder in file, creating default folders");
-                    Folders = new ObservableCollection<FolderModel>
-                    {
-                        new FolderModel("Unclassified")
-                    };
-                    _jsonManager.SaveFolders(Folders);
-                }
-            }
-            else
-            {
-                Debug.WriteLine("No folder file found, creating default folders");
-                Folders = new ObservableCollection<FolderModel>
-                {
-                    new FolderModel("Unclassified")
-                };
-                _jsonManager.SaveFolders(Folders);
-            }
+
         }
 
 

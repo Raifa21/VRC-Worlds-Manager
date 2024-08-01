@@ -1,111 +1,136 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Threading.Tasks;
-using VRC_Favourite_Manager;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
 
-public class WorldManager
+namespace VRC_Favourite_Manager.Common
 {
-    private readonly VRChatAPIService _vrChatAPIService;
-    private readonly JsonManager _jsonManager;
-    private HashSet<WorldModel> _favoriteWorlds;
-    private HashSet<string> _existingWorldIds;
-
-    public WorldManager(VRChatAPIService vrChatAPIService, JsonManager jsonManager)
+    public class WorldManager
     {
-        _vrChatAPIService = vrChatAPIService;
-        _jsonManager = jsonManager;
-        _favoriteWorlds = new HashSet<WorldModel>();
-        _existingWorldIds = new HashSet<string>();
+        private readonly VRChatAPIService _vrChatAPIService;
+        private readonly JsonManager _jsonManager;
+        private HashSet<string> _existingWorldIds;
+        private ObservableCollection<WorldModel> _worlds;
 
-        LoadWorldsAsync();
-    }
-
-    public IEnumerable<WorldModel> GetFavoriteWorlds() => _favoriteWorlds;
-
-    private async void LoadWorldsAsync()
-    {
-        if (_jsonManager.WorldConfigExists())
+        public ObservableCollection<WorldModel> Worlds
         {
-            var worlds = _jsonManager.LoadWorlds();
-            foreach (var world in worlds)
+            get => _worlds;
+            private set
             {
-                _favoriteWorlds.Add(world);
-                _existingWorldIds.Add(world.WorldId);
+                _worlds = value;
+                OnPropertyChanged(nameof(Worlds));
             }
-            if(worlds.Count > 0)
+        }
+
+
+        public WorldManager(VRChatAPIService vrChatAPIService, JsonManager jsonManager)
+        {
+            _vrChatAPIService = vrChatAPIService;
+            _jsonManager = jsonManager;
+            _worlds = new ObservableCollection<WorldModel>();
+            _existingWorldIds = new HashSet<string>();
+
+            LoadWorldsAsync();
+
+        }
+
+        private async void LoadWorldsAsync()
+        {
+            if (_jsonManager.WorldConfigExists())
             {
-                await CheckForNewWorldsAsync();
+                var worlds = _jsonManager.LoadWorlds();
+                foreach (var world in worlds)
+                {
+                    _worlds.Add(world);
+                    _existingWorldIds.Add(world.WorldId);
+                }
+
+                if (worlds.Count > 0)
+                {
+                    await CheckForNewWorldsAsync();
+                }
+                else
+                {
+                    await InitialScanAsync();
+                }
             }
             else
             {
                 await InitialScanAsync();
             }
         }
-        else
-        {
-            await InitialScanAsync();
-        }
-    }
 
-    private async Task InitialScanAsync()
-    {
-        int page = 0;
-        bool hasMore = true;
-        while (hasMore)
+        private async Task InitialScanAsync()
         {
-            var worlds = await _vrChatAPIService.GetFavoriteWorldsAsync(100, page * 100);
-            foreach (var world in worlds)
+            int page = 0;
+            bool hasMore = true;
+            while (hasMore)
             {
-                _favoriteWorlds.Add(world);
+                var worlds = await _vrChatAPIService.GetFavoriteWorldsAsync(100, page * 100);
+                foreach (var world in worlds)
+                {
+                    _worlds.Add(world);
+                }
+
+                if (worlds.Count < 100)
+                {
+                    hasMore = false;
+                }
+
+                page++;
             }
-            if (worlds.Count < 100)
+
+            SaveWorlds();
+        }
+
+        public async Task CheckForNewWorldsAsync()
+        {
+            if (_existingWorldIds == null)
             {
-                hasMore = false;
+                _existingWorldIds = new HashSet<string>();
             }
-            page++;
-        }
-        SaveWorlds();
-    }
 
-    private async Task CheckForNewWorldsAsync()
-    {
-        if (_existingWorldIds == null)
-        {
-            _existingWorldIds = new HashSet<string>();
-        }
-
-        // Add existing worlds' IDs to the set
-        foreach (var world in _favoriteWorlds)
-        {
-            _existingWorldIds.Add(world.WorldId);
-        }
-
-        var worlds = await _vrChatAPIService.GetFavoriteWorldsAsync(100, 0);
-        foreach (var world in worlds)
-        {
-            if (!_existingWorldIds.Contains(world.WorldId))
+            // Add existing worlds' IDs to the set
+            foreach (var world in _worlds)
             {
-                _favoriteWorlds.Add(world);
                 _existingWorldIds.Add(world.WorldId);
             }
-        }
-        SaveWorlds();
-    }
 
-    public void SaveWorlds()
-    {
-        _jsonManager.SaveWorlds(_favoriteWorlds);
-    }
+            var worlds = await _vrChatAPIService.GetFavoriteWorldsAsync(100, 0);
+            foreach (var world in worlds)
+            {
+                if (!_existingWorldIds.Contains(world.WorldId))
+                {
+                    _worlds.Add(world);
+                    _existingWorldIds.Add(world.WorldId);
+                }
+            }
 
-    public void RemoveWorld(WorldModel world)
-    {
-        if (_favoriteWorlds.Contains(world))
-        {
-            _favoriteWorlds.Remove(world);
-            _existingWorldIds.Remove(world.WorldId);
             SaveWorlds();
+        }
+
+        public void RemoveWorld(WorldModel world)
+        {
+            if (_worlds.Contains(world))
+            {
+                _worlds.Remove(world);
+                _existingWorldIds.Remove(world.WorldId);
+                SaveWorlds();
+            }
+        }
+
+        private void SaveWorlds()
+        {
+            _jsonManager.SaveWorlds(_worlds);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

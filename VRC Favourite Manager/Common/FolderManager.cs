@@ -1,47 +1,75 @@
 ﻿using System.Collections.ObjectModel;
-using VRC_Favourite_Manager;
+using System.Linq;
 using VRC_Favourite_Manager.Models;
-using VRC_Favourite_Manager.Services;
 
-public class FolderManager
+namespace VRC_Favourite_Manager.Common
 {
-    private readonly JsonManager _jsonManager;
-
-    public ObservableCollection<FolderModel> Folders { get; private set; }
-
-    public FolderManager(JsonManager jsonManager)
+    public class FolderManager
     {
-        _jsonManager = jsonManager;
-        Folders = new ObservableCollection<FolderModel>();
+        private readonly JsonManager _jsonManager;
+        public ObservableCollection<FolderModel> Folders { get; private set; }
 
-        var savedFolders = _jsonManager.LoadFolders();
-        if (savedFolders != null)
+        public FolderManager(JsonManager jsonManager)
         {
-            foreach (var folder in savedFolders)
+            _jsonManager = jsonManager;
+            Folders = new ObservableCollection<FolderModel>();
+
+            LoadFolders();
+        }
+
+        public void LoadFolders()
+        {
+            if (_jsonManager.FolderConfigExists())
             {
-                Folders.Add(folder);
+                var savedFolders = _jsonManager.LoadFolders();
+                if (savedFolders != null)
+                {
+                    foreach (var folder in savedFolders)
+                    {
+                        Folders.Add(folder);
+                    }
+                }
+                else
+                {
+                    Folders.Add(new FolderModel("Unclassified"));
+                    SaveFolders();
+                }
+            }
+            else
+            {
+                Folders.Add(new FolderModel("Unclassified"));
+                SaveFolders();
             }
         }
-        else
+
+        public void AddToFolder(WorldModel world, string folderName)
         {
-            Folders.Add(new FolderModel("Unclassified"));
+            var folder = Folders.FirstOrDefault(f => f.Name == folderName);
+            if (folder == null)
+            {
+                folder = new FolderModel(folderName);
+                Folders.Add(folder);
+            }
+
+            folder.Worlds.Add(world);
+            SaveFolders();
         }
-    }
 
-    public void AddFolder(string folderName)
-    {
-        Folders.Add(new FolderModel(folderName));
-        SaveFolders();
-    }
+        public void AddFolder(string folderName)
+        {
+            Folders.Add(new FolderModel(folderName));
+            SaveFolders();
+        }
 
-    public void RemoveFolder(FolderModel folder)
-    {
-        Folders.Remove(folder);
-        SaveFolders();
-    }
+        public void RemoveFolder(FolderModel folder)
+        {
+            Folders.Remove(folder);
+            SaveFolders();
+        }
 
-    private void SaveFolders()
-    {
-        _jsonManager.SaveFolders(Folders);
+        private void SaveFolders()
+        {
+            _jsonManager.SaveFolders(Folders);
+        }
     }
 }
