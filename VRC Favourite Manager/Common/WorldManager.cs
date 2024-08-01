@@ -132,5 +132,12 @@ namespace VRC_Favourite_Manager.Common
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public void ResetWorlds()
+        {
+            _worlds.Clear();
+            _existingWorldIds.Clear();
+            SaveWorlds();
+        }
     }
 }

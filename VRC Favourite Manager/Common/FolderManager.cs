@@ -50,7 +50,6 @@ namespace VRC_Favourite_Manager.Common
                 folder = new FolderModel(folderName);
                 Folders.Add(folder);
             }
-
             folder.Worlds.Add(world);
             SaveFolders();
         }
@@ -70,6 +69,13 @@ namespace VRC_Favourite_Manager.Common
         private void SaveFolders()
         {
             _jsonManager.SaveFolders(Folders);
+        }
+
+        public void ResetFolders()
+        {
+            Folders.Clear();
+            Folders.Add(new FolderModel("Unclassified"));
+            SaveFolders();
         }
     }
 }

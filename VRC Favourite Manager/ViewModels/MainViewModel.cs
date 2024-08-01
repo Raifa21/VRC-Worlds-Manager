@@ -71,11 +71,8 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public ICommand AddFolderCommand { get; }
         public ICommand MoveWorldCommand { get; }
-
         public ICommand RefreshCommand { get; }
-
         public ICommand LogoutCommand { get; }
-
         public ICommand ResetCommand { get; }
 
 
@@ -83,6 +80,9 @@ namespace VRC_Favourite_Manager.ViewModels
         public MainViewModel()
         {
             _vrChatAPIService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
+
+            Application.Current.Resources["WorldManager"] = new WorldManager(_vrChatAPIService, new JsonManager());
+            Application.Current.Resources["FolderManager"] = new FolderManager(new JsonManager());
             _worldManager = Application.Current.Resources["WorldManager"] as WorldManager;
             _folderManager = Application.Current.Resources["FolderManager"] as FolderManager;
 
@@ -93,24 +93,14 @@ namespace VRC_Favourite_Manager.ViewModels
             RefreshCommand = new RelayCommand(async () => await RefreshWorldsAsync());
             LogoutCommand = new RelayCommand(async () => await LogoutCommandAsync());
             MoveWorldCommand = new RelayCommand<WorldModel>(MoveWorld);
-            ResetCommand = new RelayCommand(ResetWorlds);
-
-
-            var task = InitializeAsync();
-
+            ResetCommand = new RelayCommand(Reset);
 
             SelectedFolder = Folders.First();
         }
 
-        private async Task InitializeAsync()
-        {
-
-        }
-
-
         private async Task RefreshWorldsAsync()
         {
-            await CheckForNewWorldsAsync();
+            await _worldManager.CheckForNewWorldsAsync();
         }
         private async Task LogoutCommandAsync()
         {
@@ -118,33 +108,16 @@ namespace VRC_Favourite_Manager.ViewModels
         }
         private void MoveWorld(WorldModel world)
         {
-            // Remove the world from the current folder
-            var unclassifiedFolder = Folders.FirstOrDefault(f => f.Name == "Unclassified");
-            if (unclassifiedFolder?.Worlds.Contains(world) == true)
-            {
-                unclassifiedFolder.Worlds.Remove(world);
-            }
-
-            SelectedFolder?.Worlds.Add(world);
+            _folderManager.AddToFolder(world, SelectedFolder.Name);
         }
-        private void ResetWorlds()
+        private void Reset()
         {
-            _favoriteWorlds.Clear();
-            _existingWorldIds.Clear();
-            foreach (var folder in Folders)
-            {
-                folder.Worlds.Clear();
-            }
-            _jsonManager.SaveWorlds(_favoriteWorlds);
+            _worldManager.ResetWorlds();
+            _folderManager.ResetFolders();
         }
         public void AddFolder(string folderName)
         {
-            if (!string.IsNullOrWhiteSpace(folderName) && !Folders.Any(f => f.Name == folderName))
-            {
-                var newFolder = new FolderModel(folderName);
-                Folders.Add(newFolder);
-                _jsonManager.SaveFolders(Folders);
-            }
+            _folderManager.AddFolder(folderName);
         }
     }
 }

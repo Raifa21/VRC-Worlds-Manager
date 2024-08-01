@@ -127,16 +127,9 @@ namespace VRC_Favourite_Manager
         /// </summary>
         private void InitialiseService()
         {
-
             Application.Current.Resources["VRChatAPIService"] = new VRChatAPIService();
 
             _VRChatAPIService = (VRChatAPIService)Application.Current.Resources["VRChatAPIService"];
-
-            Application.Current.Resources["WorldManager"] = new WorldManager(_VRChatAPIService, new JsonManager());
-
-            Application.Current.Resources["FolderManager"] = new FolderManager(new JsonManager());
-
-            
         }
 
     }
