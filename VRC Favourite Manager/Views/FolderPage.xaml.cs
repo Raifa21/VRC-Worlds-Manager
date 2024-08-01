@@ -12,11 +12,12 @@ namespace VRC_Favourite_Manager.Views
 {
     public sealed partial class FolderPage : Page
     {
-        private MainViewModel mainViewModel;
-        public FolderPage(MainViewModel mainViewmodel, FolderModel folder)
+        private readonly FolderPageViewModel viewModel;
+        public FolderPage(FolderModel folder)
         {
             this.InitializeComponent();
-
+            viewModel = new FolderPageViewModel();
+            this.DataContext = viewModel;
         }
 
         private async void GridView_ItemClick(object sender, ItemClickEventArgs e)

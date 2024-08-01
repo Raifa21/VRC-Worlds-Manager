@@ -11,7 +11,7 @@ namespace VRC_Favourite_Manager.Views
     public sealed partial class MainPage : Page
     {
         int previousSelectedIndex = 0;
-        private MainViewModel viewModel;
+        private readonly MainViewModel viewModel;
 
         public MainPage()
         {
