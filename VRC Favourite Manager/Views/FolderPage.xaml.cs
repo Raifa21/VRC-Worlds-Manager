@@ -12,49 +12,56 @@ namespace VRC_Favourite_Manager.Views
 {
     public sealed partial class FolderPage : Page
     {
-        private readonly FolderPageViewModel viewModel;
-        public FolderPage(FolderModel folder)
+        private readonly FolderPageViewModel _viewModel;
+        public FolderPage()
         {
             this.InitializeComponent();
-            viewModel = new FolderPageViewModel();
-            this.DataContext = viewModel;
+            _viewModel = new FolderPageViewModel();
+            this.DataContext = _viewModel;
         }
 
         private async void GridView_ItemClick(object sender, ItemClickEventArgs e)
         {
-            var selectedWorld = e.ClickedItem as WorldModel;
-            if (selectedWorld != null)
+            if(e.ClickedItem is WorldModel selectedWorld)
             {
-                var dialog = new WorldDetailsPopup(selectedWorld);
-                dialog.XamlRoot = this.XamlRoot;
+                var dialog = new WorldDetailsPopup(selectedWorld)
+                {
+                    XamlRoot = this.XamlRoot
+                };
                 await dialog.ShowAsync();
             }
         }
 
         private void ViewDetails_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
-            var selectedWorld = (sender as FrameworkElement).DataContext as WorldModel;
-            if (selectedWorld != null)
+            if(sender is FrameworkElement { DataContext: WorldModel selectedWorld })
             {
-                // Handle viewing details for the selected world
+                var dialog = new WorldDetailsPopup(selectedWorld)
+                {
+                    XamlRoot = this.XamlRoot
+                };
+                dialog.ShowAsync();
             }
         }
 
         private async void MoveToAnotherFolder_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
-            Debug.WriteLine("Move to another folder clicked");
-            var selectedWorld = (sender as FrameworkElement).DataContext as WorldModel;
-            if (selectedWorld != null)
+            if (sender is FrameworkElement { DataContext: WorldModel selectedWorld })
             {
-                var addToFolderPopup = new AddToFolderPopup(mainViewModel, selectedWorld);
-                addToFolderPopup.XamlRoot = this.Content.XamlRoot;
+                var addToFolderPopup = new AddToFolderPopup(selectedWorld)
+                {
+                    XamlRoot = this.Content.XamlRoot
+                };
                 await addToFolderPopup.ShowAsync();
             }
         }
 
         private void Remove_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
-            var selectedWorld = (sender as FrameworkElement).DataContext as WorldModel;
+            if (sender is FrameworkElement { DataContext: WorldModel selectedWorld })
+            {
+                _viewModel.RemoveFromFolder(selectedWorld);
+            }
         }
     }
 }

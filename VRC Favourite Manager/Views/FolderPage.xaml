@@ -13,12 +13,12 @@
     </Page.Resources>
 
     <Page.DataContext>
-        <viewModels:MainViewModel/>
+        <viewModels:FolderPageViewModel/>
     </Page.DataContext>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <TextBlock Text="{Binding FolderName}" FontSize="24" FontWeight="Bold" Margin="20 10"/>
-        <muxc:GridView ItemsSource="{Binding SelectedFolder.Worlds}" Margin="10" IsItemClickEnabled="True" ItemClick="GridView_ItemClick">
+        <muxc:GridView ItemsSource="{Binding Worlds}" Margin="10" IsItemClickEnabled="True" ItemClick="GridView_ItemClick">
             <muxc:GridView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Margin="10"> 

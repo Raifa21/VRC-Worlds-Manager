@@ -19,14 +19,27 @@ namespace VRC_Favourite_Manager.ViewModels
     {
         private readonly FolderManager _folderManager;
 
+        private ObservableCollection<WorldModel> _worlds;
+        public ObservableCollection<WorldModel> Worlds
+        {
+            get => _worlds;
+            set
+            {
+                _worlds = value;
+                OnPropertyChanged();
+            }
+        }
+
+
         public ICommand MoveWorldCommand { get; }
         public ICommand AddFolderCommand { get; }
-
 
         public FolderPageViewModel()
         {
             Application.Current.Resources["FolderManager"] = new FolderManager(new JsonManager());
             _folderManager = Application.Current.Resources["FolderManager"] as FolderManager;
+
+
 
             MoveWorldCommand = new RelayCommand<Tuple<WorldModel,string>>(MoveWorld);
             AddFolderCommand = new RelayCommand<string>(AddFolder);
@@ -39,6 +52,10 @@ namespace VRC_Favourite_Manager.ViewModels
         public void AddFolder(string folderName)
         {
             _folderManager.AddFolder(folderName);
+        }
+        public void RemoveFromFolder(WorldModel world)
+        {
+            _folderManager.RemoveFromFolder(world, _folderName);
         }
     }
 }

@@ -22,8 +22,6 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly VRChatAPIService _vrChatAPIService;
         private readonly WorldManager _worldManager;
         private readonly FolderManager _folderManager;
-        private string _folderName;
-        private FolderModel _selectedFolder;
 
         private ObservableCollection<WorldModel> _worlds;
 
@@ -40,7 +38,7 @@ namespace VRC_Favourite_Manager.ViewModels
             }
         }
 
-        public ObservableCollection<FolderModel> Folders => _folderManager.Folders;
+        private FolderModel _selectedFolder;
 
         public FolderModel SelectedFolder
         {
@@ -50,10 +48,14 @@ namespace VRC_Favourite_Manager.ViewModels
                 if (_selectedFolder != value)
                 {
                     _selectedFolder = value;
-                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(SelectedFolder));
+                    _folderManager.SelectedFolder = value;
                 }
             }
         }
+
+        public ObservableCollection<FolderModel> Folders => _folderManager.Folders;
+
         public ObservableCollection<WorldModel> Worlds
         {
             get => _worlds;
@@ -71,7 +73,6 @@ namespace VRC_Favourite_Manager.ViewModels
         public ICommand ResetCommand { get; }
 
 
-
         public MainViewModel()
         {
             _vrChatAPIService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
@@ -83,10 +84,7 @@ namespace VRC_Favourite_Manager.ViewModels
 
             RefreshCommand = new RelayCommand(async () => await RefreshWorldsAsync());
             LogoutCommand = new RelayCommand(async () => await LogoutCommandAsync());
-            MoveWorldCommand = new RelayCommand<WorldModel>(MoveWorld);
             ResetCommand = new RelayCommand(Reset);
-
-            SelectedFolder = Folders.First();
         }
 
         private async Task RefreshWorldsAsync()
@@ -96,10 +94,6 @@ namespace VRC_Favourite_Manager.ViewModels
         private async Task LogoutCommandAsync()
         {
             await _vrChatAPIService.LogoutAsync();
-        }
-        private void MoveWorld(WorldModel world)
-        {
-            _folderManager.AddToFolder(world, SelectedFolder.Name);
         }
         private void Reset()
         {

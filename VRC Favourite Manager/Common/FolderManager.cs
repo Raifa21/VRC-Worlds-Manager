@@ -1,13 +1,31 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using VRC_Favourite_Manager.Models;
 
 namespace VRC_Favourite_Manager.Common
 {
-    public class FolderManager
+    public class FolderManager : INotifyPropertyChanged
     {
         private readonly JsonManager _jsonManager;
         public ObservableCollection<FolderModel> Folders { get; private set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private FolderModel _selectedFolder;
+        public FolderModel SelectedFolder
+        {
+            get => _selectedFolder;
+            set
+            {
+                if (_selectedFolder != value)
+                {
+                    _selectedFolder = value;
+                    OnPropertyChanged(nameof(SelectedFolder));
+                }
+            }
+        }
 
         public FolderManager(JsonManager jsonManager)
         {
@@ -15,6 +33,8 @@ namespace VRC_Favourite_Manager.Common
             Folders = new ObservableCollection<FolderModel>();
 
             LoadFolders();
+
+            _selectedFolder = Folders.FirstOrDefault();
         }
 
         public void LoadFolders()
@@ -58,12 +78,24 @@ namespace VRC_Favourite_Manager.Common
                     f.Worlds.Remove(world);
                 }
             }
-
+            SaveFolders();
+        }
+        public void RemoveFromFolder(WorldModel world, string folderName)
+        {
+            var folder = Folders.FirstOrDefault(f => f.Name == folderName);
+            folder?.Worlds.Remove(world);
             SaveFolders();
         }
 
         public void AddFolder(string folderName)
         {
+            var index = 0;
+            //check for duplicates and add a (num) suffix if needed
+            while (Folders.Any(f => f.Name == folderName))
+            {
+                index++;
+                folderName = $"{folderName} ({index})";
+            }
             Folders.Add(new FolderModel(folderName));
             SaveFolders();
         }
@@ -84,6 +116,11 @@ namespace VRC_Favourite_Manager.Common
             Folders.Clear();
             Folders.Add(new FolderModel("Unclassified"));
             SaveFolders();
+        }
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
