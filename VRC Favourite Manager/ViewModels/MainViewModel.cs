@@ -16,15 +16,11 @@ namespace VRC_Favourite_Manager.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
-        private static readonly Lazy<MainViewModel> _instance =
-            new Lazy<MainViewModel>(() => new MainViewModel());
-
-        public static MainViewModel Instance => _instance.Value;
-
-
         private World selectedWorld;
         private readonly DispatcherTimer _timer;
         private readonly VRChatAPIService _vrChatAPIService;
+        private readonly WorldManager _worldManager;
+        private readonly FolderManager _folderManager;
         private readonly JsonManager _jsonManager;
         private string _folderName;
         private FolderModel _selectedFolder;
@@ -105,6 +101,9 @@ namespace VRC_Favourite_Manager.ViewModels
 
             Worlds = new ObservableCollection<WorldModel>();
             _vrChatAPIService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
+            _worldManager = Application.Current.Resources["WorldManager"] as WorldManager;
+            _folderManager = Application.Current.Resources["FolderManager"] as FolderManager;
+
             _jsonManager = new JsonManager();
             _favoriteWorlds = new HashSet<WorldModel>();
             _existingWorldIds = new HashSet<string>();
@@ -149,127 +148,8 @@ namespace VRC_Favourite_Manager.ViewModels
                 };
                 _jsonManager.SaveFolders(Folders);
             }
-            if (_jsonManager.WorldConfigExists())
-            {
-                Debug.WriteLine("Loading worlds from file");
-                var worlds = _jsonManager.LoadWorlds();
-                foreach (var world in worlds)
-                {
-                    _favoriteWorlds.Add(world);
-                    if (!Folders.Any(f => f.Worlds.Contains(world)))
-                    {
-                        Folders.First(f => f.Name == "Unclassified").Worlds.Add(world);
-                    }
-                }
-                if (_favoriteWorlds.Count == 0)
-                {
-                    Debug.WriteLine("No worlds found in file");
-                    await InitialScanAsync();
-                    Debug.WriteLine("Found " + _favoriteWorlds.Count + " worlds");
-                    Debug.WriteLine("Done checking for new worlds");
-                }
-                else
-                {
-                    Debug.WriteLine("Checking for new worlds");
-                    await CheckForNewWorldsAsync();
-                    Debug.WriteLine("Found " + _favoriteWorlds.Count + " worlds");
-                    Debug.WriteLine("Done checking for new worlds");
-                }
-            }
-            else
-            {
-                Debug.WriteLine("No config file found, scanning for worlds");
-                await InitialScanAsync();
-            }
-
-            UpdateWorldsCollection();
-        }
-        private async Task InitialScanAsync()
-        {
-            int page = 0;
-            bool hasMore = true;
-            while (hasMore)
-            {
-                var worlds = await _vrChatAPIService.GetFavoriteWorldsAsync(100, page * 100);
-                foreach (var world in worlds)
-                {
-                    _favoriteWorlds.Add(world);
-                    if (world.Folder.Count == 0)
-                    {
-                        Folders.First(f => f.Name == "Unclassified").Worlds.Add(world);
-                    }
-                    else
-                    {
-                        foreach (var folder in world.Folder)
-                        {
-                            if (Folders.All(f => f.Name != folder))
-                            {
-                                Folders.Add(new FolderModel(folder));
-                            }
-                            Folders.First(f => f.Name == folder).Worlds.Add(world);
-                        }
-                    }
-                    
-                }
-                if (worlds.Count < 100)
-                {
-                    hasMore = false;
-                }
-                page++;
-            }
-            _jsonManager.SaveWorlds(_favoriteWorlds);
-        }
-        private async Task CheckForNewWorldsAsync()
-        {
-            if (_existingWorldIds == null)
-            {
-                _existingWorldIds = new HashSet<string>();
-            }
-
-            // Add existing worlds' IDs to the set
-            foreach (var world in _favoriteWorlds)
-            {
-                _existingWorldIds.Add(world.WorldId);
-            }
-
-            var worlds = await _vrChatAPIService.GetFavoriteWorldsAsync(100, 0);
-            foreach (var world in worlds)
-            {
-                if (!_existingWorldIds.Contains(world.WorldId))
-                {
-                    _favoriteWorlds.Add(world);
-                    _existingWorldIds.Add(world.WorldId);
-                    if (world.Folder.Count == 0)
-                    {
-                        Folders.First(f => f.Name == "Unclassified").Worlds.Add(world);
-                    }
-                    else
-                    {
-                        foreach (var folder in world.Folder)
-                        {
-                            if (Folders.All(f => f.Name != folder))
-                            {
-                                Folders.Add(new FolderModel(folder));
-                            }
-                            Folders.First(f => f.Name == folder).Worlds.Add(world);
-                        }
-                    }
-                }
-            }
-            _jsonManager.SaveWorlds(_favoriteWorlds);
         }
 
-        private void UpdateWorldsCollection()
-        {
-            Worlds.Clear();
-            if (SelectedFolder != null)
-            {
-                foreach (var world in SelectedFolder.Worlds)
-                {
-                    Worlds.Add(world);
-                }
-            }
-        }
 
         private async Task RefreshWorldsAsync()
         {
