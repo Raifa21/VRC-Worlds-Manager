@@ -17,57 +17,12 @@ namespace VRC_Favourite_Manager.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
-        private World selectedWorld;
         private readonly DispatcherTimer _timer;
         private readonly VRChatAPIService _vrChatAPIService;
         private readonly WorldManager _worldManager;
         private readonly FolderManager _folderManager;
-
-        private ObservableCollection<WorldModel> _worlds;
-
-        public World SelectedWorld
-        {
-            get { return selectedWorld; }
-            set
-            {
-                if (selectedWorld != value)
-                {
-                    selectedWorld = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private FolderModel _selectedFolder;
-
-        public FolderModel SelectedFolder
-        {
-            get => _selectedFolder;
-            set
-            {
-                if (_selectedFolder != value)
-                {
-                    _selectedFolder = value;
-                    OnPropertyChanged(nameof(SelectedFolder));
-                    _folderManager.SelectedFolder = value;
-                }
-            }
-        }
-
         public ObservableCollection<FolderModel> Folders => _folderManager.Folders;
 
-        public ObservableCollection<WorldModel> Worlds
-        {
-            get => _worlds;
-            set
-            {
-                _worlds = value;
-                OnPropertyChanged();
-            }
-        }
-
-
-        public ICommand MoveWorldCommand { get; }
         public ICommand RefreshCommand { get; }
         public ICommand LogoutCommand { get; }
         public ICommand ResetCommand { get; }

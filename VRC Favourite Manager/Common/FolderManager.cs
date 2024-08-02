@@ -9,9 +9,22 @@ namespace VRC_Favourite_Manager.Common
     public class FolderManager : INotifyPropertyChanged
     {
         private readonly JsonManager _jsonManager;
-        public ObservableCollection<FolderModel> Folders { get; private set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+
+        private ObservableCollection<FolderModel> _folders;
+
+        public ObservableCollection<FolderModel> Folders
+        {
+            get => _folders;
+            set
+            {
+                _folders = value;
+                OnPropertyChanged(nameof(Folders));
+            }
+        }
+
 
         private FolderModel _selectedFolder;
         public FolderModel SelectedFolder
@@ -30,11 +43,11 @@ namespace VRC_Favourite_Manager.Common
         public FolderManager(JsonManager jsonManager)
         {
             _jsonManager = jsonManager;
-            Folders = new ObservableCollection<FolderModel>();
+            _folders = new ObservableCollection<FolderModel>();
 
             LoadFolders();
 
-            _selectedFolder = Folders.FirstOrDefault();
+            _selectedFolder = _folders.FirstOrDefault();
         }
 
         public void LoadFolders()
@@ -46,75 +59,71 @@ namespace VRC_Favourite_Manager.Common
                 {
                     foreach (var folder in savedFolders)
                     {
-                        Folders.Add(folder);
+                        _folders.Add(folder);
                     }
                 }
                 else
                 {
-                    Folders.Add(new FolderModel("Unclassified"));
+                    _folders.Add(new FolderModel("Unclassified"));
                     SaveFolders();
                 }
             }
             else
             {
-                Folders.Add(new FolderModel("Unclassified"));
+                _folders.Add(new FolderModel("Unclassified"));
                 SaveFolders();
             }
         }
 
         public void AddToFolder(WorldModel world, string folderName)
         {
-            var folder = Folders.FirstOrDefault(f => f.Name == folderName);
+            var folder = _folders.FirstOrDefault(f => f.Name == folderName);
             if (folder == null)
             {
                 folder = new FolderModel(folderName);
-                Folders.Add(folder);
+                _folders.Add(folder);
             }
             folder.Worlds.Add(world);
-            foreach (var f in Folders)
-            {
-                if (f.Name == "Unclassified")
-                {
-                    f.Worlds.Remove(world);
-                }
-            }
+
+            folder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
+            folder?.Worlds.Remove(world);
+
             SaveFolders();
         }
         public void RemoveFromFolder(WorldModel world, string folderName)
         {
-            var folder = Folders.FirstOrDefault(f => f.Name == folderName);
+            var folder = _folders.FirstOrDefault(f => f.Name == folderName);
             folder?.Worlds.Remove(world);
             SaveFolders();
         }
 
         public void AddFolder(string folderName)
         {
-            var index = 0;
-            //check for duplicates and add a (num) suffix if needed
-            while (Folders.Any(f => f.Name == folderName))
+            var index = 1;
+            while (_folders.Any(f => f.Name == folderName))
             {
                 index++;
                 folderName = $"{folderName} ({index})";
             }
-            Folders.Add(new FolderModel(folderName));
+            _folders.Add(new FolderModel(folderName));
             SaveFolders();
         }
 
         public void RemoveFolder(FolderModel folder)
         {
-            Folders.Remove(folder);
+            _folders.Remove(folder);
             SaveFolders();
         }
 
         private void SaveFolders()
         {
-            _jsonManager.SaveFolders(Folders);
+            _jsonManager.SaveFolders(_folders);
         }
 
         public void ResetFolders()
         {
-            Folders.Clear();
-            Folders.Add(new FolderModel("Unclassified"));
+            _folders.Clear();
+            _folders.Add(new FolderModel("Unclassified"));
             SaveFolders();
         }
 

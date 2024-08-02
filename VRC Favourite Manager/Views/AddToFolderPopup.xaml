@@ -9,6 +9,7 @@
     SecondaryButtonText="Confirm"
     SecondaryButtonClick="ConfirmButton_Click">
 
+
     <Grid Width="260" Height="500" HorizontalAlignment="Center" VerticalAlignment="Center">
         <StackPanel Margin="10,10,10,10">
             <Viewbox Width="240" Height="180" Margin="0,0,0,0">
@@ -19,10 +20,10 @@
             <TextBlock Text="Select Folders" FontSize="14" FontWeight="Bold" Margin="0,20,0,10"/>
             <Grid Height="95" Margin="2,25,0,0">
                 <ScrollViewer>
-                    <ItemsControl ItemsSource="{Binding Folders}">
+                    <ItemsControl ItemsSource="{Binding SelectedFolders}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <ToggleButton Content="{Binding Key}" IsChecked="{Binding Value}" Margin="0,0,0,10"/>
+                                <ToggleButton Content="{Binding Key}" IsChecked="{Binding Value, Mode=TwoWay}" Margin="0,0,0,10"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

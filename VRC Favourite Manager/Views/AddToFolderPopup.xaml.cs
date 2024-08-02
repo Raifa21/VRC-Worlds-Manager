@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.ViewModels;
 
@@ -16,6 +17,8 @@ namespace VRC_Favourite_Manager.Views
 
         private void CloseButton_Click(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
+            var viewModel = (AddToFolderPopupViewModel)this.DataContext;
+            viewModel.CancelSelection();
             this.Hide();
         }
 
@@ -28,10 +31,8 @@ namespace VRC_Favourite_Manager.Views
         private void ConfirmButton_Click(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             var viewModel = (AddToFolderPopupViewModel)this.DataContext;
-            var selectedFolders = viewModel.GetSelectedFolders();
+            viewModel.ConfirmSelection();
 
-            // Update the selected world folder property
-            viewModel.SelectedWorld.Folder = selectedFolders;
 
             this.Hide();
         }
