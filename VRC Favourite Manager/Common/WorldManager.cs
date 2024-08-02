@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
@@ -10,6 +11,7 @@ namespace VRC_Favourite_Manager.Common
     public class WorldManager
     {
         private readonly VRChatAPIService _vrChatAPIService;
+        private readonly FolderManager _folderManager;
         private readonly JsonManager _jsonManager;
         private HashSet<string> _existingWorldIds;
         private ObservableCollection<WorldModel> _worlds;
@@ -25,18 +27,16 @@ namespace VRC_Favourite_Manager.Common
         }
 
 
-        public WorldManager(VRChatAPIService vrChatAPIService, JsonManager jsonManager)
+        public WorldManager()
         {
-            _vrChatAPIService = vrChatAPIService;
-            _jsonManager = jsonManager;
+            _vrChatAPIService = (VRChatAPIService)App.Current.Resources["VRChatAPIService"];
+            _folderManager = (FolderManager)App.Current.Resources["FolderManager"];
+            _jsonManager = new JsonManager();
             _worlds = new ObservableCollection<WorldModel>();
             _existingWorldIds = new HashSet<string>();
-
-            LoadWorldsAsync();
-
         }
 
-        private async void LoadWorldsAsync()
+        public async void LoadWorldsAsync()
         {
             if (_jsonManager.WorldConfigExists())
             {
@@ -53,11 +53,13 @@ namespace VRC_Favourite_Manager.Common
                 }
                 else
                 {
+                    Debug.WriteLine("No worlds found in the config file. Performing initial scan.");
                     await InitialScanAsync();
                 }
             }
             else
             {
+                Debug.WriteLine("No config file found. Performing initial scan.");
                 await InitialScanAsync();
             }
         }
@@ -72,6 +74,7 @@ namespace VRC_Favourite_Manager.Common
                 foreach (var world in worlds)
                 {
                     _worlds.Add(world);
+                    _existingWorldIds.Add(world.WorldId);
                 }
 
                 if (worlds.Count < 100)
@@ -105,6 +108,10 @@ namespace VRC_Favourite_Manager.Common
                 {
                     _worlds.Add(world);
                     _existingWorldIds.Add(world.WorldId);
+                }
+                else
+                {
+                    break;
                 }
             }
 

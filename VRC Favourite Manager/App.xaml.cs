@@ -123,12 +123,13 @@ namespace VRC_Favourite_Manager
         }
 
         /// <summary>
-        /// Initialise VRChatAPIService as singleton.
+        /// Initialise services as singleton.
         /// </summary>
         private void InitialiseService()
         {
             Application.Current.Resources["VRChatAPIService"] = new VRChatAPIService();
-
+            Application.Current.Resources["FolderManager"] = new FolderManager();
+            Application.Current.Resources["WorldManager"] = new WorldManager();
             _VRChatAPIService = (VRChatAPIService)Application.Current.Resources["VRChatAPIService"];
         }
 

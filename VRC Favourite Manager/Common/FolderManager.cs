@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using VRC_Favourite_Manager.Models;
 
@@ -40,13 +41,15 @@ namespace VRC_Favourite_Manager.Common
             }
         }
 
-        public FolderManager(JsonManager jsonManager)
+        public FolderManager()
         {
-            _jsonManager = jsonManager;
+            _jsonManager = new JsonManager();
             _folders = new ObservableCollection<FolderModel>();
-
             LoadFolders();
-
+            foreach (var folder in _folders)
+            {
+                Debug.WriteLine(folder.Name);
+            }
             _selectedFolder = _folders.FirstOrDefault();
         }
 
@@ -55,8 +58,9 @@ namespace VRC_Favourite_Manager.Common
             if (_jsonManager.FolderConfigExists())
             {
                 var savedFolders = _jsonManager.LoadFolders();
-                if (savedFolders != null)
+                if (savedFolders != null && savedFolders.Count > 0)
                 {
+                    Debug.WriteLine("Loading folders");
                     foreach (var folder in savedFolders)
                     {
                         _folders.Add(folder);
@@ -64,32 +68,60 @@ namespace VRC_Favourite_Manager.Common
                 }
                 else
                 {
-                    _folders.Add(new FolderModel("Unclassified"));
+                    Debug.WriteLine("No folders found");
+                    AddFolder("Unclassified");
                     SaveFolders();
                 }
             }
             else
             {
-                _folders.Add(new FolderModel("Unclassified"));
+                Debug.WriteLine("File not found");
+                AddFolder("Unclassified");
                 SaveFolders();
             }
+            
+        }
+        public void InitializeFolders(ObservableCollection<WorldModel> worlds)
+        {
+            var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
+            if (unclassifiedFolder != null)
+            {
+                foreach (var world in worlds)
+                {
+                    if (!unclassifiedFolder.Worlds.Contains(world))
+                    {
+                        unclassifiedFolder.Worlds.Add(world);
+                    }
+                }
+            }
+            else
+            {
+                AddFolder("Unclassified");
+                InitializeFolders(worlds);
+            }
+            SaveFolders();
         }
 
         public void AddToFolder(WorldModel world, string folderName)
         {
             var folder = _folders.FirstOrDefault(f => f.Name == folderName);
-            if (folder == null)
+            if (folder != null)
             {
-                folder = new FolderModel(folderName);
-                _folders.Add(folder);
+                if (!folder.Worlds.Contains(world))
+                {
+                    folder.Worlds.Add(world);
+                }
+                var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
+                unclassifiedFolder?.Worlds.Remove(world);
+                SaveFolders();
             }
-            folder.Worlds.Add(world);
-
-            folder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
-            folder?.Worlds.Remove(world);
-
-            SaveFolders();
+            else
+            {
+                AddFolder(folderName);
+                AddToFolder(world, folderName);
+            }
         }
+
         public void RemoveFromFolder(WorldModel world, string folderName)
         {
             var folder = _folders.FirstOrDefault(f => f.Name == folderName);
@@ -123,7 +155,6 @@ namespace VRC_Favourite_Manager.Common
         public void ResetFolders()
         {
             _folders.Clear();
-            _folders.Add(new FolderModel("Unclassified"));
             SaveFolders();
         }
 

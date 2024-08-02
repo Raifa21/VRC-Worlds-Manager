@@ -44,13 +44,7 @@ namespace VRC_Favourite_Manager.ViewModels
         }
         public void RemoveFromFolder(WorldModel world)
         {
-            _folderManager.RemoveFromFolder(world, _folderName);
-        }
-
-        public void UpdateWorlds()
-        {
-            _worlds = _folderManager?.SelectedFolder.Worlds;
-            OnPropertyChanged(nameof(Worlds));
+            _folderManager.RemoveFromFolder(world, FolderName);
         }
     }
 }

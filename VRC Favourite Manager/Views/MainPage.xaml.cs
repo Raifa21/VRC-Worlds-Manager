@@ -22,6 +22,8 @@ namespace VRC_Favourite_Manager.Views
             LoadFoldersToDropDownButton();
 
             ((INotifyCollectionChanged)viewModel.Folders).CollectionChanged += Folders_CollectionChanged;
+
+            NavigateToFolderPage();
         }
         private void Folders_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -32,8 +34,6 @@ namespace VRC_Favourite_Manager.Views
         {
             FoldersFlyout.Items.Clear();
 
-            var viewModel = (MainViewModel)this.DataContext;
-
             foreach (var folder in viewModel.Folders)
             {
                 var menuFlyoutItem = new MenuFlyoutItem { Text = folder.Name, Tag = folder };
@@ -41,7 +41,6 @@ namespace VRC_Favourite_Manager.Views
                 FoldersFlyout.Items.Add(menuFlyoutItem);
             }
         }
-
 
         private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
         {
@@ -51,10 +50,13 @@ namespace VRC_Favourite_Manager.Views
                 var selectedFolder = menuItem.Tag as FolderModel;
                 if (selectedFolder != null)
                 {
-                    var viewModel = (MainViewModel)this.DataContext;
                     viewModel.SelectedFolder = selectedFolder;
                 }
             }
+        }
+        private void NavigateToFolderPage()
+        {
+            ContentFrame.Navigate(typeof(FolderPage));
         }
     }
 }

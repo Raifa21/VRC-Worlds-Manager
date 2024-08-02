@@ -41,12 +41,13 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public MainViewModel()
         {
+            Debug.WriteLine("MainViewModel created");
             _vrChatAPIService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
-
-            Application.Current.Resources["WorldManager"] = new WorldManager(_vrChatAPIService, new JsonManager());
-            Application.Current.Resources["FolderManager"] = new FolderManager(new JsonManager());
-            _worldManager = Application.Current.Resources["WorldManager"] as WorldManager;
             _folderManager = Application.Current.Resources["FolderManager"] as FolderManager;
+            _worldManager = Application.Current.Resources["WorldManager"] as WorldManager;
+            
+            _worldManager.LoadWorldsAsync();
+            
 
             RefreshCommand = new RelayCommand(async () => await RefreshWorldsAsync());
             LogoutCommand = new RelayCommand(async () => await LogoutCommandAsync());
@@ -65,10 +66,6 @@ namespace VRC_Favourite_Manager.ViewModels
         {
             _worldManager.ResetWorlds();
             _folderManager.ResetFolders();
-        }
-        public void AddFolder(string folderName)
-        {
-            _folderManager.AddFolder(folderName);
         }
     }
 }
