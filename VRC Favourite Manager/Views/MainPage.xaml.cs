@@ -5,6 +5,7 @@ using VRC_Favourite_Manager.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Specialized;
+using VRC_Favourite_Manager.Models;
 
 namespace VRC_Favourite_Manager.Views
 {
@@ -31,27 +32,29 @@ namespace VRC_Favourite_Manager.Views
         {
             FoldersFlyout.Items.Clear();
 
-            for (int i = 0; i < viewModel.Folders.Count; i++)
+            var viewModel = (MainViewModel)this.DataContext;
+
+            foreach (var folder in viewModel.Folders)
             {
-                var folder = viewModel.Folders[i];
-                var menuFlyoutItem = new MenuFlyoutItem { Text = folder.Name, Tag = i };
+                var menuFlyoutItem = new MenuFlyoutItem { Text = folder.Name, Tag = folder };
                 menuFlyoutItem.Click += MenuFlyoutItem_Click;
                 FoldersFlyout.Items.Add(menuFlyoutItem);
             }
         }
 
+
         private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
         {
-            var menuFlyoutItem = sender as MenuFlyoutItem;
-            var index = (int)menuFlyoutItem.Tag;
-            if (index != previousSelectedIndex)
+            var menuItem = sender as MenuFlyoutItem;
+            if (menuItem != null)
             {
-                var folder = viewModel.Folders[index];
-                viewModel.SelectedFolder = folder;
-                previousSelectedIndex = index;
+                var selectedFolder = menuItem.Tag as FolderModel;
+                if (selectedFolder != null)
+                {
+                    var viewModel = (MainViewModel)this.DataContext;
+                    viewModel.SelectedFolder = selectedFolder;
+                }
             }
-
-
         }
     }
 }

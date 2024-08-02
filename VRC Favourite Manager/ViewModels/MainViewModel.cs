@@ -22,7 +22,18 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly WorldManager _worldManager;
         private readonly FolderManager _folderManager;
         public ObservableCollection<FolderModel> Folders => _folderManager.Folders;
-
+        public FolderModel SelectedFolder
+        {
+            get => _folderManager.SelectedFolder;
+            set
+            {
+                if (_folderManager.SelectedFolder != value)
+                {
+                    _folderManager.SelectedFolder = value;
+                    OnPropertyChanged(nameof(SelectedFolder));
+                }
+            }
+        }
         public ICommand RefreshCommand { get; }
         public ICommand LogoutCommand { get; }
         public ICommand ResetCommand { get; }

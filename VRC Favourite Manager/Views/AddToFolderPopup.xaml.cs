@@ -33,7 +33,6 @@ namespace VRC_Favourite_Manager.Views
             var viewModel = (AddToFolderPopupViewModel)this.DataContext;
             viewModel.ConfirmSelection();
 
-
             this.Hide();
         }
     }

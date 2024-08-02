@@ -27,7 +27,6 @@
                 <DropDownButton Content="Folders">
                     <DropDownButton.Flyout>
                         <MenuFlyout Placement="Bottom" x:Name="FoldersFlyout">
-                            <!-- MenuFlyoutItems will be dynamically added here -->
                         </MenuFlyout>
                     </DropDownButton.Flyout>
                 </DropDownButton>
