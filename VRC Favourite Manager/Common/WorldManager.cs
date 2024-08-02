@@ -84,6 +84,7 @@ namespace VRC_Favourite_Manager.Common
 
                 page++;
             }
+            _folderManager.InitializeFolders(_worlds);
 
             SaveWorlds();
         }
@@ -108,6 +109,7 @@ namespace VRC_Favourite_Manager.Common
                 {
                     _worlds.Add(world);
                     _existingWorldIds.Add(world.WorldId);
+                    _folderManager.AddToFolder(world, "Unclassified");
                 }
                 else
                 {

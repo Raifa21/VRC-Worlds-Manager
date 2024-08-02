@@ -22,18 +22,7 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly WorldManager _worldManager;
         private readonly FolderManager _folderManager;
         public ObservableCollection<FolderModel> Folders => _folderManager.Folders;
-        public FolderModel SelectedFolder
-        {
-            get => _folderManager.SelectedFolder;
-            set
-            {
-                if (_folderManager.SelectedFolder != value)
-                {
-                    _folderManager.SelectedFolder = value;
-                    OnPropertyChanged(nameof(SelectedFolder));
-                }
-            }
-        }
+
         public ICommand RefreshCommand { get; }
         public ICommand LogoutCommand { get; }
         public ICommand ResetCommand { get; }
@@ -47,7 +36,6 @@ namespace VRC_Favourite_Manager.ViewModels
             _worldManager = Application.Current.Resources["WorldManager"] as WorldManager;
             
             _worldManager.LoadWorldsAsync();
-            
 
             RefreshCommand = new RelayCommand(async () => await RefreshWorldsAsync());
             LogoutCommand = new RelayCommand(async () => await LogoutCommandAsync());
@@ -66,6 +54,11 @@ namespace VRC_Favourite_Manager.ViewModels
         {
             _worldManager.ResetWorlds();
             _folderManager.ResetFolders();
+        }
+
+        public void SelectedFolderChanged(FolderModel folder)
+        {
+            _folderManager.SelectedFolder = folder;
         }
     }
 }

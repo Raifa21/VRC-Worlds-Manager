@@ -1,4 +1,5 @@
 ﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -14,9 +15,9 @@ namespace VRC_Favourite_Manager.ViewModels
     {
         private readonly FolderManager _folderManager;
 
-        private ObservableCollection<KeyValuePair<string, bool>> _selectedFolders;
+        private ObservableCollection<FolderSelection> _selectedFolders;
 
-        public ObservableCollection<KeyValuePair<string, bool>> SelectedFolders
+        public ObservableCollection<FolderSelection> SelectedFolders
         {
             get => _selectedFolders;
             set
@@ -32,14 +33,17 @@ namespace VRC_Favourite_Manager.ViewModels
         public AddToFolderPopupViewModel(WorldModel selectedWorld)
         {
             _folderManager = Application.Current.Resources["FolderManager"] as FolderManager;
-            _selectedFolders = new ObservableCollection<KeyValuePair<string, bool>>();
+            _selectedFolders = new ObservableCollection<FolderSelection>();
             foreach (var folder in Folders)
             {
                 // Don't show the unclassified folder in the list
                 if (folder.Name != "Unclassified")
                 {
-                    _selectedFolders.Add(new KeyValuePair<string, bool>(folder.Name,
-                        folder.Worlds.Contains(selectedWorld)));
+                    _selectedFolders.Add(new FolderSelection()
+                    {
+                        FolderName = folder.Name,
+                        IsChecked = folder.Worlds.Contains(selectedWorld)
+                    });
                 }
             }
 
@@ -51,19 +55,26 @@ namespace VRC_Favourite_Manager.ViewModels
         {
             var newFolderName = "New Folder";
             _folderManager.AddFolder(newFolderName);
-            _selectedFolders.Add(new KeyValuePair<string, bool>(newFolderName, false));
+            _selectedFolders.Add(new FolderSelection()
+            {
+                FolderName = newFolderName,
+                IsChecked = false
+            });
         }
 
         public void CancelSelection()
         {
-            _selectedFolders = new ObservableCollection<KeyValuePair<string, bool>>();
+            _selectedFolders = new ObservableCollection<FolderSelection>();
             foreach (var folder in Folders)
             {
                 // Don't show the unclassified folder in the list
                 if (folder.Name != "Unclassified")
                 {
-                    _selectedFolders.Add(new KeyValuePair<string, bool>(folder.Name,
-                        folder.Worlds.Contains(SelectedWorld)));
+                    _selectedFolders.Add(new FolderSelection()
+                    {
+                        FolderName = folder.Name,
+                        IsChecked = folder.Worlds.Contains(SelectedWorld)
+                    });
                 }
             }
         }
@@ -74,7 +85,7 @@ namespace VRC_Favourite_Manager.ViewModels
             {
                 if (folder.Name != "Unclassified")
                 {
-                    if (_selectedFolders.FirstOrDefault(f => f.Key == folder.Name).Value)
+                    if (_selectedFolders.FirstOrDefault(x => x.FolderName == folder.Name).IsChecked)
                     {
                         _folderManager.AddToFolder(SelectedWorld, folder.Name);
                     }
@@ -88,8 +99,34 @@ namespace VRC_Favourite_Manager.ViewModels
 
 
 
-    public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+    public class FolderSelection : INotifyPropertyChanged
+    {
+        private bool _isChecked;
+
+        public string FolderName { get; set; }
+
+        public bool IsChecked
+        {
+            get => _isChecked;
+            set
+            {
+                if (_isChecked != value)
+                {
+                    _isChecked = value;
+                    OnPropertyChanged(nameof(IsChecked));
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

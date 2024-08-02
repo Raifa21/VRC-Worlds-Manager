@@ -47,10 +47,9 @@ namespace VRC_Favourite_Manager.Views
             var menuItem = sender as MenuFlyoutItem;
             if (menuItem != null)
             {
-                var selectedFolder = menuItem.Tag as FolderModel;
-                if (selectedFolder != null)
+                if(menuItem.Tag is FolderModel selectedFolder)
                 {
-                    viewModel.SelectedFolder = selectedFolder;
+                    viewModel.SelectedFolderChanged(selectedFolder);
                 }
             }
         }

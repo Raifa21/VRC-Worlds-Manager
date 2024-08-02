@@ -51,6 +51,8 @@ namespace VRC_Favourite_Manager.Common
                 Debug.WriteLine(folder.Name);
             }
             _selectedFolder = _folders.FirstOrDefault();
+
+            PrintFolders();
         }
 
         public void LoadFolders()
@@ -79,7 +81,8 @@ namespace VRC_Favourite_Manager.Common
                 AddFolder("Unclassified");
                 SaveFolders();
             }
-            
+
+            PrintFolders();
         }
         public void InitializeFolders(ObservableCollection<WorldModel> worlds)
         {
@@ -100,6 +103,7 @@ namespace VRC_Favourite_Manager.Common
                 InitializeFolders(worlds);
             }
             SaveFolders();
+            PrintFolders();
         }
 
         public void AddToFolder(WorldModel world, string folderName)
@@ -156,6 +160,17 @@ namespace VRC_Favourite_Manager.Common
         {
             _folders.Clear();
             SaveFolders();
+        }
+
+        public void PrintFolders()
+        {
+            foreach (var folder in _folders) {
+                Debug.WriteLine(folder.Name);
+                foreach (var world in folder.Worlds)
+                {
+                    Debug.WriteLine(world.WorldName);
+                }
+            }
         }
 
         protected void OnPropertyChanged(string propertyName)
