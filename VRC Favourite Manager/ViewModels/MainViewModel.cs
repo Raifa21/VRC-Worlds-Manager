@@ -23,7 +23,7 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly FolderManager _folderManager;
         public ObservableCollection<FolderModel> Folders => _folderManager.Folders;
 
-        public ICommand RefreshCommand { get; }
+        
         public ICommand LogoutCommand { get; }
         public ICommand ResetCommand { get; }
 
@@ -37,14 +37,9 @@ namespace VRC_Favourite_Manager.ViewModels
             
             _worldManager.LoadWorldsAsync();
 
-            RefreshCommand = new RelayCommand(async () => await RefreshWorldsAsync());
+            
             LogoutCommand = new RelayCommand(async () => await LogoutCommandAsync());
             ResetCommand = new RelayCommand(Reset);
-        }
-
-        private async Task RefreshWorldsAsync()
-        {
-            await _worldManager.CheckForNewWorldsAsync();
         }
         private async Task LogoutCommandAsync()
         {

@@ -17,8 +17,13 @@
     </Page.DataContext>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBlock Text="{Binding FolderName}" FontSize="24" FontWeight="Bold" Margin="20 10"/>
-        <muxc:GridView ItemsSource="{Binding Worlds}" Margin="10" IsItemClickEnabled="True" ItemClick="GridView_ItemClick">
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="{Binding FolderName}" FontSize="24" FontWeight="Bold" Margin="20 10"/>
+            <Button Command ="{Binding RefreshCommand}" Margin="10,12,10,0" BorderThickness="0" BorderBrush="Transparent" Background="Transparent" CornerRadius="8" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <FontIcon Glyph="&#xE72C;"/>
+            </Button>
+        </StackPanel>
+        <muxc:GridView ItemsSource="{Binding Worlds}" Margin="10,40,10,0" IsItemClickEnabled="True" ItemClick="GridView_ItemClick">
             <muxc:GridView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Margin="10"> 

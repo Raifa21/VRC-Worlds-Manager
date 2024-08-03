@@ -130,6 +130,20 @@ namespace VRC_Favourite_Manager.Common
         {
             var folder = _folders.FirstOrDefault(f => f.Name == folderName);
             folder?.Worlds.Remove(world);
+            var PlaceWorldInUnclassified = true;
+            foreach(var f in _folders)
+            {
+                if(f.Worlds.Contains(world))
+                {
+                    PlaceWorldInUnclassified = false;
+                    break;
+                }
+            }
+            if (PlaceWorldInUnclassified)
+            {
+                var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
+                unclassifiedFolder?.Worlds.Add(world);
+            }
             SaveFolders();
         }
 
@@ -147,6 +161,23 @@ namespace VRC_Favourite_Manager.Common
 
         public void RemoveFolder(FolderModel folder)
         {
+            foreach (var world in folder.Worlds)
+            {
+                var PlaceWorldInUnclassified = true;
+                foreach (var f in _folders)
+                {
+                    if(f != folder && f.Worlds.Contains(world))
+                    {
+                        PlaceWorldInUnclassified = false;
+                        break;
+                    }
+                }
+            }
+            var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
+            foreach (var world in folder.Worlds)
+            {
+                unclassifiedFolder?.Worlds.Add(world);
+            }
             _folders.Remove(folder);
             SaveFolders();
         }

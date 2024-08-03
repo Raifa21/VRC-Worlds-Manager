@@ -18,24 +18,37 @@ namespace VRC_Favourite_Manager.ViewModels
     public class FolderPageViewModel : ViewModelBase
     {
         private readonly FolderManager _folderManager;
+        private readonly WorldManager _worldManager;
         public ObservableCollection<WorldModel> Worlds { get; private set; }
-        public string FolderName { get; private set; }
 
+        private string _folderName;
+        public string FolderName
+        {
+            get => _folderName;
+            set
+            {
+                _folderName = value;
+                OnPropertyChanged(nameof(FolderName));
+            }
+        }
 
         public ICommand MoveWorldCommand { get; }
         public ICommand AddFolderCommand { get; }
+        public ICommand RefreshCommand { get; }
 
         public FolderPageViewModel()
         {
             _folderManager = Application.Current.Resources["FolderManager"] as FolderManager;
+            _worldManager = Application.Current.Resources["WorldManager"] as WorldManager;
 
             Worlds = new ObservableCollection<WorldModel>();
-            FolderName = _folderManager.SelectedFolder?.Name;
+            _folderName = _folderManager?.SelectedFolder?.Name;
 
             _folderManager.PropertyChanged += OnFolderManagerPropertyChanged;
 
             MoveWorldCommand = new RelayCommand<Tuple<WorldModel, string>>(MoveWorld);
             AddFolderCommand = new RelayCommand<string>(AddFolder);
+            RefreshCommand = new RelayCommand(async () => await RefreshWorldsAsync());
 
             UpdateWorlds();
         }
@@ -44,7 +57,8 @@ namespace VRC_Favourite_Manager.ViewModels
         {
             if (e.PropertyName == nameof(FolderManager.SelectedFolder))
             {
-                FolderName = _folderManager.SelectedFolder?.Name;
+                _folderName = _folderManager.SelectedFolder?.Name;
+                OnPropertyChanged(nameof(FolderName));
                 UpdateWorlds();
             }
         }
@@ -74,8 +88,12 @@ namespace VRC_Favourite_Manager.ViewModels
         }
         public void RemoveFromFolder(WorldModel world)
         {
-            _folderManager.RemoveFromFolder(world, FolderName);
+            _folderManager.RemoveFromFolder(world, _folderName);
             UpdateWorlds();
+        }
+        private async Task RefreshWorldsAsync()
+        {
+            await _worldManager.CheckForNewWorldsAsync();
         }
     }
 }
