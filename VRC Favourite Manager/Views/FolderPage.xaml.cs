@@ -19,10 +19,7 @@ namespace VRC_Favourite_Manager.Views
         public FolderPage()
         {
             this.InitializeComponent();
-
-            _coreWindow = Window.Current.CoreWindow;
             this.DataContext = _viewModel;
-            this.DataContextChanged += MainPage_DataContextChanged;
         }
 
         private async void GridView_ItemClick(object sender, ItemClickEventArgs e)
@@ -34,32 +31,6 @@ namespace VRC_Favourite_Manager.Views
                     XamlRoot = this.XamlRoot
                 };
                 await dialog.ShowAsync();
-            }
-        }
-        private void MainPage_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
-        {
-            if (args.NewValue is FolderPageViewModel viewModel)
-            {
-                viewModel.PropertyChanged += ViewModel_PropertyChanged;
-                UpdateVisualState(viewModel.IsRenaming);
-            }
-        }
-        private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(FolderPageViewModel.IsRenaming))
-            {
-                UpdateVisualState(_viewModel.IsRenaming);
-            }
-        }
-        private void UpdateVisualState(bool isRenaming)
-        {
-            if (isRenaming)
-            {
-                VisualStateManager.GoToState(this, "Renaming", true);
-            }
-            else
-            {
-                VisualStateManager.GoToState(this, "Normal", true);
             }
         }
 
@@ -77,6 +48,7 @@ namespace VRC_Favourite_Manager.Views
         private bool IsImeComposing()
         {
             // Check if the IME is currently composing
+            _coreWindow = Window.Current.CoreWindow;
             return _coreWindow.GetKeyState(Windows.System.VirtualKey.Space).HasFlag(CoreVirtualKeyStates.Down);
         }
 

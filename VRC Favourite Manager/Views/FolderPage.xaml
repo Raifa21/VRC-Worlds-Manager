@@ -6,7 +6,9 @@
     xmlns:viewModels="using:VRC_Favourite_Manager.ViewModels"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:models="using:VRC_Favourite_Manager.Models"
-    xmlns:converters="using:VRC_Favourite_Manager">
+    xmlns:converters="using:VRC_Favourite_Manager"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core">
 
     <Page.Resources>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
@@ -17,53 +19,58 @@
     </Page.DataContext>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Button Command ="{Binding RefreshCommand}" Margin="10,12,20,0" BorderThickness="1" BorderBrush="Transparent" Background="Transparent" CornerRadius="8" HorizontalAlignment="Right" VerticalAlignment="Top">
-            <FontIcon Glyph="&#xE72C;" Scale="0.8,0.8"/>
+        <Button Command ="{Binding RefreshCommand}" Margin="10,12,25,0" Padding="5" BorderThickness="1" BorderBrush="Transparent" Background="Transparent" CornerRadius="8" HorizontalAlignment="Right" VerticalAlignment="Top">
+            <FontIcon Glyph="&#xE72C;" FontSize="16"/>
         </Button>
-        <StackPanel>
-            <StackPanel.Resources>
-                <!-- Define VisualStates for renaming mode -->
-                <VisualStateManager.VisualStateGroups>
-                    <VisualStateGroup x:Name="CommonStates">
-                        <VisualState x:Name="Normal">
-                            <VisualState.Setters>
-                                <Setter Target="TextBlock.Visibility" Value="Visible"/>
-                                <Setter Target="Button.Visibility" Value="Visible"/>
-                                <Setter Target="TextBox.Visibility" Value="Collapsed"/>
-                            </VisualState.Setters>
-                        </VisualState>
-                        <VisualState x:Name="Renaming">
-                            <VisualState.Setters>
-                                <Setter Target="TextBlock.Visibility" Value="Collapsed"/>
-                                <Setter Target="Button.Visibility" Value="Collapsed"/>
-                                <Setter Target="TextBox.Visibility" Value="Visible"/>
-                            </VisualState.Setters>
-                        </VisualState>
-                    </VisualStateGroup>
-                </VisualStateManager.VisualStateGroups>
-            </StackPanel.Resources>
+        <StackPanel Orientation="Horizontal">
+            <interactivity:Interaction.Behaviors>
+                <core:DataTriggerBehavior Binding="{Binding FolderName}" ComparisonCondition="Equal" Value="Unclassified">
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility" Value="Visible"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBox}" PropertyName="Visibility" Value="Collapsed"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=RenameButton}" PropertyName="Visibility" Value="Collapsed"/>
+                </core:DataTriggerBehavior>
+                <core:DataTriggerBehavior Binding="{Binding FolderName}" ComparisonCondition="NotEqual" Value="Unclassified">
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility" Value="Visible"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBox}" PropertyName="Visibility" Value="Collapsed"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=RenameButton}" PropertyName="Visibility" Value="Visible"/>
+                </core:DataTriggerBehavior>
 
+                <core:DataTriggerBehavior Binding="{Binding IsRenaming}" ComparisonCondition="Equal" Value="True">
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility" Value="Collapsed"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBox}" PropertyName="Visibility" Value="Visible"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=RenameButton}" PropertyName="Visibility" Value="Collapsed"/>
+                </core:DataTriggerBehavior>
+                <core:DataTriggerBehavior Binding="{Binding IsRenaming}" ComparisonCondition="Equal" Value="False">
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility" Value="Visible"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBox}" PropertyName="Visibility" Value="Collapsed"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=RenameButton}" PropertyName="Visibility" Value="Visible"/>
+                </core:DataTriggerBehavior>
+            </interactivity:Interaction.Behaviors>
             <!-- TextBlock displayed when not renaming -->
             <TextBlock x:Name="FolderNameTextBlock" 
                        Text="{Binding FolderName}" 
                        FontSize="24" 
                        FontWeight="Bold" 
                        Margin="20 10"/>
-
+            <!-- Button displayed when not renaming -->
+            <!-- Button hidden when file is "Unclassified" -->
+            <Button x:Name="RenameButton"
+                    Command="{Binding RenameCommand}" 
+                    Margin="-20,13,0,10"
+                    Padding="5"
+                    VerticalAlignment="Top"
+                    BorderThickness="1" 
+                    BorderBrush="Transparent" 
+                    Background="Transparent">
+                <FontIcon Glyph="&#xE70F;" FontSize="16"/>
+            </Button>
             <!-- TextBox displayed when renaming -->
             <TextBox x:Name="FolderNameTextBox" 
                      Text="{Binding FolderName, Mode=TwoWay}" 
                      Visibility="Collapsed" 
+                     Foreground="Gray"
                      KeyDown="TextBox_KeyDown" 
                      Margin="20 10"/>
-
-            <Button Command="{Binding RenameCommand}" 
-                    Margin="10" 
-                    BorderThickness="1" 
-                    BorderBrush="Transparent" 
-                    Background="Transparent">
-                <FontIcon Glyph="&#xE70F;" />
-            </Button>
         </StackPanel>
 
         <muxc:GridView ItemsSource="{Binding Worlds}" Margin="10,50,10,0" IsItemClickEnabled="True" ItemClick="GridView_ItemClick">

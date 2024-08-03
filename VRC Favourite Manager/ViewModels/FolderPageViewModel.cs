@@ -112,10 +112,12 @@ namespace VRC_Favourite_Manager.ViewModels
         private void RenamingFolder()
         {
             _isRenaming = true;
+            Debug.WriteLine("Renaming");
         }
         private async Task RefreshWorldsAsync()
         {
             await _worldManager.CheckForNewWorldsAsync();
+            UpdateWorlds();
         }
     }
 }
