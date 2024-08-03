@@ -45,6 +45,7 @@ namespace VRC_Favourite_Manager.Views
         private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
         {
             var menuItem = sender as MenuFlyoutItem;
+            Debug.WriteLine(menuItem.Text);
             if (menuItem != null)
             {
                 if(menuItem.Tag is FolderModel selectedFolder)

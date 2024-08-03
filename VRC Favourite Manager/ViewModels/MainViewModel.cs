@@ -58,7 +58,7 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public void SelectedFolderChanged(FolderModel folder)
         {
-            _folderManager.SelectedFolder = folder;
+            _folderManager.ChangeSelectedFolder(folder);
         }
     }
 }
