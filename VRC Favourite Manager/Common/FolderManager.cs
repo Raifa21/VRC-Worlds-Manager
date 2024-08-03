@@ -187,6 +187,14 @@ namespace VRC_Favourite_Manager.Common
             _jsonManager.SaveFolders(_folders);
         }
 
+        public void RenameFolder(string newName)
+        {
+            if(_selectedFolder.Name != "Unclassified")
+            {
+                _selectedFolder.Name = newName;
+                SaveFolders();
+            }
+        }
         public void ResetFolders()
         {
             _folders.Clear();

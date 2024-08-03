@@ -17,13 +17,56 @@
     </Page.DataContext>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <StackPanel Orientation="Horizontal">
-            <TextBlock Text="{Binding FolderName}" FontSize="24" FontWeight="Bold" Margin="20 10"/>
-            <Button Command ="{Binding RefreshCommand}" Margin="10,12,10,0" BorderThickness="0" BorderBrush="Transparent" Background="Transparent" CornerRadius="8" HorizontalAlignment="Right" VerticalAlignment="Top">
-                <FontIcon Glyph="&#xE72C;"/>
+        <Button Command ="{Binding RefreshCommand}" Margin="10,12,20,0" BorderThickness="1" BorderBrush="Transparent" Background="Transparent" CornerRadius="8" HorizontalAlignment="Right" VerticalAlignment="Top">
+            <FontIcon Glyph="&#xE72C;" Scale="0.8,0.8"/>
+        </Button>
+        <StackPanel>
+            <StackPanel.Resources>
+                <!-- Define VisualStates for renaming mode -->
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Target="TextBlock.Visibility" Value="Visible"/>
+                                <Setter Target="Button.Visibility" Value="Visible"/>
+                                <Setter Target="TextBox.Visibility" Value="Collapsed"/>
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Renaming">
+                            <VisualState.Setters>
+                                <Setter Target="TextBlock.Visibility" Value="Collapsed"/>
+                                <Setter Target="Button.Visibility" Value="Collapsed"/>
+                                <Setter Target="TextBox.Visibility" Value="Visible"/>
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+            </StackPanel.Resources>
+
+            <!-- TextBlock displayed when not renaming -->
+            <TextBlock x:Name="FolderNameTextBlock" 
+                       Text="{Binding FolderName}" 
+                       FontSize="24" 
+                       FontWeight="Bold" 
+                       Margin="20 10"/>
+
+            <!-- TextBox displayed when renaming -->
+            <TextBox x:Name="FolderNameTextBox" 
+                     Text="{Binding FolderName, Mode=TwoWay}" 
+                     Visibility="Collapsed" 
+                     KeyDown="TextBox_KeyDown" 
+                     Margin="20 10"/>
+
+            <Button Command="{Binding RenameCommand}" 
+                    Margin="10" 
+                    BorderThickness="1" 
+                    BorderBrush="Transparent" 
+                    Background="Transparent">
+                <FontIcon Glyph="&#xE70F;" />
             </Button>
         </StackPanel>
-        <muxc:GridView ItemsSource="{Binding Worlds}" Margin="10,40,10,0" IsItemClickEnabled="True" ItemClick="GridView_ItemClick">
+
+        <muxc:GridView ItemsSource="{Binding Worlds}" Margin="10,50,10,0" IsItemClickEnabled="True" ItemClick="GridView_ItemClick">
             <muxc:GridView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Margin="10"> 

@@ -21,6 +21,17 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly WorldManager _worldManager;
         public ObservableCollection<WorldModel> Worlds { get; private set; }
 
+        private bool _isRenaming;
+        public bool IsRenaming
+        {
+            get => _isRenaming;
+            set
+            {
+                _isRenaming = value;
+                OnPropertyChanged(nameof(IsRenaming));
+            }
+        }
+
         private string _folderName;
         public string FolderName
         {
@@ -34,6 +45,7 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public ICommand MoveWorldCommand { get; }
         public ICommand AddFolderCommand { get; }
+        public ICommand RenamingCommand { get; }
         public ICommand RefreshCommand { get; }
 
         public FolderPageViewModel()
@@ -43,14 +55,25 @@ namespace VRC_Favourite_Manager.ViewModels
 
             Worlds = new ObservableCollection<WorldModel>();
             _folderName = _folderManager?.SelectedFolder?.Name;
+            _isRenaming = false;
 
             _folderManager.PropertyChanged += OnFolderManagerPropertyChanged;
 
             MoveWorldCommand = new RelayCommand<Tuple<WorldModel, string>>(MoveWorld);
             AddFolderCommand = new RelayCommand<string>(AddFolder);
+            RenamingCommand = new RelayCommand(RenamingFolder);
             RefreshCommand = new RelayCommand(async () => await RefreshWorldsAsync());
 
             UpdateWorlds();
+        }
+        public void RemoveFromFolder(WorldModel world)
+        {
+            _folderManager.RemoveFromFolder(world, _folderName);
+            UpdateWorlds();
+        }
+        public void RenameFolder()
+        {
+            _folderManager.RenameFolder(FolderName);
         }
 
         private void OnFolderManagerPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -86,10 +109,9 @@ namespace VRC_Favourite_Manager.ViewModels
             _folderManager.AddFolder(folderName);
             UpdateWorlds();
         }
-        public void RemoveFromFolder(WorldModel world)
+        private void RenamingFolder()
         {
-            _folderManager.RemoveFromFolder(world, _folderName);
-            UpdateWorlds();
+            _isRenaming = true;
         }
         private async Task RefreshWorldsAsync()
         {
