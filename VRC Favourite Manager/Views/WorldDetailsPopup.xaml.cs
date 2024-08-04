@@ -1,7 +1,11 @@
 // WorldDetailsPopup.xaml.cs
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Documents;
+using System;
 using System.Diagnostics;
 using VRC_Favourite_Manager.Models;
+using VRChat.API.Model;
 
 namespace VRC_Favourite_Manager.Views
 {
@@ -34,6 +38,16 @@ namespace VRC_Favourite_Manager.Views
                 Debug.WriteLine("Selected Instance Type: " + selectedInstanceType);
                 // Handle the selection change, e.g., update the view model
             }
+        }
+        private void AuthorLink_Click(object sender, RoutedEventArgs e)
+        {
+            var uri = $"https://vrchat.com/home/user/{World.AuthorId}";
+            Windows.System.Launcher.LaunchUriAsync(new Uri(uri));
+        }
+        private void WorldLink_Click(object sender, RoutedEventArgs e)
+        {
+            var uri = $"https://vrchat.com/home/world/{World.WorldId}";
+            Windows.System.Launcher.LaunchUriAsync(new Uri(uri));
         }
 
         private void Region_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)

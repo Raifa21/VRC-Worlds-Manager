@@ -79,13 +79,10 @@ namespace VRC_Favourite_Manager.ViewModels
 
         private void OnFolderManagerPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(FolderManager.SelectedFolder))
-            {
-                Debug.WriteLine("Selected folder updated");
-                _folderName = _folderManager.SelectedFolder?.Name;
-                OnPropertyChanged(nameof(FolderName));
-                UpdateWorlds();
-            }
+            Debug.WriteLine("Selected folder updated");
+            _folderName = _folderManager.SelectedFolder?.Name;
+            OnPropertyChanged(nameof(FolderName));
+            UpdateWorlds();
         }
 
         private void UpdateWorlds()

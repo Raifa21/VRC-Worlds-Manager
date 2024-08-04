@@ -43,8 +43,11 @@ namespace VRC_Favourite_Manager.Common
                 var worlds = _jsonManager.LoadWorlds();
                 foreach (var world in worlds)
                 {
-                    _worlds.Add(world);
-                    _existingWorldIds.Add(world.WorldId);
+                    if (world.WorldId != "???")
+                    {
+                        _worlds.Add(world);
+                        _existingWorldIds.Add(world.WorldId);
+                    }
                 }
 
                 if (worlds.Count > 0)
@@ -73,8 +76,11 @@ namespace VRC_Favourite_Manager.Common
                 var worlds = await _vrChatAPIService.GetFavoriteWorldsAsync(100, page * 100);
                 foreach (var world in worlds)
                 {
-                    _worlds.Add(world);
-                    _existingWorldIds.Add(world.WorldId);
+                    if(world.WorldId != "???")
+                    {
+                        _worlds.Add(world);
+                        _existingWorldIds.Add(world.WorldId);
+                    }
                 }
 
                 if (worlds.Count < 100)
@@ -107,9 +113,12 @@ namespace VRC_Favourite_Manager.Common
             {
                 if (!_existingWorldIds.Contains(world.WorldId))
                 {
-                    _worlds.Add(world);
-                    _existingWorldIds.Add(world.WorldId);
-                    _folderManager.AddToFolder(world, "Unclassified");
+                    if (world.WorldId != "???")
+                    {
+                        _worlds.Add(world);
+                        _existingWorldIds.Add(world.WorldId);
+                        _folderManager.AddToFolder(world, "Unclassified");
+                    }
                 }
                 else
                 {

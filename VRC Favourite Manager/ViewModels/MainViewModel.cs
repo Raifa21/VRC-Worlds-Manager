@@ -21,8 +21,17 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly VRChatAPIService _vrChatAPIService;
         private readonly WorldManager _worldManager;
         private readonly FolderManager _folderManager;
-        public ObservableCollection<FolderModel> Folders => _folderManager.Folders;
+        private ObservableCollection<FolderModel> _folders;
 
+        public ObservableCollection<FolderModel> Folders
+        {
+            get => _folders;
+            private set
+            {
+                _folders = value;
+                OnPropertyChanged(nameof(Folders));
+            }
+        }
         
         public ICommand LogoutCommand { get; }
         public ICommand ResetCommand { get; }
@@ -36,11 +45,19 @@ namespace VRC_Favourite_Manager.ViewModels
             _worldManager = Application.Current.Resources["WorldManager"] as WorldManager;
             
             _worldManager.LoadWorldsAsync();
+            _folders = _folderManager.Folders;
 
-            
+            _folderManager.PropertyChanged += OnFolderManagerPropertyChanged;
+
             LogoutCommand = new RelayCommand(async () => await LogoutCommandAsync());
             ResetCommand = new RelayCommand(Reset);
         }
+
+        private void OnFolderManagerPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            _folders = _folderManager.Folders;
+        }
+
         private async Task LogoutCommandAsync()
         {
             await _vrChatAPIService.LogoutAsync();

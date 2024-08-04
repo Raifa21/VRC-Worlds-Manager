@@ -44,7 +44,11 @@ namespace VRC_Favourite_Manager.Views
         {
             FolderNameTextBlock.Visibility = isRenaming ? Visibility.Collapsed : Visibility.Visible;
             FolderNameTextBox.Visibility = isRenaming ? Visibility.Visible : Visibility.Collapsed;
-            RenameButton.Visibility = isRenaming ? Visibility.Collapsed : Visibility.Visible;
+            if(_viewModel.FolderName != "Unclassified")
+            {
+                RenameButton.Visibility = isRenaming ? Visibility.Collapsed : Visibility.Visible;
+            }
+            
         }
         private void TextBox_KeyDown(object sender, KeyRoutedEventArgs e)
         {
