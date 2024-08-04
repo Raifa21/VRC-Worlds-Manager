@@ -13,6 +13,22 @@
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid>
+            <NavigationView Grid.Row="0" Height="auto"
+                            PaneDisplayMode="Left"
+                            IsTabStop="False"
+                            IsSettingsVisible="False"
+                            SelectionChanged="NavigationView_SelectionChanged">
+                <NavigationView.MenuItems>
+                    <NavigationViewItem Content="All Worlds" Icon="Globe" Tag="AllWorlds" />
+                    <NavigationViewItem Content="Folders" Icon="FolderHorizontal" ToolTipService.ToolTip="Account" Tag="Folders" MenuItemsSource="{Binding FolderNames}"/>
+                </NavigationView.MenuItems>
+                <NavigationView.FooterMenuItems>
+                    <NavigationViewItem Content="Settings" Tag="SettingsPage" Icon="Setting" />
+                    <NavigationViewItem Content="Account"/>
+                </NavigationView.FooterMenuItems>
+            </NavigationView>
+        </Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>

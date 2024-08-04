@@ -21,15 +21,16 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly VRChatAPIService _vrChatAPIService;
         private readonly WorldManager _worldManager;
         private readonly FolderManager _folderManager;
-        private ObservableCollection<FolderModel> _folders;
+        public ObservableCollection<FolderModel> Folders => _folderManager.Folders;
+        private ObservableCollection<string> _folderNames;
 
-        public ObservableCollection<FolderModel> Folders
+        public ObservableCollection<string> FolderNames
         {
-            get => _folders;
-            private set
+            get => _folderNames;
+            set
             {
-                _folders = value;
-                OnPropertyChanged(nameof(Folders));
+                _folderNames = value;
+                OnPropertyChanged(nameof(FolderNames));
             }
         }
         
@@ -45,7 +46,11 @@ namespace VRC_Favourite_Manager.ViewModels
             _worldManager = Application.Current.Resources["WorldManager"] as WorldManager;
             
             _worldManager.LoadWorldsAsync();
-            _folders = _folderManager.Folders;
+            _folderNames = new ObservableCollection<string>();
+            foreach (var folder in _folderManager.Folders)
+            {
+                _folderNames.Add(folder.Name);
+            }
 
             _folderManager.PropertyChanged += OnFolderManagerPropertyChanged;
 
@@ -55,7 +60,11 @@ namespace VRC_Favourite_Manager.ViewModels
 
         private void OnFolderManagerPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            _folders = _folderManager.Folders;
+            _folderNames.Clear();
+            foreach (var folder in _folderManager.Folders)
+            {
+                _folderNames.Add(folder.Name);
+            }
         }
 
         private async Task LogoutCommandAsync()
