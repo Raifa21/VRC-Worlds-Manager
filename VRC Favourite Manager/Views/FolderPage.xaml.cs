@@ -50,9 +50,8 @@ namespace VRC_Favourite_Manager.Views
         {
             if (e.Key == Windows.System.VirtualKey.Enter)
             {
-                _viewModel.RenameFolder();
+                _viewModel.RenameFolder(FolderNameTextBox.Text);
                 _viewModel.IsRenaming = false;
-                Debug.WriteLine("Enter key pressed");
             }
         }
 

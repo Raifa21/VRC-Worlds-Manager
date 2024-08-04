@@ -71,9 +71,10 @@ namespace VRC_Favourite_Manager.ViewModels
             _folderManager.RemoveFromFolder(world, _folderName);
             UpdateWorlds();
         }
-        public void RenameFolder()
+        public void RenameFolder(string newFolderName)
         {
-            _folderManager.RenameFolder(FolderName);
+            _folderManager.RenameFolder(newFolderName);
+            Debug.WriteLine("Renamed folder: " + newFolderName);
         }
 
         private void OnFolderManagerPropertyChanged(object sender, PropertyChangedEventArgs e)
