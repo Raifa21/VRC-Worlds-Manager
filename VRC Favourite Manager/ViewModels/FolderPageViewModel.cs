@@ -80,6 +80,7 @@ namespace VRC_Favourite_Manager.ViewModels
         {
             if (e.PropertyName == nameof(FolderManager.SelectedFolder))
             {
+                Debug.WriteLine("Selected folder updated");
                 _folderName = _folderManager.SelectedFolder?.Name;
                 OnPropertyChanged(nameof(FolderName));
                 UpdateWorlds();
@@ -112,7 +113,7 @@ namespace VRC_Favourite_Manager.ViewModels
         private void RenamingFolder()
         {
             _isRenaming = true;
-            Debug.WriteLine("Renaming");
+            Debug.WriteLine(IsRenaming);
         }
         private async Task RefreshWorldsAsync()
         {

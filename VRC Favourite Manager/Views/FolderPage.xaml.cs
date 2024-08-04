@@ -20,6 +20,40 @@ namespace VRC_Favourite_Manager.Views
         {
             this.InitializeComponent();
             this.DataContext = _viewModel;
+            this.DataContextChanged += FolderPage_DataContextChanged;
+
+            RenameButton.Visibility = Visibility.Collapsed;
+        }
+        private void FolderPage_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+        {
+            if (args.NewValue is FolderPageViewModel viewModel)
+            {
+                viewModel.PropertyChanged += ViewModel_PropertyChanged;
+                UpdateVisibility(viewModel.IsRenaming);
+            }
+        }
+        private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(FolderPageViewModel.IsRenaming))
+            {
+                var viewModel = sender as FolderPageViewModel;
+                UpdateVisibility(viewModel.IsRenaming);
+            }
+        }
+        private void UpdateVisibility(bool isRenaming)
+        {
+            FolderNameTextBlock.Visibility = isRenaming ? Visibility.Collapsed : Visibility.Visible;
+            FolderNameTextBox.Visibility = isRenaming ? Visibility.Visible : Visibility.Collapsed;
+            RenameButton.Visibility = isRenaming ? Visibility.Collapsed : Visibility.Visible;
+        }
+        private void TextBox_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.Enter)
+            {
+                _viewModel.RenameFolder();
+                _viewModel.IsRenaming = false;
+                Debug.WriteLine("Enter key pressed");
+            }
         }
 
         private async void GridView_ItemClick(object sender, ItemClickEventArgs e)
@@ -34,23 +68,7 @@ namespace VRC_Favourite_Manager.Views
             }
         }
 
-        private void TextBox_KeyDown(object sender, KeyRoutedEventArgs e)
-        {
-            // Check if the Enter key is pressed and IME is not composing
-            if (e.Key == Windows.System.VirtualKey.Enter && !IsImeComposing())
-            {
-                _viewModel.RenameFolder();
-                _viewModel.IsRenaming = false;
 
-            }
-        }
-
-        private bool IsImeComposing()
-        {
-            // Check if the IME is currently composing
-            _coreWindow = Window.Current.CoreWindow;
-            return _coreWindow.GetKeyState(Windows.System.VirtualKey.Space).HasFlag(CoreVirtualKeyStates.Down);
-        }
 
         private void ViewDetails_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {

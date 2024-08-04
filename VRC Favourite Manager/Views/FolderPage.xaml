@@ -7,7 +7,8 @@
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:models="using:VRC_Favourite_Manager.Models"
     xmlns:converters="using:VRC_Favourite_Manager"
-    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:Interactions="using:Microsoft.Xaml.Interactions.Core"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core">
 
     <Page.Resources>
@@ -23,7 +24,7 @@
             <FontIcon Glyph="&#xE72C;" FontSize="16"/>
         </Button>
         <StackPanel Orientation="Horizontal">
-            <interactivity:Interaction.Behaviors>
+            <Interactivity:Interaction.Behaviors>
                 <core:DataTriggerBehavior Binding="{Binding FolderName}" ComparisonCondition="Equal" Value="Unclassified">
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility" Value="Visible"/>
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBox}" PropertyName="Visibility" Value="Collapsed"/>
@@ -34,18 +35,7 @@
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBox}" PropertyName="Visibility" Value="Collapsed"/>
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=RenameButton}" PropertyName="Visibility" Value="Visible"/>
                 </core:DataTriggerBehavior>
-
-                <core:DataTriggerBehavior Binding="{Binding IsRenaming}" ComparisonCondition="Equal" Value="True">
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility" Value="Collapsed"/>
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBox}" PropertyName="Visibility" Value="Visible"/>
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=RenameButton}" PropertyName="Visibility" Value="Collapsed"/>
-                </core:DataTriggerBehavior>
-                <core:DataTriggerBehavior Binding="{Binding IsRenaming}" ComparisonCondition="Equal" Value="False">
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility" Value="Visible"/>
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBox}" PropertyName="Visibility" Value="Collapsed"/>
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=RenameButton}" PropertyName="Visibility" Value="Visible"/>
-                </core:DataTriggerBehavior>
-            </interactivity:Interaction.Behaviors>
+            </Interactivity:Interaction.Behaviors>
             <!-- TextBlock displayed when not renaming -->
             <TextBlock x:Name="FolderNameTextBlock" 
                        Text="{Binding FolderName}" 
@@ -55,7 +45,8 @@
             <!-- Button displayed when not renaming -->
             <!-- Button hidden when file is "Unclassified" -->
             <Button x:Name="RenameButton"
-                    Command="{Binding RenameCommand}" 
+                    Command="{Binding RenamingCommand}" 
+                    Visibility="Collapsed" 
                     Margin="-20,13,0,10"
                     Padding="5"
                     VerticalAlignment="Top"
@@ -63,6 +54,13 @@
                     BorderBrush="Transparent" 
                     Background="Transparent">
                 <FontIcon Glyph="&#xE70F;" FontSize="16"/>
+                <Interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="Click">
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBox}" PropertyName="Visibility" Value="Visible"/>
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility" Value="Collapsed"/>
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=RenameButton}" PropertyName="Visibility" Value="Collapsed"/>
+                    </core:EventTriggerBehavior>
+                </Interactivity:Interaction.Behaviors>
             </Button>
             <!-- TextBox displayed when renaming -->
             <TextBox x:Name="FolderNameTextBox" 
