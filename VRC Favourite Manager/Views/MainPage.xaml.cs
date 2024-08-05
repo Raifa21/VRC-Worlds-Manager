@@ -28,6 +28,10 @@ namespace VRC_Favourite_Manager.Views
             {
                 Debug.WriteLine(selectedItem);
             }
+            else if(args.SelectedItemContainer.Tag is FolderModel selectedFolder)
+            {
+                Debug.WriteLine(selectedFolder.Name);
+            }
         }
         private void NavigateToFolderPage()
         {

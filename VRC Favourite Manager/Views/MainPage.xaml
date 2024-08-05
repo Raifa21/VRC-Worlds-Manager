@@ -14,39 +14,31 @@
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <StackPanel Orientation="Horizontal">
-            <NavigationView Height="auto"
-                            PaneDisplayMode="Left"
-                            IsTabStop="False"
-                            IsSettingsVisible="False"
-                            SelectionChanged="NavigationView_SelectionChanged">
-                <NavigationView.MenuItems>
-                    <NavigationViewItem Content="All Worlds" Icon="Globe" Tag="AllWorlds" />
-                    <NavigationViewItem Content="Folders" MenuItemsSource="{Binding FoldersNavigationViewItems}"/>
-                </NavigationView.MenuItems>
-                <NavigationView.FooterMenuItems>
-                    <NavigationViewItem Content="Settings" Tag="SettingsPage">
-                        <NavigationViewItem.Icon>
-                            <FontIcon Glyph="&#xE713;" />
-                        </NavigationViewItem.Icon>
-                    </NavigationViewItem>
-                    <NavigationViewItem Content="Account"/>
-                </NavigationView.FooterMenuItems>
-            </NavigationView>
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid Grid.Row="0">
-                    <!-- DropDownButton for switching between folders -->
-                        <Button Content="Reset Worlds" Command="{Binding ResetCommand}" Margin="0,0,0,0"/>
-                </Grid>
-                <Grid Grid.Row="1">
-                <!-- Frame for displaying the content of the selected folder -->
-                    <Frame x:Name="ContentFrame" IsNavigationStackEnabled="False" />
-                </Grid>
-            </Grid>
-        </StackPanel>
+        <NavigationView Height="auto"
+                        PaneDisplayMode="Left"
+                        IsTabStop="False"
+                        IsSettingsVisible="False"
+                        IsBackButtonVisible="Collapsed"
+                        SelectionChanged="NavigationView_SelectionChanged">
+            <NavigationView.MenuItems>
+                <NavigationViewItem Content="All Worlds" Icon="Globe" Tag="AllWorlds" />
+                <NavigationViewItem Content="Folders" MenuItemsSource="{Binding FoldersNavigationViewItems}">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xF12B;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+            <NavigationView.FooterMenuItems>
+                <NavigationViewItem Content="Settings" Tag="SettingsPage">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE713;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="Account"/>
+            </NavigationView.FooterMenuItems>
+            <Frame x:Name="ContentFrame" IsNavigationStackEnabled="False" />
+        </NavigationView>
+        <Button Command="{Binding ResetCommand}" />
+
     </Grid>
 </Page>

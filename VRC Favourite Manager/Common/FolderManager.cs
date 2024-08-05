@@ -104,7 +104,6 @@ namespace VRC_Favourite_Manager.Common
             }
             SaveFolders();
             PrintFolders();
-            UpdateSelectedFolder();
         }
 
         public void AddToFolder(WorldModel world, string folderName)
@@ -125,7 +124,6 @@ namespace VRC_Favourite_Manager.Common
                 AddFolder(folderName);
                 AddToFolder(world, folderName);
             }
-            UpdateSelectedFolder();
         }
 
         public void RemoveFromFolder(WorldModel world, string folderName)
@@ -147,7 +145,6 @@ namespace VRC_Favourite_Manager.Common
                 unclassifiedFolder?.Worlds.Add(world);
             }
             SaveFolders();
-            UpdateSelectedFolder();
         }
 
         public void AddFolder(string folderName)
@@ -197,19 +194,18 @@ namespace VRC_Favourite_Manager.Common
 
         public void RenameFolder(string newName)
         {
-            if(_selectedFolder.Name != "Unclassified")
+            if (_selectedFolder.Name != "Unclassified")
             {
                 _selectedFolder.Name = newName;
                 SaveFolders();
             }
-            UpdateSelectedFolder();
         }
+
         public void ResetFolders()
         {
             _folders.Clear();
             SaveFolders();
             _folders.Add(new FolderModel("Unclassified"));
-            UpdateSelectedFolder();
         }
 
         public void PrintFolders()
@@ -230,15 +226,6 @@ namespace VRC_Favourite_Manager.Common
             Debug.WriteLine($"Selected folder: {SelectedFolder.Name}");
         }
 
-        private void UpdateSelectedFolder()
-        {
-            var folder = _folders.FirstOrDefault(f => f.Name == _selectedFolder.Name);
-            if (folder != null)
-            {
-                _selectedFolder = folder;
-                OnPropertyChanged(nameof(SelectedFolder));
-            }
-        }
 
         protected void OnPropertyChanged(string propertyName)
         {

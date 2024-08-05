@@ -51,15 +51,11 @@ namespace VRC_Favourite_Manager.ViewModels
 
         private IEnumerable<NavigationViewItemBase> GetFoldersNavigationViewItems()
         {
-            foreach (var folder in _folderManager.Folders)
+            return _folderManager.Folders.Select(folder => new NavigationViewItem
             {
-                var navigationViewItem = new NavigationViewItem
-                {
-                    Content = folder.Name,
-                    Tag = folder
-                };
-                yield return navigationViewItem;
-            }
+                Content = folder.Name,
+                Tag = folder
+            }).Cast<NavigationViewItemBase>();
         }
 
         private async Task LogoutCommandAsync()
