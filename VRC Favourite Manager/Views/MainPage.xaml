@@ -6,48 +6,47 @@
     xmlns:viewModels="using:VRC_Favourite_Manager.ViewModels"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:models="using:VRC_Favourite_Manager.Models"
-    xmlns:converters="using:VRC_Favourite_Manager">
+    xmlns:converters="using:VRC_Favourite_Manager"
+    xmlns:generic="using:System.Collections.Generic">
 
     <Page.Resources>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid>
-            <NavigationView Grid.Row="0" Height="auto"
+        <StackPanel Orientation="Horizontal">
+            <NavigationView Height="auto"
                             PaneDisplayMode="Left"
                             IsTabStop="False"
                             IsSettingsVisible="False"
                             SelectionChanged="NavigationView_SelectionChanged">
                 <NavigationView.MenuItems>
                     <NavigationViewItem Content="All Worlds" Icon="Globe" Tag="AllWorlds" />
-                    <NavigationViewItem Content="Folders" Icon="FolderHorizontal" ToolTipService.ToolTip="Account" Tag="Folders" MenuItemsSource="{Binding FolderNames}"/>
+                    <NavigationViewItem Content="Folders" MenuItemsSource="{Binding FoldersNavigationViewItems}"/>
                 </NavigationView.MenuItems>
                 <NavigationView.FooterMenuItems>
-                    <NavigationViewItem Content="Settings" Tag="SettingsPage" Icon="Setting" />
+                    <NavigationViewItem Content="Settings" Tag="SettingsPage">
+                        <NavigationViewItem.Icon>
+                            <FontIcon Glyph="&#xE713;" />
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
                     <NavigationViewItem Content="Account"/>
                 </NavigationView.FooterMenuItems>
             </NavigationView>
-        </Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            <!-- DropDownButton for switching between folders -->
-            <StackPanel Orientation="Horizontal">
-                <DropDownButton Content="Folders">
-                    <DropDownButton.Flyout>
-                        <MenuFlyout Placement="Bottom" x:Name="FoldersFlyout">
-                        </MenuFlyout>
-                    </DropDownButton.Flyout>
-                </DropDownButton>
-                <Button Content="Reset Worlds" Command="{Binding ResetCommand}" Margin="0,0,0,0"/>
-            </StackPanel>
-        </Grid>
-        <Grid Grid.Row="1">
-        <!-- Frame for displaying the content of the selected folder -->
-            <Frame x:Name="ContentFrame" IsNavigationStackEnabled="False" />
-        </Grid>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <!-- DropDownButton for switching between folders -->
+                        <Button Content="Reset Worlds" Command="{Binding ResetCommand}" Margin="0,0,0,0"/>
+                </Grid>
+                <Grid Grid.Row="1">
+                <!-- Frame for displaying the content of the selected folder -->
+                    <Frame x:Name="ContentFrame" IsNavigationStackEnabled="False" />
+                </Grid>
+            </Grid>
+        </StackPanel>
     </Grid>
 </Page>

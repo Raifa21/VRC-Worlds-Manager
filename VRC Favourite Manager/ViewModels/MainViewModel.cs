@@ -10,6 +10,7 @@ using System.Windows.Input;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
 using System.Linq;
+using Microsoft.UI.Xaml.Controls;
 using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Views;
 
@@ -21,19 +22,9 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly VRChatAPIService _vrChatAPIService;
         private readonly WorldManager _worldManager;
         private readonly FolderManager _folderManager;
-        public ObservableCollection<FolderModel> Folders => _folderManager.Folders;
-        private ObservableCollection<string> _folderNames;
+        public IEnumerable<NavigationViewItemBase> FoldersNavigationViewItems { get; set; }
 
-        public ObservableCollection<string> FolderNames
-        {
-            get => _folderNames;
-            set
-            {
-                _folderNames = value;
-                OnPropertyChanged(nameof(FolderNames));
-            }
-        }
-        
+
         public ICommand LogoutCommand { get; }
         public ICommand ResetCommand { get; }
 
@@ -46,12 +37,7 @@ namespace VRC_Favourite_Manager.ViewModels
             _worldManager = Application.Current.Resources["WorldManager"] as WorldManager;
             
             _worldManager.LoadWorldsAsync();
-            _folderNames = new ObservableCollection<string>();
-            foreach (var folder in _folderManager.Folders)
-            {
-                _folderNames.Add(folder.Name);
-            }
-
+            FoldersNavigationViewItems = GetFoldersNavigationViewItems();
             _folderManager.PropertyChanged += OnFolderManagerPropertyChanged;
 
             LogoutCommand = new RelayCommand(async () => await LogoutCommandAsync());
@@ -60,10 +46,19 @@ namespace VRC_Favourite_Manager.ViewModels
 
         private void OnFolderManagerPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            _folderNames.Clear();
+            FoldersNavigationViewItems = GetFoldersNavigationViewItems();
+        }
+
+        private IEnumerable<NavigationViewItemBase> GetFoldersNavigationViewItems()
+        {
             foreach (var folder in _folderManager.Folders)
             {
-                _folderNames.Add(folder.Name);
+                var navigationViewItem = new NavigationViewItem
+                {
+                    Content = folder.Name,
+                    Tag = folder
+                };
+                yield return navigationViewItem;
             }
         }
 

@@ -19,39 +19,14 @@ namespace VRC_Favourite_Manager.Views
             this.InitializeComponent();
             viewModel = new MainViewModel();
             this.DataContext = viewModel;
-            LoadFoldersToDropDownButton();
-
-            ((INotifyCollectionChanged)viewModel.Folders).CollectionChanged += Folders_CollectionChanged;
 
             NavigateToFolderPage();
         }
-        private void Folders_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void NavigationView_SelectionChanged(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)
         {
-            LoadFoldersToDropDownButton();
-        }
-
-        private void LoadFoldersToDropDownButton()
-        {
-            FoldersFlyout.Items.Clear();
-
-            foreach (var folder in viewModel.Folders)
+            if (args.SelectedItemContainer.Tag is string selectedItem)
             {
-                var menuFlyoutItem = new MenuFlyoutItem { Text = folder.Name, Tag = folder };
-                menuFlyoutItem.Click += MenuFlyoutItem_Click;
-                FoldersFlyout.Items.Add(menuFlyoutItem);
-            }
-        }
-
-        private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
-        {
-            var menuItem = sender as MenuFlyoutItem;
-            Debug.WriteLine(menuItem.Text);
-            if (menuItem != null)
-            {
-                if(menuItem.Tag is FolderModel selectedFolder)
-                {
-                    viewModel.SelectedFolderChanged(selectedFolder);
-                }
+                Debug.WriteLine(selectedItem);
             }
         }
         private void NavigateToFolderPage()
