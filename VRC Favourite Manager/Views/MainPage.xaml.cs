@@ -5,6 +5,8 @@ using VRC_Favourite_Manager.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Specialized;
+using CommunityToolkit.Mvvm;
+using CommunityToolkit.Mvvm.Messaging;
 using VRC_Favourite_Manager.Models;
 
 namespace VRC_Favourite_Manager.Views
@@ -21,7 +23,23 @@ namespace VRC_Favourite_Manager.Views
             this.DataContext = viewModel;
 
             NavigateToFolderPage();
+
+            WeakReferenceMessenger.Default.Register<LanguageChangedMessage>(this, (r, m) =>
+            {
+                Debug.WriteLine("Language changed to " + m.LanguageCode);
+                RefreshPage();
+            });
         }
+
+        private void RefreshPage()
+        {
+            if (ContentFrame != null)
+            {
+                ContentFrame.Navigate(ContentFrame.Content.GetType());
+            }
+        }
+
+
         private void NavigationView_SelectionChanged(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)
         {
             if (args.SelectedItemContainer.Tag is string selectedItem)

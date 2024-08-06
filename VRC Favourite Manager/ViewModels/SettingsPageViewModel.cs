@@ -17,8 +17,6 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly FolderManager _folderManager;
         public ICommand ResetCommand { get; }
 
-        public event EventHandler LanguageChanged;
-
         public SettingsPageViewModel()
         {
             _folderManager = Application.Current.Resources["FolderManager"] as FolderManager;
@@ -34,10 +32,6 @@ namespace VRC_Favourite_Manager.ViewModels
         {
             _worldManager.ResetWorlds();
             _folderManager.ResetFolders();
-        }
-        protected virtual void OnLanguageChanged()
-        {
-            LanguageChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

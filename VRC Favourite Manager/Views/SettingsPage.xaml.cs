@@ -43,7 +43,6 @@ namespace VRC_Favourite_Manager.Views
                 if (!string.IsNullOrEmpty(languageCode))
                 {
                     ChangeApplicationLanguage(languageCode);
-                    RefreshPage();
                 }
             }
         }
@@ -52,14 +51,6 @@ namespace VRC_Favourite_Manager.Views
         {
             Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = languageCode;
             WeakReferenceMessenger.Default.Send(new LanguageChangedMessage(languageCode));
-        }
-        private void RefreshPage()
-        {
-            var frame = Window.Current.Content as Frame;
-            if (frame != null)
-            {
-                frame.Navigate(frame.Content.GetType());
-            }
         }
     }
 }
