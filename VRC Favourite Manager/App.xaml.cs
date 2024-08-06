@@ -50,9 +50,8 @@ namespace VRC_Favourite_Manager
                     {
                         try
                         {
-                            if(await _VRChatAPIService.VerifyLoginWithAuthTokenAsync(authToken,twoFactorAuthToken))
+                            if(await _VRChatAPIService.VerifyLoginWithAuthTokenAsync(authToken, twoFactorAuthToken))
                             {
-                                System.Diagnostics.Debug.WriteLine($"authToken: {authToken}, twoFactorAuthToken: {twoFactorAuthToken}");
                                 System.Diagnostics.Debug.WriteLine("Login successful.");
                                 rootFrame.Navigate(typeof(MainPage), args.Arguments);
                             }
@@ -119,7 +118,6 @@ namespace VRC_Favourite_Manager
             {
                 System.Diagnostics.Debug.WriteLine("Config file not found.");
             }
-            
         }
 
         /// <summary>

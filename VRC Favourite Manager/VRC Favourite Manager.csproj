@@ -18,6 +18,7 @@
     <None Remove="Views\AddToFolderPopup.xaml" />
     <None Remove="Views\AuthenticationPage.xaml" />
     <None Remove="Views\FolderPage.xaml" />
+    <None Remove="Views\SettingsPage.xaml" />
     <None Remove="Views\TwoFactorAuthPopup.xaml" />
     <None Remove="Views\WorldDetailsPopup.xaml" />
   </ItemGroup>
@@ -57,6 +58,9 @@
     <None Update="App.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
+    <Page Update="Views\SettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

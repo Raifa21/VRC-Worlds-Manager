@@ -30,7 +30,8 @@ namespace VRC_Favourite_Manager.Views
             }
             else if(args.SelectedItemContainer.Tag is FolderModel selectedFolder)
             {
-                Debug.WriteLine(selectedFolder.Name);
+                viewModel.SelectedFolderChanged(selectedFolder);
+                ContentFrame.Navigate(typeof(FolderPage));
             }
         }
         private void NavigateToFolderPage()
