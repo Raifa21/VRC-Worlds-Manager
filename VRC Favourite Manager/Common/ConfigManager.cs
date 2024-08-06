@@ -50,12 +50,19 @@ namespace VRC_Favourite_Manager
             }
         }
 
-        public void DeleteConfig()
+        /// <summary>
+        /// Logs the user out. Only the auth token is removed.
+        /// </summary>
+        public void Logout()
         {
             if (ConfigExists())
             {
-                File.Delete(_configFilePath);
-                Debug.WriteLine("Config file deleted.");
+                var toml = Toml.ToModel(Toml.Parse(ReadConfig()));
+                if (toml.ContainsKey("auth"))
+                {
+                    toml.Remove("auth");
+                    File.WriteAllText(_configFilePath, (Toml.FromModel(toml)));
+                }
             }
         }
     }

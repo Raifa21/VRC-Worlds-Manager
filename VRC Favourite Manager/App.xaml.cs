@@ -138,5 +138,12 @@ namespace VRC_Favourite_Manager
 
         public AuthenticationViewModel AuthenticationViewModel => _authenticationViewModel;
     }
-
+    public class LanguageChangedMessage
+    {
+        public string LanguageCode { get; set; }
+        public LanguageChangedMessage(string languageCode)
+        {
+            LanguageCode = languageCode;
+        }
+    }
 }

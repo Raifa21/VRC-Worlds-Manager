@@ -26,7 +26,18 @@ namespace VRC_Favourite_Manager.Views
         {
             if (args.SelectedItemContainer.Tag is string selectedItem)
             {
-                Debug.WriteLine(selectedItem);
+                switch (selectedItem)
+                {
+                    case "SettingsPage":
+                        ContentFrame.Navigate(typeof(SettingsPage));
+                        break;
+                    case "AboutPage":
+                        //ContentFrame.Navigate(typeof(AboutPage));
+                        break;
+                    case "Logout":
+                        viewModel.LogoutCommand.Execute(null);
+                        break;
+                }
             }
             else if(args.SelectedItemContainer.Tag is FolderModel selectedFolder)
             {

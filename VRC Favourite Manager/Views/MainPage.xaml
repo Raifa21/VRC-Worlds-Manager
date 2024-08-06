@@ -34,11 +34,13 @@
                         <FontIcon Glyph="&#xE713;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Account"/>
+                <NavigationViewItem Content="Logout">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xF3B1;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
             </NavigationView.FooterMenuItems>
             <Frame x:Name="ContentFrame" IsNavigationStackEnabled="False" />
         </NavigationView>
-        <Button Command="{Binding ResetCommand}" />
-
     </Grid>
 </Page>

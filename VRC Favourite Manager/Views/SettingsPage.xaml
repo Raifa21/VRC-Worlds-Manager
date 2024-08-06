@@ -15,6 +15,17 @@
     </Page.DataContext>
 
     <Grid>
-        
+        <StackPanel Padding="20">
+            <TextBlock Text="Settings" FontSize="24" FontWeight="Bold" Margin="0,0,0,20"/>
+            <TextBlock Text="Language" FontSize="18" FontWeight="Bold" />
+            <StackPanel Orientation="Horizontal" BorderThickness="0,1,0,0" BorderBrush="Black">
+                <RadioButton GroupName="Language" Content="Japanese" Checked="Language_Checked" Padding="10,5,10,5"/>
+                <RadioButton GroupName="Language" Content="English" Checked="Language_Checked" Padding="10,5,10,5"/>
+            </StackPanel>
+
+
+            <Button Content="Reset" Command="{Binding ResetCommand}" Padding="10" Background="Red" Foreground="White"/>
+
+        </StackPanel>
     </Grid>
 </Page>

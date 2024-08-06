@@ -106,32 +106,6 @@ namespace VRC_Favourite_Manager.Services
             }
         }
 
-        /// <summary>
-        /// Gets the user's display name.
-        /// </summary>
-        /// <returns>The user's display name</returns>
-        /// <exception cref="VRCIncorrectCredentialsException"></exception>
-        public async Task<string> GetUserDisplayName()
-        {
-            try
-            {
-                var request = new HttpRequestMessage(HttpMethod.Get, "https://vrchat.com/api/1/auth/user?");
-                request.Headers.Add("Accept", "application/json");
-                request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
-                request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
-                var response = await _Client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                string responseString = await response.Content.ReadAsStringAsync();
-                return JsonDocument.Parse(responseString).RootElement.GetProperty("displayName").GetString();
-            }
-            catch (HttpRequestException e)
-            {
-                Debug.WriteLine("Error: " + e.Message);
-                throw new VRCIncorrectCredentialsException();
-            }
-
-        }
-
 
         /// <summary>
         /// Verifies if the user has provided the correct login credentials.
@@ -305,7 +279,7 @@ namespace VRC_Favourite_Manager.Services
 
             // Deserialize the response string to a JSON object.
             var authResponse = JsonSerializer.Deserialize<Models.LogoutResponse>(responseString);
-            configManager.DeleteConfig();
+            configManager.Logout();
             Debug.WriteLine(authResponse.message);
 
             return authResponse.message == "Ok!";

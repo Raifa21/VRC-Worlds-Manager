@@ -12,20 +12,54 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+using CommunityToolkit.Mvvm;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace VRC_Favourite_Manager.Views
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class SettingsPage : Page
     {
         public SettingsPage()
         {
             this.InitializeComponent();
+        }
+
+        private void Language_Checked(object sender, RoutedEventArgs e)
+        {
+            if (sender is RadioButton radioButton)
+            {
+                string languageCode = string.Empty;
+
+                switch (radioButton.Content.ToString())
+                {
+                    case "Japanese":
+                        languageCode = "ja-JP";
+                        break;
+                    case "English":
+                        languageCode = "en-US";
+                        break;
+                }
+
+                if (!string.IsNullOrEmpty(languageCode))
+                {
+                    ChangeApplicationLanguage(languageCode);
+                    RefreshPage();
+                }
+            }
+        }
+
+        private void ChangeApplicationLanguage(string languageCode)
+        {
+            Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = languageCode;
+            WeakReferenceMessenger.Default.Send(new LanguageChangedMessage(languageCode));
+        }
+        private void RefreshPage()
+        {
+            var frame = Window.Current.Content as Frame;
+            if (frame != null)
+            {
+                frame.Navigate(frame.Content.GetType());
+            }
         }
     }
 }
