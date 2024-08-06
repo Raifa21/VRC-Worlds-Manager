@@ -8,6 +8,7 @@ using System.Collections.Specialized;
 using CommunityToolkit.Mvvm;
 using CommunityToolkit.Mvvm.Messaging;
 using VRC_Favourite_Manager.Models;
+using VRC_Favourite_Manager.Services;
 
 namespace VRC_Favourite_Manager.Views
 {
@@ -23,19 +24,30 @@ namespace VRC_Favourite_Manager.Views
             this.DataContext = viewModel;
 
             NavigateToFolderPage();
+            RefreshPage("ja-JP");
 
             WeakReferenceMessenger.Default.Register<LanguageChangedMessage>(this, (r, m) =>
             {
                 Debug.WriteLine("Language changed to " + m.LanguageCode);
-                RefreshPage();
+                RefreshPage(m.LanguageCode);
             });
         }
 
-        private void RefreshPage()
+        private void RefreshPage(string languageCode)
         {
-            if (ContentFrame != null)
+            if (languageCode == "ja-JP")
             {
-                ContentFrame.Navigate(ContentFrame.Content.GetType());
+                this.AllWorldsItem.Content = "すべてのワールド";
+                this.FoldersItem.Content = "フォルダ";
+                this.SettingsItem.Content = "設定";
+                this.LogoutItem.Content = "ログアウト";
+            }
+            else
+            {
+                this.AllWorldsItem.Content = "All Worlds";
+                this.FoldersItem.Content = "Folders";
+                this.SettingsItem.Content = "Settings";
+                this.LogoutItem.Content = "Logout";
             }
         }
 

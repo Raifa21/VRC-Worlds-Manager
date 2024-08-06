@@ -26,6 +26,7 @@ namespace VRC_Favourite_Manager.Views
 
         private void Language_Checked(object sender, RoutedEventArgs e)
         {
+            var _configManager = new ConfigManager();
             if (sender is RadioButton radioButton)
             {
                 string languageCode = string.Empty;
@@ -34,9 +35,11 @@ namespace VRC_Favourite_Manager.Views
                 {
                     case "Japanese":
                         languageCode = "ja-JP";
+                        _configManager.WriteToConfig("language", "ja-JP");
                         break;
                     case "English":
                         languageCode = "en-US";
+                        _configManager.WriteToConfig("language", "en-US");
                         break;
                 }
 
@@ -50,6 +53,7 @@ namespace VRC_Favourite_Manager.Views
         private void ChangeApplicationLanguage(string languageCode)
         {
             Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = languageCode;
+            Frame.BackStack.Clear();
             WeakReferenceMessenger.Default.Send(new LanguageChangedMessage(languageCode));
         }
     }

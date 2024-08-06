@@ -3,14 +3,6 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Page.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Strings.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Page.Resources>
-
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <NavigationView Height="auto"
                         PaneDisplayMode="Left"
@@ -19,20 +11,20 @@
                         IsBackButtonVisible="Collapsed"
                         SelectionChanged="NavigationView_SelectionChanged">
             <NavigationView.MenuItems>
-                <NavigationViewItem x:Uid="AllWorldsItem" Icon="Globe" Tag="AllWorlds"/>
-                <NavigationViewItem x:Uid="FoldersItem" MenuItemsSource="{Binding FoldersNavigationViewItems}">
+                <NavigationViewItem x:Name="AllWorldsItem" Icon="Globe" Tag="AllWorlds"/>
+                <NavigationViewItem x:Name="FoldersItem" MenuItemsSource="{Binding FoldersNavigationViewItems}">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xF12B;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
-                <NavigationViewItem x:Uid="SettingsItem" Tag="SettingsPage">
+                <NavigationViewItem x:Name="SettingsItem" Tag="SettingsPage">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE713;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem x:Uid="LogoutItem">
+                <NavigationViewItem x:Name="LogoutItem">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xF3B1;" />
                     </NavigationViewItem.Icon>
