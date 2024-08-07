@@ -218,6 +218,16 @@ namespace VRC_Favourite_Manager.Common
                 }
             }
         }
+        public void ChangeSelectedFolder(FolderModel folder)
+        {
+            _selectedFolder = folder;
+            OnPropertyChanged(nameof(SelectedFolder));
+            Debug.WriteLine($"Selected folder: {SelectedFolder.Name}");
+        }
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
     public class FolderUpdatedMessage(ObservableCollection<FolderModel> folders)
     {
@@ -226,18 +236,5 @@ namespace VRC_Favourite_Manager.Common
     public class SelectedFolderChangedMessage(FolderModel folder)
     {
         public FolderModel Folder { get; set; } = folder;
-
-        public void ChangeSelectedFolder(FolderModel folder)
-        {
-            _selectedFolder = folder;
-            OnPropertyChanged(nameof(SelectedFolder));
-            Debug.WriteLine($"Selected folder: {SelectedFolder.Name}");
-        }
-
-
-        protected void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
     }
 }
