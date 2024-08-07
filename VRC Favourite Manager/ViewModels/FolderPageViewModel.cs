@@ -12,6 +12,7 @@ using VRC_Favourite_Manager.Services;
 using System.Linq;
 using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Views;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace VRC_Favourite_Manager.ViewModels
 {
@@ -54,59 +55,48 @@ namespace VRC_Favourite_Manager.ViewModels
             _worldManager = Application.Current.Resources["WorldManager"] as WorldManager;
 
             Worlds = new ObservableCollection<WorldModel>();
-            _folderName = _folderManager?.SelectedFolder?.Name;
             _isRenaming = false;
-
-            _folderManager.PropertyChanged += OnFolderManagerPropertyChanged;
 
             MoveWorldCommand = new RelayCommand<Tuple<WorldModel, string>>(MoveWorld);
             AddFolderCommand = new RelayCommand<string>(AddFolder);
             RenamingCommand = new RelayCommand(RenamingFolder);
             RefreshCommand = new RelayCommand(async () => await RefreshWorldsAsync());
 
-            UpdateWorlds();
+            _folderManager.GetCurrentState();
+
+            WeakReferenceMessenger.Default.Register<SelectedFolderChangedMessage>(this, (r, m) =>
+            {
+                _folderName = m.Folder.Name;
+                UpdateWorlds(m.Folder);
+            });
         }
         public void RemoveFromFolder(WorldModel world)
         {
             _folderManager.RemoveFromFolder(world, _folderName);
-            UpdateWorlds();
         }
         public void RenameFolder(string newFolderName)
         {
-            _folderManager.RenameFolder(newFolderName);
+            _folderManager.RenameFolder(newFolderName, _folderName);
             Debug.WriteLine("Renamed folder: " + newFolderName);
         }
 
-        private void OnFolderManagerPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            Debug.WriteLine("Selected folder updated");
-            _folderName = _folderManager.SelectedFolder?.Name;
-            OnPropertyChanged(nameof(FolderName));
-            UpdateWorlds();
-        }
-
-        private void UpdateWorlds()
+        private void UpdateWorlds(FolderModel folder)
         {
             Worlds.Clear();
-            if (_folderManager.SelectedFolder != null)
+            foreach (var world in folder.Worlds)
             {
-                foreach (var world in _folderManager.SelectedFolder.Worlds)
-                {
-                    Worlds.Add(world);
-                }
+                Worlds.Add(world);
             }
         }
 
         private void MoveWorld(Tuple<WorldModel,string> tuple)
         {
             _folderManager.AddToFolder(tuple.Item1, tuple.Item2);
-            UpdateWorlds();
 
         }
         private void AddFolder(string folderName)
         {
             _folderManager.AddFolder(folderName);
-            UpdateWorlds();
         }
         private void RenamingFolder()
         {
@@ -116,7 +106,6 @@ namespace VRC_Favourite_Manager.ViewModels
         private async Task RefreshWorldsAsync()
         {
             await _worldManager.CheckForNewWorldsAsync();
-            UpdateWorlds();
         }
     }
 }

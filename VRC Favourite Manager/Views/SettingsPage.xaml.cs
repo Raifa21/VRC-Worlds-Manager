@@ -14,6 +14,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using CommunityToolkit.Mvvm;
 using CommunityToolkit.Mvvm.Messaging;
+using System.Diagnostics;
 
 namespace VRC_Favourite_Manager.Views
 {
@@ -22,6 +23,13 @@ namespace VRC_Favourite_Manager.Views
         public SettingsPage()
         {
             this.InitializeComponent();
+
+            RefreshPage("ja-JP");
+            WeakReferenceMessenger.Default.Register<LanguageChangedMessage>(this, (r, m) =>
+            {
+                Debug.WriteLine("Language changed to " + m.LanguageCode);
+                RefreshPage(m.LanguageCode);
+            });
         }
 
         private void Language_Checked(object sender, RoutedEventArgs e)
@@ -31,7 +39,7 @@ namespace VRC_Favourite_Manager.Views
             {
                 string languageCode = string.Empty;
 
-                switch (radioButton.Content.ToString())
+                switch (radioButton.Tag.ToString())
                 {
                     case "Japanese":
                         languageCode = "ja-JP";
@@ -50,10 +58,32 @@ namespace VRC_Favourite_Manager.Views
             }
         }
 
-        private void ChangeApplicationLanguage(string languageCode)
+        private void RefreshPage(string languageCode)
+        {
+            if(languageCode == "ja-JP")
+            {
+                this.SettingsTitle.Text = "設定";
+                this.LanguageTitle.Text = "言語";
+                this.JapaneseRadioButton.Content = "日本語";
+                this.JapaneseRadioButton.IsChecked = true;
+                this.EnglishRadioButton.Content = "英語";
+                this.ResetButton.Content = "リセット";
+
+            }
+            else
+            {
+                this.SettingsTitle.Text = "Settings";
+                this.LanguageTitle.Text = "Language";
+                this.JapaneseRadioButton.Content = "Japanese";
+                this.EnglishRadioButton.Content = "English";
+                this.EnglishRadioButton.IsChecked = true;
+                this.ResetButton.Content = "Reset";
+            }
+        }
+
+    private void ChangeApplicationLanguage(string languageCode)
         {
             Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = languageCode;
-            Frame.BackStack.Clear();
             WeakReferenceMessenger.Default.Send(new LanguageChangedMessage(languageCode));
         }
     }
