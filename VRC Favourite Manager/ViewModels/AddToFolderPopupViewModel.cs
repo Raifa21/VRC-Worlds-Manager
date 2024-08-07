@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using CommunityToolkit.Mvvm.Messaging;
 using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Models;
 
@@ -28,43 +29,25 @@ namespace VRC_Favourite_Manager.ViewModels
         }
 
         public WorldModel SelectedWorld { get; set; }
-        public ObservableCollection<FolderModel> Folders => _folderManager.Folders;
+        public ObservableCollection<FolderModel> Folders;
 
         public AddToFolderPopupViewModel(WorldModel selectedWorld)
         {
             _folderManager = Application.Current.Resources["FolderManager"] as FolderManager;
             _selectedFolders = new ObservableCollection<FolderSelection>();
-            foreach (var folder in Folders)
-            {
-                // Don't show the unclassified folder in the list
-                if (folder.Name != "Unclassified")
-                {
-                    _selectedFolders.Add(new FolderSelection()
-                    {
-                        FolderName = folder.Name,
-                        IsChecked = folder.Worlds.Contains(selectedWorld)
-                    });
-                }
-            }
 
             SelectedWorld = selectedWorld;
-        }
 
-
-        public void AddFolder()
-        {
-            var newFolderName = "New Folder";
-            _folderManager.AddFolder(newFolderName);
-            _selectedFolders.Add(new FolderSelection()
+            WeakReferenceMessenger.Default.Register<FolderUpdatedMessage>(this, (r, m) =>
             {
-                FolderName = newFolderName,
-                IsChecked = false
+                Folders = m.Folders;
+                UpdateFolderSelection(Folders);
             });
         }
 
-        public void CancelSelection()
+        public void UpdateFolderSelection(ObservableCollection<FolderModel> Folders)
         {
-            _selectedFolders = new ObservableCollection<FolderSelection>();
+            _selectedFolders.Clear();
             foreach (var folder in Folders)
             {
                 // Don't show the unclassified folder in the list
@@ -77,6 +60,17 @@ namespace VRC_Favourite_Manager.ViewModels
                     });
                 }
             }
+        }
+
+        public void AddFolder()
+        {
+            var newFolderName = "New Folder";
+            _folderManager.AddFolder(newFolderName);
+        }
+
+        public void CancelSelection()
+        {
+            UpdateFolderSelection(Folders);
         }
 
         public void ConfirmSelection()

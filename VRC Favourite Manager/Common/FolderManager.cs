@@ -13,7 +13,23 @@ namespace VRC_Favourite_Manager.Common
     {
         private readonly JsonManager _jsonManager;
         private ObservableCollection<FolderModel> _folders;
+        public ObservableCollection<FolderModel> Folders
+        {
+            get => _folders;
+            set
+            {
+                _folders = value;
+            }
+        }
         private string _selectedFolder;
+        public string SelectedFolder
+        {
+            get => _selectedFolder;
+            set
+            {
+                _selectedFolder = value;
+            }
+        }
 
         public FolderManager()
         {
@@ -215,12 +231,6 @@ namespace VRC_Favourite_Manager.Common
         public void ChangeSelectedFolder(string folderName)
         {
             _selectedFolder = folderName;
-            WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(_folders.FirstOrDefault(f => f.Name == _selectedFolder)));
-        }
-
-        public void GetCurrentState()
-        {
-            WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
             WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(_folders.FirstOrDefault(f => f.Name == _selectedFolder)));
         }
     }

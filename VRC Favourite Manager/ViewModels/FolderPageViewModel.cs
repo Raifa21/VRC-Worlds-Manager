@@ -55,6 +55,7 @@ namespace VRC_Favourite_Manager.ViewModels
             _worldManager = Application.Current.Resources["WorldManager"] as WorldManager;
 
             Worlds = new ObservableCollection<WorldModel>();
+            _folderName = _folderManager.SelectedFolder;
             _isRenaming = false;
 
             MoveWorldCommand = new RelayCommand<Tuple<WorldModel, string>>(MoveWorld);
@@ -62,10 +63,11 @@ namespace VRC_Favourite_Manager.ViewModels
             RenamingCommand = new RelayCommand(RenamingFolder);
             RefreshCommand = new RelayCommand(async () => await RefreshWorldsAsync());
 
-            _folderManager.GetCurrentState();
+            UpdateWorlds(_folderManager.Folders.FirstOrDefault(f => f.Name == _folderName));
 
             WeakReferenceMessenger.Default.Register<SelectedFolderChangedMessage>(this, (r, m) =>
             {
+                Debug.WriteLine("Selected folder changed: " + m.Folder.Name);
                 _folderName = m.Folder.Name;
                 UpdateWorlds(m.Folder);
             });

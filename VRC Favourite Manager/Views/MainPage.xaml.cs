@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml.Controls;
 using System.Collections.Specialized;
 using CommunityToolkit.Mvvm;
 using CommunityToolkit.Mvvm.Messaging;
+using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
 
@@ -30,6 +31,10 @@ namespace VRC_Favourite_Manager.Views
             {
                 Debug.WriteLine("Language changed to " + m.LanguageCode);
                 RefreshPage(m.LanguageCode);
+            });
+            WeakReferenceMessenger.Default.Register<FolderUpdatedMessage>(this, (r, m) =>
+            {
+
             });
         }
 

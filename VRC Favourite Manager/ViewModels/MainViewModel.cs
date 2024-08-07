@@ -37,10 +37,11 @@ namespace VRC_Favourite_Manager.ViewModels
 
             _worldManager.LoadWorldsAsync();
 
-            _folderManager.GetCurrentState();
+            FoldersNavigationViewItems = GetFoldersNavigationViewItems(_folderManager.Folders);
 
             WeakReferenceMessenger.Default.Register<FolderUpdatedMessage>(this, (r, m) =>
             {
+                Debug.WriteLine("FolderUpdatedMessage received");
                 FoldersNavigationViewItems = GetFoldersNavigationViewItems(m.Folders);
             });
         }
