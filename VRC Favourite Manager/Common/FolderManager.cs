@@ -1,33 +1,43 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using VRC_Favourite_Manager.Models;
-using VRC_Favourite_Manager.Views;
 
 namespace VRC_Favourite_Manager.Common
 {
-    public class FolderManager
+    public class FolderManager : INotifyPropertyChanged
     {
         private readonly JsonManager _jsonManager;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+
         private ObservableCollection<FolderModel> _folders;
+
         public ObservableCollection<FolderModel> Folders
         {
             get => _folders;
             set
             {
                 _folders = value;
+                OnPropertyChanged(nameof(Folders));
             }
         }
-        private string _selectedFolder;
-        public string SelectedFolder
+
+
+        private FolderModel _selectedFolder;
+        public FolderModel SelectedFolder
         {
             get => _selectedFolder;
             set
             {
-                _selectedFolder = value;
+                if (_selectedFolder != value)
+                {
+                    _selectedFolder = value;
+                    OnPropertyChanged(nameof(SelectedFolder));
+                }
             }
         }
 
@@ -40,9 +50,9 @@ namespace VRC_Favourite_Manager.Common
             {
                 Debug.WriteLine(folder.Name);
             }
-            _selectedFolder = "Unclassified";
-            WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
-            WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(_folders.FirstOrDefault(f => f.Name == _selectedFolder)));
+            _selectedFolder = _folders.FirstOrDefault();
+
+            PrintFolders();
         }
 
         public void LoadFolders()
@@ -71,6 +81,8 @@ namespace VRC_Favourite_Manager.Common
                 AddFolder("Unclassified");
                 SaveFolders();
             }
+
+            PrintFolders();
         }
         public void InitializeFolders(ObservableCollection<WorldModel> worlds)
         {
@@ -84,15 +96,14 @@ namespace VRC_Favourite_Manager.Common
                         unclassifiedFolder.Worlds.Add(world);
                     }
                 }
-                SaveFolders();
             }
             else
             {
                 AddFolder("Unclassified");
                 InitializeFolders(worlds);
             }
-            WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
-            WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(_folders.FirstOrDefault(f => f.Name == _selectedFolder)));
+            SaveFolders();
+            PrintFolders();
         }
 
         public void AddToFolder(WorldModel world, string folderName)
@@ -113,39 +124,25 @@ namespace VRC_Favourite_Manager.Common
                 AddFolder(folderName);
                 AddToFolder(world, folderName);
             }
-            WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
-
-            if (folderName == _selectedFolder)
-            {
-                WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(folder));
-            }
         }
 
         public void RemoveFromFolder(WorldModel world, string folderName)
         {
             var folder = _folders.FirstOrDefault(f => f.Name == folderName);
             folder?.Worlds.Remove(world);
-            var placeWorldInUnclassified = true;
+            var PlaceWorldInUnclassified = true;
             foreach(var f in _folders)
             {
                 if(f.Worlds.Contains(world))
                 {
-                    placeWorldInUnclassified = false;
+                    PlaceWorldInUnclassified = false;
                     break;
                 }
             }
-            if (placeWorldInUnclassified)
+            if (PlaceWorldInUnclassified)
             {
                 var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
                 unclassifiedFolder?.Worlds.Add(world);
-                if(_selectedFolder == "Unclassified")
-                {
-                    WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(unclassifiedFolder));
-                }
-            }
-            if (folderName == _selectedFolder)
-            {
-                WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(folder));
             }
             SaveFolders();
         }
@@ -159,7 +156,6 @@ namespace VRC_Favourite_Manager.Common
                 folderName = $"{folderName} ({index})";
             }
             _folders.Add(new FolderModel(folderName));
-            WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
             SaveFolders();
         }
 
@@ -167,29 +163,28 @@ namespace VRC_Favourite_Manager.Common
         {
             foreach (var world in folder.Worlds)
             {
-                var placeWorldInUnclassified = true;
+                var PlaceWorldInUnclassified = true;
                 foreach (var f in _folders)
                 {
                     if(f != folder && f.Worlds.Contains(world))
                     {
-                        placeWorldInUnclassified = false;
+                        PlaceWorldInUnclassified = false;
                         break;
                     }
                 }
-                if (placeWorldInUnclassified)
-                {
-                    var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
-                    unclassifiedFolder?.Worlds.Add(world);
-                }
+            }
+            var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
+            foreach (var world in folder.Worlds)
+            {
+                unclassifiedFolder?.Worlds.Add(world);
             }
             _folders.Remove(folder);
             SaveFolders();
-            if(_selectedFolder == folder.Name)
+            if(_selectedFolder == folder)
             {
-                _selectedFolder = "Unclassified";
+                _selectedFolder = _folders.FirstOrDefault();
+                OnPropertyChanged(nameof(SelectedFolder));
             }
-            WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(_folders.FirstOrDefault(f => f.Name == "Unclassified")));
-            WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
         }
 
         private void SaveFolders()
@@ -197,24 +192,11 @@ namespace VRC_Favourite_Manager.Common
             _jsonManager.SaveFolders(_folders);
         }
 
-        public void RenameFolder(string newName, string oldName)
+        public void RenameFolder(string newName)
         {
-            if (oldName != "Unclassified")
+            if (_selectedFolder.Name != "Unclassified")
             {
-                var index = 1;
-                while (_folders.Any(f => f.Name == newName))
-                {
-                    index++;
-                    newName = $"{newName} ({index})";
-                }
-                var folder = _folders.FirstOrDefault(f => f.Name == oldName);
-                folder.Name = newName;
-                WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
-                if (oldName == _selectedFolder)
-                {
-                    _selectedFolder = newName;
-                    WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(_folders.FirstOrDefault(f => f.Name == _selectedFolder)));
-                }
+                _selectedFolder.Name = newName;
                 SaveFolders();
             }
         }
@@ -224,22 +206,30 @@ namespace VRC_Favourite_Manager.Common
             _folders.Clear();
             SaveFolders();
             _folders.Add(new FolderModel("Unclassified"));
-            WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
-            WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(_folders.FirstOrDefault(f => f.Name == "Unclassified")));
         }
 
-        public void ChangeSelectedFolder(string folderName)
+        public void PrintFolders()
         {
-            _selectedFolder = folderName;
-            WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(_folders.FirstOrDefault(f => f.Name == _selectedFolder)));
+            foreach (var folder in _folders) {
+                Debug.WriteLine(folder.Name);
+                foreach (var world in folder.Worlds)
+                {
+                    Debug.WriteLine(world.WorldName);
+                }
+            }
         }
-    }
-    public class FolderUpdatedMessage(ObservableCollection<FolderModel> folders)
-    {
-        public ObservableCollection<FolderModel> Folders { get; set; } = folders;
-    }
-    public class SelectedFolderChangedMessage(FolderModel folder)
-    {
-        public FolderModel Folder { get; set; } = folder;
+
+        public void ChangeSelectedFolder(FolderModel folder)
+        {
+            _selectedFolder = folder;
+            OnPropertyChanged(nameof(SelectedFolder));
+            Debug.WriteLine($"Selected folder: {SelectedFolder.Name}");
+        }
+
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

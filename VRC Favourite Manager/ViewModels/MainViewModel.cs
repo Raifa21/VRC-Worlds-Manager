@@ -13,7 +13,6 @@ using System.Linq;
 using Microsoft.UI.Xaml.Controls;
 using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Views;
-using CommunityToolkit.Mvvm.Messaging;
 
 namespace VRC_Favourite_Manager.ViewModels
 {
@@ -36,14 +35,8 @@ namespace VRC_Favourite_Manager.ViewModels
             LogoutCommand = new RelayCommand(async () => await LogoutCommandAsync());
 
             _worldManager.LoadWorldsAsync();
-
-            FoldersNavigationViewItems = GetFoldersNavigationViewItems(_folderManager.Folders);
-
-            WeakReferenceMessenger.Default.Register<FolderUpdatedMessage>(this, (r, m) =>
-            {
-                Debug.WriteLine("FolderUpdatedMessage received");
-                FoldersNavigationViewItems = GetFoldersNavigationViewItems(m.Folders);
-            });
+            FoldersNavigationViewItems = GetFoldersNavigationViewItems();
+            _folderManager.PropertyChanged += OnFolderManagerPropertyChanged;
         }
 
         private async Task LogoutCommandAsync()
@@ -52,9 +45,14 @@ namespace VRC_Favourite_Manager.ViewModels
             ((App)Application.Current).mainWindow.NavigateToAuthenticationPage();
         }
 
-        private IEnumerable<NavigationViewItemBase> GetFoldersNavigationViewItems(ObservableCollection<FolderModel> Folders)
+        private void OnFolderManagerPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            return Folders.Select(folder => new NavigationViewItem
+            FoldersNavigationViewItems = GetFoldersNavigationViewItems();
+        }
+
+        private IEnumerable<NavigationViewItemBase> GetFoldersNavigationViewItems()
+        {
+            return _folderManager.Folders.Select(folder => new NavigationViewItem
             {
                 Content = folder.Name,
                 Tag = folder
@@ -63,7 +61,7 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public void SelectedFolderChanged(FolderModel folder)
         {
-            _folderManager.ChangeSelectedFolder(folder.Name);
+            _folderManager.ChangeSelectedFolder(folder);
         }
     }
 }

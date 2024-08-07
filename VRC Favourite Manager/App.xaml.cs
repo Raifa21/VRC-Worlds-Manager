@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Net;
 using CommunityToolkit.Mvvm.Messaging;
@@ -7,7 +6,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Tomlyn;
 using VRC_Favourite_Manager.Common;
-using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
 using VRC_Favourite_Manager.ViewModels;
 using VRC_Favourite_Manager.Views;
@@ -157,8 +155,12 @@ namespace VRC_Favourite_Manager
 
         public AuthenticationViewModel AuthenticationViewModel => _authenticationViewModel;
     }
-    public class LanguageChangedMessage(string languageCode)
+    public class LanguageChangedMessage
     {
-        public string LanguageCode { get; set; } = languageCode;
+        public string LanguageCode { get; set; }
+        public LanguageChangedMessage(string languageCode)
+        {
+            LanguageCode = languageCode;
+        }
     }
 }

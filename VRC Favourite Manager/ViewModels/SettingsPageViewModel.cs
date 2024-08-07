@@ -16,6 +16,7 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly WorldManager _worldManager;
         private readonly FolderManager _folderManager;
         public ICommand ResetCommand { get; }
+
         public SettingsPageViewModel()
         {
             _folderManager = Application.Current.Resources["FolderManager"] as FolderManager;
