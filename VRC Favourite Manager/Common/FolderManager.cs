@@ -218,6 +218,14 @@ namespace VRC_Favourite_Manager.Common
                 }
             }
         }
+    }
+    public class FolderUpdatedMessage(ObservableCollection<FolderModel> folders)
+    {
+        public ObservableCollection<FolderModel> Folders { get; set; } = folders;
+    }
+    public class SelectedFolderChangedMessage(FolderModel folder)
+    {
+        public FolderModel Folder { get; set; } = folder;
 
         public void ChangeSelectedFolder(FolderModel folder)
         {
