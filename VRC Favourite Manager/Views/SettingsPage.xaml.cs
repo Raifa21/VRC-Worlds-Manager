@@ -43,11 +43,9 @@ namespace VRC_Favourite_Manager.Views
                 {
                     case "Japanese":
                         languageCode = "ja-JP";
-                        _configManager.WriteToConfig("language", "ja-JP");
                         break;
                     case "English":
                         languageCode = "en-US";
-                        _configManager.WriteToConfig("language", "en-US");
                         break;
                 }
 

@@ -3,7 +3,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using CommunityToolkit.Mvvm.Messaging;
 using VRC_Favourite_Manager.Models;
+using VRC_Favourite_Manager.Views;
 
 namespace VRC_Favourite_Manager.Common
 {
@@ -117,6 +119,11 @@ namespace VRC_Favourite_Manager.Common
                 }
                 var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
                 unclassifiedFolder?.Worlds.Remove(world);
+                if (SelectedFolder.Name == "Unclassified")
+                {
+                    _selectedFolder = unclassifiedFolder;
+                    WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(_selectedFolder));
+                }
                 SaveFolders();
             }
             else
@@ -124,6 +131,14 @@ namespace VRC_Favourite_Manager.Common
                 AddFolder(folderName);
                 AddToFolder(world, folderName);
             }
+
+            if (folderName == SelectedFolder.Name)
+            {
+                _selectedFolder = folder;
+                WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(_selectedFolder));
+            }
+
+            WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
         }
 
         public void RemoveFromFolder(WorldModel world, string folderName)
@@ -143,19 +158,36 @@ namespace VRC_Favourite_Manager.Common
             {
                 var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
                 unclassifiedFolder?.Worlds.Add(world);
+                if (SelectedFolder.Name == "Unclassified")
+                {
+                    _selectedFolder = unclassifiedFolder;
+                    WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(_selectedFolder));
+                }
             }
+
+            if (folderName == SelectedFolder.Name)
+            {
+                _selectedFolder = folder;
+                WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(_selectedFolder));
+            }
+
+            WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
+
+
             SaveFolders();
         }
 
         public void AddFolder(string folderName)
         {
-            var index = 1;
+            var index = 0;
             while (_folders.Any(f => f.Name == folderName))
             {
                 index++;
                 folderName = $"{folderName} ({index})";
             }
             _folders.Add(new FolderModel(folderName));
+
+            WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
             SaveFolders();
         }
 
@@ -172,19 +204,21 @@ namespace VRC_Favourite_Manager.Common
                         break;
                     }
                 }
-            }
-            var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
-            foreach (var world in folder.Worlds)
-            {
-                unclassifiedFolder?.Worlds.Add(world);
+                if(PlaceWorldInUnclassified)
+                {
+                    var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
+                    unclassifiedFolder?.Worlds.Add(world);
+                }
             }
             _folders.Remove(folder);
             SaveFolders();
-            if(_selectedFolder == folder)
+            if(_selectedFolder == folder || _selectedFolder.Name == "Unclassified")
             {
-                _selectedFolder = _folders.FirstOrDefault();
-                OnPropertyChanged(nameof(SelectedFolder));
+                _selectedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
+                WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(_selectedFolder));
             }
+
+            WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
         }
 
         private void SaveFolders()
@@ -192,12 +226,26 @@ namespace VRC_Favourite_Manager.Common
             _jsonManager.SaveFolders(_folders);
         }
 
-        public void RenameFolder(string newName)
+        public void RenameFolder(string newName, string oldName)
         {
-            if (_selectedFolder.Name != "Unclassified")
+            if (oldName != "Unclassified")
             {
-                _selectedFolder.Name = newName;
-                SaveFolders();
+                var index = 0;
+                while (_folders.Any(f => f.Name == newName))
+                {
+                    index++;
+                    newName = $"{newName} ({index})";
+                }
+                var folder = _folders.FirstOrDefault(f => f.Name == oldName);
+                folder.Name = newName;
+
+                if (_selectedFolder.Name == oldName)
+                {
+                    _selectedFolder = folder;
+                    WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(_selectedFolder));
+                }
+
+                WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
             }
         }
 
@@ -206,6 +254,9 @@ namespace VRC_Favourite_Manager.Common
             _folders.Clear();
             SaveFolders();
             _folders.Add(new FolderModel("Unclassified"));
+            _selectedFolder = _folders.FirstOrDefault();
+            WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
+            WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(_selectedFolder));
         }
 
         public void PrintFolders()

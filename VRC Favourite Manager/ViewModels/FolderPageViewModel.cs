@@ -73,7 +73,7 @@ namespace VRC_Favourite_Manager.ViewModels
         }
         public void RenameFolder(string newFolderName)
         {
-            _folderManager.RenameFolder(newFolderName);
+            _folderManager.RenameFolder(newFolderName, _folderName);
             Debug.WriteLine("Renamed folder: " + newFolderName);
         }
 

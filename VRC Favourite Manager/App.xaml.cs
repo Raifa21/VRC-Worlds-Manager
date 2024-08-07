@@ -116,19 +116,6 @@ namespace VRC_Favourite_Manager
                     System.Diagnostics.Debug.WriteLine("API key not found in config file.");
                 }
 
-                if (toml.ContainsKey("language"))
-                {
-                    try
-                    {
-                        this.languageCode = toml["language"].ToString();
-                        WeakReferenceMessenger.Default.Send(new LanguageChangedMessage(languageCode));
-                    }
-                    catch (System.Exception)
-                    {
-                        System.Diagnostics.Debug.WriteLine("Error reading language from config file.");
-                        WeakReferenceMessenger.Default.Send(new LanguageChangedMessage("en-US"));
-                    }
-                }
             }
             catch (FileNotFoundException)
             {

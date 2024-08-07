@@ -17,6 +17,7 @@ namespace VRC_Favourite_Manager.Views
     {
         int previousSelectedIndex = 0;
         private readonly MainViewModel viewModel;
+        private object _previouslySelectedItem;
 
         public MainPage()
         {
@@ -25,7 +26,14 @@ namespace VRC_Favourite_Manager.Views
             this.DataContext = viewModel;
 
             NavigateToFolderPage();
-            RefreshPage("ja-JP");
+            RefreshPage(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
+
+            var folders = viewModel.FoldersNavigationViewItems;
+            foreach (var folder in folders)
+            {
+                FoldersItem.MenuItems.Add(folder);
+            }
+
 
             WeakReferenceMessenger.Default.Register<LanguageChangedMessage>(this, (r, m) =>
             {
@@ -34,7 +42,8 @@ namespace VRC_Favourite_Manager.Views
             });
             WeakReferenceMessenger.Default.Register<FolderUpdatedMessage>(this, (r, m) =>
             {
-
+                Debug.WriteLine("Folder updated");
+                GenerateFolders();
             });
         }
 
@@ -56,9 +65,27 @@ namespace VRC_Favourite_Manager.Views
             }
         }
 
+        private void GenerateFolders()
+        {
+            var folders = viewModel.GetFoldersNavigationViewItems();
+            FoldersItem.MenuItems.Clear();
+            foreach (var folder in folders)
+            {
+                FoldersItem.MenuItems.Add(folder);
+                if (folder.IsSelected)
+                {
+                    NavView.SelectedItem = folder;
+                }
+            }
+        }
+
 
         private void NavigationView_SelectionChanged(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)
         {
+            if( args.SelectedItemContainer == null)
+            {
+                return;
+            }
             if (args.SelectedItemContainer.Tag is string selectedItem)
             {
                 switch (selectedItem)

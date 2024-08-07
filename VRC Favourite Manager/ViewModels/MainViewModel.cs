@@ -50,12 +50,13 @@ namespace VRC_Favourite_Manager.ViewModels
             FoldersNavigationViewItems = GetFoldersNavigationViewItems();
         }
 
-        private IEnumerable<NavigationViewItemBase> GetFoldersNavigationViewItems()
+        public IEnumerable<NavigationViewItemBase> GetFoldersNavigationViewItems()
         {
             return _folderManager.Folders.Select(folder => new NavigationViewItem
             {
                 Content = folder.Name,
-                Tag = folder
+                Tag = folder,
+                IsSelected = (folder == _folderManager.SelectedFolder)
             }).Cast<NavigationViewItemBase>();
         }
 

@@ -4,7 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <NavigationView Height="auto"
+        <NavigationView x:Name="NavView" 
+                        Height="auto"
                         PaneDisplayMode="Left"
                         IsTabStop="False"
                         IsSettingsVisible="False"
@@ -12,7 +13,7 @@
                         SelectionChanged="NavigationView_SelectionChanged">
             <NavigationView.MenuItems>
                 <NavigationViewItem x:Name="AllWorldsItem" Icon="Globe" Tag="AllWorlds"/>
-                <NavigationViewItem x:Name="FoldersItem" MenuItemsSource="{Binding FoldersNavigationViewItems}">
+                <NavigationViewItem x:Name="FoldersItem" >
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xF12B;" />
                     </NavigationViewItem.Icon>
