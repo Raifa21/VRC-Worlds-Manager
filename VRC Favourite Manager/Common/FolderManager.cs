@@ -88,6 +88,7 @@ namespace VRC_Favourite_Manager.Common
         }
         public void InitializeFolders(ObservableCollection<WorldModel> worlds)
         {
+            Debug.WriteLine("Initializing folders");
             var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
             if (unclassifiedFolder != null)
             {
@@ -105,11 +106,11 @@ namespace VRC_Favourite_Manager.Common
                 InitializeFolders(worlds);
             }
             SaveFolders();
-            PrintFolders();
         }
 
         public void AddToFolder(WorldModel world, string folderName)
         {
+            Debug.WriteLine($"Adding {world.WorldName} to {folderName}");
             var folder = _folders.FirstOrDefault(f => f.Name == folderName);
             if (folder != null)
             {
@@ -117,12 +118,20 @@ namespace VRC_Favourite_Manager.Common
                 {
                     folder.Worlds.Add(world);
                 }
-                var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
-                unclassifiedFolder?.Worlds.Remove(world);
-                if (SelectedFolder.Name == "Unclassified")
+
+                if (folderName != "Unclassified")
                 {
-                    _selectedFolder = unclassifiedFolder;
-                    WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(_selectedFolder));
+                    var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
+                    unclassifiedFolder?.Worlds.Remove(world);
+                    if(SelectedFolder.Name == "Unclassified")
+                    {
+                        _selectedFolder = unclassifiedFolder;
+                    }
+                }
+
+                if (SelectedFolder.Name == folderName)
+                {
+                    _selectedFolder = _folders.FirstOrDefault(f => f.Name == folderName);
                 }
                 SaveFolders();
             }

@@ -79,7 +79,7 @@ namespace VRC_Favourite_Manager.ViewModels
 
         private void OnFolderManagerPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            Debug.WriteLine("Selected folder updated");
+            Debug.WriteLine("Selected folder changed");
             _folderName = _folderManager.SelectedFolder?.Name;
             OnPropertyChanged(nameof(FolderName));
             UpdateWorlds();

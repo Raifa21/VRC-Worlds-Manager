@@ -24,7 +24,7 @@ namespace VRC_Favourite_Manager.Views
         {
             this.InitializeComponent();
 
-            RefreshPage("ja-JP");
+            RefreshPage(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
             WeakReferenceMessenger.Default.Register<LanguageChangedMessage>(this, (r, m) =>
             {
                 Debug.WriteLine("Language changed to " + m.LanguageCode);

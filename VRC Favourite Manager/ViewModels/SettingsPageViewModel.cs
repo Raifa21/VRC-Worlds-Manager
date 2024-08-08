@@ -28,10 +28,12 @@ namespace VRC_Favourite_Manager.ViewModels
         }
 
 
-        private void Reset()
+        private async void Reset()
         {
-            _worldManager.ResetWorlds();
             _folderManager.ResetFolders();
+            _worldManager.ResetWorlds();
+
+            await _worldManager.InitialScanAsync();
         }
     }
 }

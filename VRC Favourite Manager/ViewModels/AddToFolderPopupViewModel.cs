@@ -29,7 +29,6 @@ namespace VRC_Favourite_Manager.ViewModels
         }
 
         public WorldModel SelectedWorld { get; set; }
-        public ObservableCollection<FolderModel> Folders;
 
         public AddToFolderPopupViewModel(WorldModel selectedWorld)
         {
@@ -37,6 +36,7 @@ namespace VRC_Favourite_Manager.ViewModels
             _selectedFolders = new ObservableCollection<FolderSelection>();
 
             UpdateFolderSelection(_folderManager.Folders);
+
 
             SelectedWorld = selectedWorld;
         }
@@ -76,7 +76,7 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public void ConfirmSelection()
         {
-            foreach (var folder in Folders)
+            foreach (var folder in _folderManager.Folders)
             {
                 if (folder.Name != "Unclassified")
                 {

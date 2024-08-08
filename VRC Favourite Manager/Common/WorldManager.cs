@@ -67,7 +67,7 @@ namespace VRC_Favourite_Manager.Common
             }
         }
 
-        private async Task InitialScanAsync()
+        public async Task InitialScanAsync()
         {
             int page = 0;
             bool hasMore = true;
