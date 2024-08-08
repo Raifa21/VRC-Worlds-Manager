@@ -45,7 +45,6 @@
             <!-- Button displayed when not renaming -->
             <!-- Button hidden when file is "Unclassified" -->
             <Button x:Name="RenameButton"
-                    Command="{Binding RenamingCommand}" 
                     Visibility="Collapsed" 
                     Margin="-20,13,0,10"
                     Padding="5"
@@ -71,10 +70,52 @@
                      Margin="20 10"/>
         </StackPanel>
 
-        <muxc:GridView ItemsSource="{Binding Worlds}" Margin="10,50,10,0" IsItemClickEnabled="True" ItemClick="GridView_ItemClick">
+        <Button x:Name="MultiSelectButton" Margin="10,10,75,0" Content="Select" HorizontalAlignment="Right" VerticalAlignment="Top">
+            <Interactivity:Interaction.Behaviors>
+                <core:EventTriggerBehavior EventName="Click">
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=SingleClickGrid}" PropertyName="Visibility" Value="Collapsed"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiClickGrid}" PropertyName="Visibility" Value="Visible"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiSelectButton_Cancel}" PropertyName="Visibility" Value="Visible"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiSelectButton}" PropertyName="Visibility" Value="Collapsed"/>
+                </core:EventTriggerBehavior>
+            </Interactivity:Interaction.Behaviors>
+        </Button>
+        <Button x:Name="MultiSelectButton_Cancel" Margin="10,10,75,0" Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Top" Visibility="Collapsed" Click="GridView_SelectionCleared">
+            <Interactivity:Interaction.Behaviors>
+                <core:EventTriggerBehavior EventName="Click">
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=SingleClickGrid}" PropertyName="Visibility" Value="Visible"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiClickGrid}" PropertyName="Visibility" Value="Collapsed"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiSelectButton_Cancel}" PropertyName="Visibility" Value="Collapsed"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiSelectButton}" PropertyName="Visibility" Value="Visible"/>
+                </core:EventTriggerBehavior>
+            </Interactivity:Interaction.Behaviors>
+        </Button>
+        <muxc:GridView x:Name="SingleClickGrid" ItemsSource="{Binding Worlds}" Margin="10,50,10,0" IsItemClickEnabled="True" ItemClick="GridView_ItemClick" >
             <muxc:GridView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Margin="10"> 
+                        <StackPanel.ContextFlyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem Text="View Details" Click="ViewDetails_Click"/>
+                                <MenuFlyoutItem Text="Move to Another Folder" Click="MoveToAnotherFolder_Click"/>
+                                <MenuFlyoutItem Text="Remove" Click="Remove_Click"/>
+                            </MenuFlyout>
+                        </StackPanel.ContextFlyout>
+                        <Viewbox Width="240" Height="180">
+                            <Grid Width="240" Height="180">
+                                <Image Source="{Binding ThumbnailImageUrl}" Stretch="Fill" Width="240" Height="180"/>
+                            </Grid>
+                        </Viewbox>
+                        <TextBlock Text="{Binding WorldName}" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='By {0}'}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </muxc:GridView.ItemTemplate>
+        </muxc:GridView>
+        <muxc:GridView x:Name="MultiClickGrid" ItemsSource="{Binding Worlds}" Margin="10,50,10,0" IsItemClickEnabled="True" SelectionMode="Multiple" SelectionChanged="GridView_SelectionChanged" Visibility="Collapsed">
+            <muxc:GridView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="10">
                         <StackPanel.ContextFlyout>
                             <MenuFlyout>
                                 <MenuFlyoutItem Text="View Details" Click="ViewDetails_Click"/>

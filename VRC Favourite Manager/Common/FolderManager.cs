@@ -238,6 +238,7 @@ namespace VRC_Favourite_Manager.Common
 
         public void RenameFolder(string newName, string oldName)
         {
+            if(newName == oldName) return;
             if (oldName != "Unclassified")
             {
                 var index = 0;

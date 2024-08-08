@@ -33,6 +33,17 @@ namespace VRC_Favourite_Manager.ViewModels
             }
         }
 
+        private bool _isSelecting;
+        public bool IsSelecting
+        {
+            get => _isSelecting;
+            set
+            {
+                _isSelecting = value;
+                OnPropertyChanged(nameof(IsSelecting));
+            }
+        }
+
         private string _folderName;
         public string FolderName
         {
@@ -43,10 +54,8 @@ namespace VRC_Favourite_Manager.ViewModels
                 OnPropertyChanged(nameof(FolderName));
             }
         }
-
         public ICommand MoveWorldCommand { get; }
         public ICommand AddFolderCommand { get; }
-        public ICommand RenamingCommand { get; }
         public ICommand RefreshCommand { get; }
 
         public FolderPageViewModel()
@@ -58,10 +67,8 @@ namespace VRC_Favourite_Manager.ViewModels
             _folderName = _folderManager?.SelectedFolder?.Name;
             _isRenaming = false;
 
-
             MoveWorldCommand = new RelayCommand<Tuple<WorldModel, string>>(MoveWorld);
             AddFolderCommand = new RelayCommand<string>(AddFolder);
-            RenamingCommand = new RelayCommand(RenamingFolder);
             RefreshCommand = new RelayCommand(async () => await RefreshWorldsAsync());
 
             UpdateWorlds();
@@ -113,11 +120,7 @@ namespace VRC_Favourite_Manager.ViewModels
             _folderManager.AddFolder(folderName);
             UpdateWorlds();
         }
-        private void RenamingFolder()
-        {
-            _isRenaming = true;
-            Debug.WriteLine(IsRenaming);
-        }
+
         private async Task RefreshWorldsAsync()
         {
             await _worldManager.CheckForNewWorldsAsync();

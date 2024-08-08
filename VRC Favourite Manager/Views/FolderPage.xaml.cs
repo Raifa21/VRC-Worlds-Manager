@@ -1,6 +1,7 @@
 // FolderPage.xaml.cs
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -12,46 +13,39 @@ using Windows.UI.Core;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml.Navigation;
 using VRC_Favourite_Manager.Common;
+using System.Linq;
 
 namespace VRC_Favourite_Manager.Views
 {
     public sealed partial class FolderPage : Page
     {
         private FolderPageViewModel _viewModel => (FolderPageViewModel)this.DataContext;
-        private CoreWindow _coreWindow;
+        private List<WorldModel> selectedItems;
         public FolderPage()
         {
             this.InitializeComponent();
             this.DataContext = _viewModel;
             this.DataContextChanged += FolderPage_DataContextChanged;
+            
+            selectedItems = new List<WorldModel>();
 
             RenameButton.Visibility = Visibility.Collapsed;
+            MultiClickGrid.Visibility = Visibility.Collapsed;
         }
         private void FolderPage_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
             if (args.NewValue is FolderPageViewModel viewModel)
             {
-                viewModel.PropertyChanged += ViewModel_PropertyChanged;
-                UpdateVisibility(viewModel.IsRenaming);
+                UpdateVisibility();
             }
         }
-        private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+
+        private void UpdateVisibility()
         {
-            if (e.PropertyName == nameof(FolderPageViewModel.IsRenaming))
-            {
-                var viewModel = sender as FolderPageViewModel;
-                UpdateVisibility(viewModel.IsRenaming);
-            }
-        }
-        private void UpdateVisibility(bool isRenaming)
-        {
-            FolderNameTextBlock.Visibility = isRenaming ? Visibility.Collapsed : Visibility.Visible;
-            FolderNameTextBox.Visibility = isRenaming ? Visibility.Visible : Visibility.Collapsed;
             if(_viewModel.FolderName != "Unclassified")
             {
-                RenameButton.Visibility = isRenaming ? Visibility.Collapsed : Visibility.Visible;
+                RenameButton.Visibility = Visibility.Visible;
             }
-            
         }
         private void TextBox_KeyDown(object sender, KeyRoutedEventArgs e)
         {
@@ -72,6 +66,17 @@ namespace VRC_Favourite_Manager.Views
                 };
                 await dialog.ShowAsync();
             }
+        }
+        private void GridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var gridView = sender as GridView;
+            selectedItems = gridView?.SelectedItems.Cast<WorldModel>().ToList();
+        }
+
+        private void GridView_SelectionCleared()
+        {
+            MultiClickGrid.SelectedItems.Clear();
+            selectedItems.Clear();
         }
 
 
