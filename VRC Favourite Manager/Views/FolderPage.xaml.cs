@@ -9,6 +9,9 @@ using VRC_Favourite_Manager.Models;
 using Microsoft.UI.Xaml.Input;
 using System.ComponentModel;
 using Windows.UI.Core;
+using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.UI.Xaml.Navigation;
+using VRC_Favourite_Manager.Common;
 
 namespace VRC_Favourite_Manager.Views
 {
@@ -104,5 +107,11 @@ namespace VRC_Favourite_Manager.Views
                 _viewModel.RemoveFromFolder(selectedWorld);
             }
         }
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+            _viewModel.Dispose();
+        }
+
     }
 }

@@ -58,7 +58,7 @@ namespace VRC_Favourite_Manager.Views
 
         private void RefreshPage(string languageCode)
         {
-            if(languageCode == "ja-JP")
+            if (languageCode == "ja-JP")
             {
                 this.SettingsTitle.Text = "ê›íË";
                 this.LanguageTitle.Text = "åæåÍ";
@@ -79,10 +79,17 @@ namespace VRC_Favourite_Manager.Views
             }
         }
 
-    private void ChangeApplicationLanguage(string languageCode)
+        private void ChangeApplicationLanguage(string languageCode)
         {
             Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = languageCode;
             WeakReferenceMessenger.Default.Send(new LanguageChangedMessage(languageCode));
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+            // Unregister the message subscription
+            WeakReferenceMessenger.Default.Unregister<LanguageChangedMessage>(this);
         }
     }
 }

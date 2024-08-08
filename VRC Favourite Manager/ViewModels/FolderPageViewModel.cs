@@ -12,6 +12,7 @@ using VRC_Favourite_Manager.Services;
 using System.Linq;
 using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Views;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace VRC_Favourite_Manager.ViewModels
 {
@@ -57,7 +58,6 @@ namespace VRC_Favourite_Manager.ViewModels
             _folderName = _folderManager?.SelectedFolder?.Name;
             _isRenaming = false;
 
-            _folderManager.PropertyChanged += OnFolderManagerPropertyChanged;
 
             MoveWorldCommand = new RelayCommand<Tuple<WorldModel, string>>(MoveWorld);
             AddFolderCommand = new RelayCommand<string>(AddFolder);
@@ -65,6 +65,12 @@ namespace VRC_Favourite_Manager.ViewModels
             RefreshCommand = new RelayCommand(async () => await RefreshWorldsAsync());
 
             UpdateWorlds();
+
+            WeakReferenceMessenger.Default.Register<FolderUpdatedMessage>(this, (r, m) =>
+            {
+                Debug.WriteLine("Folder updated");
+                OnFolderUpdated();
+            });
         }
         public void RemoveFromFolder(WorldModel world)
         {
@@ -77,15 +83,14 @@ namespace VRC_Favourite_Manager.ViewModels
             Debug.WriteLine("Renamed folder: " + newFolderName);
         }
 
-        private void OnFolderManagerPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void OnFolderUpdated()
         {
             Debug.WriteLine("Selected folder changed");
             _folderName = _folderManager.SelectedFolder?.Name;
-            OnPropertyChanged(nameof(FolderName));
             UpdateWorlds();
         }
 
-        private void UpdateWorlds()
+        public void UpdateWorlds()
         {
             Worlds.Clear();
             if (_folderManager.SelectedFolder != null)
@@ -117,6 +122,10 @@ namespace VRC_Favourite_Manager.ViewModels
         {
             await _worldManager.CheckForNewWorldsAsync();
             UpdateWorlds();
+        }
+        public void Dispose()
+        {
+            WeakReferenceMessenger.Default.Unregister<FolderUpdatedMessage>(this);
         }
     }
 }

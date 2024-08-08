@@ -106,6 +106,8 @@ namespace VRC_Favourite_Manager.Common
                 InitializeFolders(worlds);
             }
             SaveFolders();
+            WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
+            Debug.WriteLine("Folders initialized");
         }
 
         public void AddToFolder(WorldModel world, string folderName)
@@ -144,7 +146,6 @@ namespace VRC_Favourite_Manager.Common
             if (folderName == SelectedFolder.Name)
             {
                 _selectedFolder = folder;
-                WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(_selectedFolder));
             }
 
             WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
@@ -170,14 +171,12 @@ namespace VRC_Favourite_Manager.Common
                 if (SelectedFolder.Name == "Unclassified")
                 {
                     _selectedFolder = unclassifiedFolder;
-                    WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(_selectedFolder));
                 }
             }
 
             if (folderName == SelectedFolder.Name)
             {
                 _selectedFolder = folder;
-                WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(_selectedFolder));
             }
 
             WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
@@ -227,7 +226,6 @@ namespace VRC_Favourite_Manager.Common
             if(_selectedFolder == folder || _selectedFolder.Name == "Unclassified")
             {
                 _selectedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
-                WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(_selectedFolder));
             }
 
             WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
@@ -255,7 +253,6 @@ namespace VRC_Favourite_Manager.Common
                 if (_selectedFolder.Name == oldName)
                 {
                     _selectedFolder = folder;
-                    WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(_selectedFolder));
                 }
 
                 WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
@@ -269,7 +266,6 @@ namespace VRC_Favourite_Manager.Common
             _folders.Add(new FolderModel("Unclassified"));
             _selectedFolder = _folders.FirstOrDefault();
             WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
-            WeakReferenceMessenger.Default.Send(new SelectedFolderChangedMessage(_selectedFolder));
         }
 
         public void PrintFolders()
@@ -296,9 +292,5 @@ namespace VRC_Favourite_Manager.Common
     public class FolderUpdatedMessage(ObservableCollection<FolderModel> folders)
     {
         public ObservableCollection<FolderModel> Folders { get; set; } = folders;
-    }
-    public class SelectedFolderChangedMessage(FolderModel folder)
-    {
-        public FolderModel Folder { get; set; } = folder;
     }
 }

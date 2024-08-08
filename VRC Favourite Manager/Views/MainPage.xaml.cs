@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
+using Microsoft.UI.Xaml.Navigation;
 
 namespace VRC_Favourite_Manager.Views
 {
@@ -110,6 +111,13 @@ namespace VRC_Favourite_Manager.Views
         private void NavigateToFolderPage()
         {
             ContentFrame.Navigate(typeof(FolderPage));
+        }
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+            // Unregister the message subscription
+            WeakReferenceMessenger.Default.Unregister<LanguageChangedMessage>(this);
+            WeakReferenceMessenger.Default.Unregister<FolderUpdatedMessage>(this);
         }
     }
 }
