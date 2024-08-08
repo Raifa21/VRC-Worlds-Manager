@@ -177,18 +177,21 @@ namespace VRC_Favourite_Manager.Common
             SaveFolders();
         }
 
-        public void AddFolder(string folderName)
+        public string AddFolder(string folderName)
         {
             var index = 0;
+            var name = folderName;
             while (_folders.Any(f => f.Name == folderName))
             {
                 index++;
-                folderName = $"{folderName} ({index})";
+                folderName = $"{name} ({index})";
             }
             _folders.Add(new FolderModel(folderName));
-
+            
             WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
             SaveFolders();
+
+            return folderName;
         }
 
         public void RemoveFolder(FolderModel folder)
@@ -231,10 +234,11 @@ namespace VRC_Favourite_Manager.Common
             if (oldName != "Unclassified")
             {
                 var index = 0;
+                var name = newName;
                 while (_folders.Any(f => f.Name == newName))
                 {
                     index++;
-                    newName = $"{newName} ({index})";
+                    newName = $"{name} ({index})";
                 }
                 var folder = _folders.FirstOrDefault(f => f.Name == oldName);
                 folder.Name = newName;

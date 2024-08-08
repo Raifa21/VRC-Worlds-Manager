@@ -36,13 +36,9 @@ namespace VRC_Favourite_Manager.ViewModels
             _folderManager = Application.Current.Resources["FolderManager"] as FolderManager;
             _selectedFolders = new ObservableCollection<FolderSelection>();
 
-            SelectedWorld = selectedWorld;
+            UpdateFolderSelection(_folderManager.Folders);
 
-            WeakReferenceMessenger.Default.Register<FolderUpdatedMessage>(this, (r, m) =>
-            {
-                Folders = m.Folders;
-                UpdateFolderSelection(Folders);
-            });
+            SelectedWorld = selectedWorld;
         }
 
         public void UpdateFolderSelection(ObservableCollection<FolderModel> Folders)
@@ -65,12 +61,17 @@ namespace VRC_Favourite_Manager.ViewModels
         public void AddFolder()
         {
             var newFolderName = "New Folder";
-            _folderManager.AddFolder(newFolderName);
+            newFolderName = _folderManager.AddFolder(newFolderName);
+            _selectedFolders.Add(new FolderSelection()
+            {
+                FolderName = newFolderName,
+                IsChecked = false
+            });
         }
 
         public void CancelSelection()
         {
-            UpdateFolderSelection(Folders);
+            UpdateFolderSelection(_folderManager.Folders);
         }
 
         public void ConfirmSelection()
