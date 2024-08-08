@@ -69,16 +69,14 @@ namespace VRC_Favourite_Manager.Views
         }
         private void GridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var gridView = sender as GridView;
-            selectedItems = gridView?.SelectedItems.Cast<WorldModel>().ToList();
+            selectedItems = MultiClickGrid.SelectedItems.Cast<WorldModel>().ToList();
         }
 
-        private void GridView_SelectionCleared()
+        private void GridView_ClearSelection(object sender, RoutedEventArgs e)
         {
             MultiClickGrid.SelectedItems.Clear();
             selectedItems.Clear();
         }
-
 
 
         private void ViewDetails_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
@@ -102,6 +100,28 @@ namespace VRC_Favourite_Manager.Views
                     XamlRoot = this.Content.XamlRoot
                 };
                 await addToFolderPopup.ShowAsync();
+            }
+        }
+        private async void MultiMoveToAnotherFolder_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            if(sender is FrameworkElement { DataContext: WorldModel selectedWorld })
+            {
+                if(selectedItems.Count <= 1)
+                {
+                    var addToFolderPopup = new AddToFolderPopup(selectedWorld)
+                    {
+                        XamlRoot = this.Content.XamlRoot
+                    };
+                    await addToFolderPopup.ShowAsync();
+                }
+                else
+                {
+                    var addToFolderPopup = new MultiAddToFolderPopup(selectedItems)
+                    {
+                        XamlRoot = this.Content.XamlRoot
+                    };
+                    await addToFolderPopup.ShowAsync();
+                }
             }
         }
 

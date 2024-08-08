@@ -80,7 +80,7 @@
                 </core:EventTriggerBehavior>
             </Interactivity:Interaction.Behaviors>
         </Button>
-        <Button x:Name="MultiSelectButton_Cancel" Margin="10,10,75,0" Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Top" Visibility="Collapsed" Click="GridView_SelectionCleared">
+        <Button x:Name="MultiSelectButton_Cancel" Margin="10,10,75,0" Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Top" Visibility="Collapsed" Click="GridView_ClearSelection">
             <Interactivity:Interaction.Behaviors>
                 <core:EventTriggerBehavior EventName="Click">
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=SingleClickGrid}" PropertyName="Visibility" Value="Visible"/>
@@ -118,8 +118,7 @@
                     <StackPanel Margin="10">
                         <StackPanel.ContextFlyout>
                             <MenuFlyout>
-                                <MenuFlyoutItem Text="View Details" Click="ViewDetails_Click"/>
-                                <MenuFlyoutItem Text="Move to Another Folder" Click="MoveToAnotherFolder_Click"/>
+                                <MenuFlyoutItem Text="Move to Another Folder" Click="MultiMoveToAnotherFolder_Click"/>
                                 <MenuFlyoutItem Text="Remove" Click="Remove_Click"/>
                             </MenuFlyout>
                         </StackPanel.ContextFlyout>
