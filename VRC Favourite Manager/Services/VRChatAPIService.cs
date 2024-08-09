@@ -309,25 +309,6 @@ namespace VRC_Favourite_Manager.Services
                 var worldModels = new List<Models.WorldModel>();
                 foreach (var world in responseWorlds)
                 {
-                    List<string> tags_replaced = new List<string>();
-                    foreach (var tag in world.Tags)
-                    {
-                        if (tag.StartsWith("system_"))
-                        {
-                            var replace = tag.Replace("system_", "");
-                            tags_replaced = tags_replaced.Append(replace).ToList();
-                        }
-                        else if (tag.StartsWith("author_tag_"))
-                        {
-                            var replace = tag.Replace("author_tag_", "");
-                            tags_replaced = tags_replaced.Append(replace).ToList();
-                        }
-                        else
-                        {
-                            tags_replaced = tags_replaced.Append(tag).ToList();
-                        }
-
-                    }
                     var worldModel = new Models.WorldModel
                     {
                         ThumbnailImageUrl = world.ThumbnailImageUrl,
@@ -340,7 +321,6 @@ namespace VRC_Favourite_Manager.Services
                         Description = world.Description,
                         Visits = world.Visits,
                         Favorites = world.Favorites,
-                        Tags = tags_replaced,
                     };
                     worldModels.Add(worldModel);
                 }

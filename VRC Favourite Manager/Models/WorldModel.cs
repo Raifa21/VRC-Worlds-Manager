@@ -18,7 +18,6 @@ namespace VRC_Favourite_Manager.Models
         public string Description { get; set; }
         public int? Visits { get; set; }
         public int Favorites { get; set; }
-        public List<string> Tags { get; set; }
         
     }
 

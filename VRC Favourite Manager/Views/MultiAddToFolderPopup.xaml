@@ -12,9 +12,6 @@
     <Grid Width="260" Height="500" HorizontalAlignment="Center" VerticalAlignment="Center">
         <StackPanel Margin="10,10,10,10">
             <Viewbox Width="240" Height="180" Margin="0,0,0,0">
-                <Grid Width="240" Height="180">
-                    <Image Source="{Binding SelectedWorld.ThumbnailImageUrl}" Stretch="Fill" Width="240" Height="180"/>
-                </Grid>
             </Viewbox>
             <TextBlock Text="Select Folders" FontSize="14" FontWeight="Bold" Margin="0,20,0,10"/>
             <Grid Height="175" Margin="2,25,0,0">
@@ -22,7 +19,7 @@
                     <ItemsControl ItemsSource="{Binding SelectedFolders}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <ToggleButton Content="{Binding FolderName}" IsChecked="{Binding IsChecked, Mode=TwoWay}" Margin="0,0,0,10" IsThreeState="True"/>
+                                <ToggleButton Content="{Binding FolderName}" IsChecked="{Binding IsCheckedNullable, Mode=TwoWay}" Margin="0,0,0,10" IsThreeState="True"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

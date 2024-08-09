@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
@@ -122,7 +123,21 @@ namespace VRC_Favourite_Manager.Common
                 }
                 else
                 {
-                    break;
+                    if (!_worlds.Contains(world))
+                    {
+                        var oldWorld = _worlds.FirstOrDefault(w => w.WorldId == world.WorldId);
+                        if (oldWorld != null)
+                        {
+                            oldWorld.AuthorName = world.AuthorName;
+                            oldWorld.Capacity = world.Capacity;
+                            oldWorld.Description = world.Description;
+                            oldWorld.Favorites = world.Favorites;
+                            oldWorld.LastUpdate = world.LastUpdate;
+                            oldWorld.ThumbnailImageUrl = world.ThumbnailImageUrl;
+                            oldWorld.Visits = world.Visits;
+                            oldWorld.WorldName = world.WorldName;
+                        }
+                    }
                 }
             }
 

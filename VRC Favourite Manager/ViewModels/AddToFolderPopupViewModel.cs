@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using CommunityToolkit.Mvvm.Messaging;
 using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Models;
+using VRChat.API.Model;
 
 namespace VRC_Favourite_Manager.ViewModels
 {
@@ -35,10 +36,9 @@ namespace VRC_Favourite_Manager.ViewModels
             _folderManager = Application.Current.Resources["FolderManager"] as FolderManager;
             _selectedFolders = new ObservableCollection<FolderSelection>();
 
-            UpdateFolderSelection(_folderManager.Folders);
-
-
             SelectedWorld = selectedWorld;
+
+            UpdateFolderSelection(_folderManager.Folders);
         }
 
         public void UpdateFolderSelection(ObservableCollection<FolderModel> Folders)
@@ -52,7 +52,7 @@ namespace VRC_Favourite_Manager.ViewModels
                     _selectedFolders.Add(new FolderSelection()
                     {
                         FolderName = folder.Name,
-                        IsChecked = folder.Worlds.Contains(SelectedWorld)
+                        IsChecked =  folder.Worlds.Any(w => w.WorldId == SelectedWorld.WorldId)
                     });
                 }
             }

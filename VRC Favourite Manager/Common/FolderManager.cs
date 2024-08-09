@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.UI.Xaml.Controls;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Views;
 
@@ -94,10 +95,7 @@ namespace VRC_Favourite_Manager.Common
             {
                 foreach (var world in worlds)
                 {
-                    if (!unclassifiedFolder.Worlds.Contains(world))
-                    {
-                        unclassifiedFolder.Worlds.Add(world);
-                    }
+                    unclassifiedFolder.Worlds.Add(world);
                 }
             }
             else
@@ -116,9 +114,26 @@ namespace VRC_Favourite_Manager.Common
             var folder = _folders.FirstOrDefault(f => f.Name == folderName);
             if (folder != null)
             {
-                if (!folder.Worlds.Contains(world))
+                if (folder.Worlds.All(w => w.WorldId != world.WorldId))
                 {
+                    Debug.WriteLine("Adding to folder");
                     folder.Worlds.Add(world);
+                }
+                else
+                {
+                    Debug.WriteLine("World already exists in folder");
+                    var oldWorld = folder.Worlds.FirstOrDefault(w => w.WorldId == world.WorldId);
+                    if (oldWorld != null)
+                    {
+                        oldWorld.AuthorName = world.AuthorName;
+                        oldWorld.Capacity = world.Capacity;
+                        oldWorld.Description = world.Description;
+                        oldWorld.Favorites = world.Favorites;
+                        oldWorld.LastUpdate = world.LastUpdate;
+                        oldWorld.ThumbnailImageUrl = world.ThumbnailImageUrl;
+                        oldWorld.Visits = world.Visits;
+                        oldWorld.WorldName = world.WorldName;
+                    }
                 }
 
                 if (folderName != "Unclassified")
@@ -153,12 +168,14 @@ namespace VRC_Favourite_Manager.Common
 
         public void RemoveFromFolder(WorldModel world, string folderName)
         {
+            Debug.WriteLine($"Removing {world.WorldName} from {folderName}");
             var folder = _folders.FirstOrDefault(f => f.Name == folderName);
-            folder?.Worlds.Remove(world);
+            folder.Worlds.Remove(world);
+            Debug.WriteLine($"Worlds in {folderName}: {folder.Worlds.Count}");
             var PlaceWorldInUnclassified = true;
             foreach(var f in _folders)
             {
-                if(f.Worlds.Contains(world))
+                if (f.Worlds.Any(w => w.WorldId == world.WorldId))
                 {
                     PlaceWorldInUnclassified = false;
                     break;
@@ -209,7 +226,7 @@ namespace VRC_Favourite_Manager.Common
                 var PlaceWorldInUnclassified = true;
                 foreach (var f in _folders)
                 {
-                    if(f != folder && f.Worlds.Contains(world))
+                    if(f != folder && f.Worlds.Any(w => w.WorldId == world.WorldId))
                     {
                         PlaceWorldInUnclassified = false;
                         break;

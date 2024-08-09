@@ -54,7 +54,7 @@ namespace VRC_Favourite_Manager.ViewModels
                     bool? flag = null;
                     foreach (var SelectedWorld in SelectedWorlds)
                     {
-                        if (folder.Worlds.Contains(SelectedWorld))
+                        if (folder.Worlds.Any(w => w.WorldId == SelectedWorld.WorldId))
                         {
                             count++;
                         }
@@ -106,12 +106,14 @@ namespace VRC_Favourite_Manager.ViewModels
                 {
                     if (_selectedFolders.FirstOrDefault(x => x.FolderName == folder.Name).IsCheckedNullable == null)
                     {
+                        Debug.WriteLine("Folder " + folder.Name + " is null");
                         continue;
                     }
                     else if (_selectedFolders.FirstOrDefault(x => x.FolderName == folder.Name).IsCheckedNullable == true)
                     {
                         foreach (var SelectedWorld in SelectedWorlds)
                         {
+                            Debug.WriteLine("Adding " + SelectedWorld.WorldName + " to " + folder.Name);
                             _folderManager.AddToFolder(SelectedWorld, folder.Name);
                         }
                     }
