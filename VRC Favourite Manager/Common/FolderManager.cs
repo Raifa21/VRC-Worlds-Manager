@@ -262,6 +262,7 @@ namespace VRC_Favourite_Manager.Common
                 var name = newName;
                 while (_folders.Any(f => f.Name == newName))
                 {
+                    if (newName == oldName) return;
                     index++;
                     newName = $"{name} ({index})";
                 }
