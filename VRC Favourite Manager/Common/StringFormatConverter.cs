@@ -1,7 +1,7 @@
 ﻿using Microsoft.UI.Xaml.Data;
 using System;
 
-namespace VRC_Favourite_Manager
+namespace VRC_Favourite_Manager.Common
 {
     public class StringFormatConverter : IValueConverter
     {

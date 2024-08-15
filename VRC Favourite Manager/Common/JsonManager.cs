@@ -5,7 +5,7 @@ using System.IO;
 using System.Text.Json;
 using VRC_Favourite_Manager.Models;
 
-namespace VRC_Favourite_Manager
+namespace VRC_Favourite_Manager.Common
 {
     public class JsonManager
     {

@@ -16,9 +16,9 @@ namespace VRC_Favourite_Manager.ViewModels
     {
         private readonly FolderManager _folderManager;
 
-        private ObservableCollection<FolderSelectionNullable> _selectedFolders;
+        private ObservableCollection<FolderSelection_Indeterminatable> _selectedFolders;
 
-        public ObservableCollection<FolderSelectionNullable> SelectedFolders
+        public ObservableCollection<FolderSelection_Indeterminatable> SelectedFolders
         {
             get => _selectedFolders;
             set
@@ -33,7 +33,7 @@ namespace VRC_Favourite_Manager.ViewModels
         public MultiAddToFolderPopupViewModel(List<WorldModel> selectedWorlds)
         {
             _folderManager = Application.Current.Resources["FolderManager"] as FolderManager;
-            _selectedFolders = new ObservableCollection<FolderSelectionNullable>();
+            _selectedFolders = new ObservableCollection<FolderSelection_Indeterminatable>();
 
             SelectedWorlds = selectedWorlds;
 
@@ -51,7 +51,8 @@ namespace VRC_Favourite_Manager.ViewModels
                 if (folder.Name != "Unclassified")
                 {
                     int count = 0;
-                    bool? flag = null;
+                    bool flag_checked = true;
+                    bool flag_indeterminate = false;
                     foreach (var SelectedWorld in SelectedWorlds)
                     {
                         if (folder.Worlds.Any(w => w.WorldId == SelectedWorld.WorldId))
@@ -61,22 +62,23 @@ namespace VRC_Favourite_Manager.ViewModels
                     }
                     if(count == SelectedWorlds.Count)
                     {
-                        flag = true;
+                        flag_checked = true;
                     }
                     else if(count == 0)
                     {
-                        flag = false;
+                        flag_checked = false;
                     }
                     else
                     {
-                        flag = null;
+                        flag_indeterminate = true;
                     }
                     
                     
-                    _selectedFolders.Add(new FolderSelectionNullable()
+                    _selectedFolders.Add(new FolderSelection_Indeterminatable()
                     {
                         FolderName = folder.Name,
-                        IsCheckedNullable = flag
+                        IsChecked = flag_checked,
+                        IsIndeterminate = flag_indeterminate
                     });
                 }
             }
@@ -86,10 +88,11 @@ namespace VRC_Favourite_Manager.ViewModels
         {
             var newFolderName = "New Folder";
             newFolderName = _folderManager.AddFolder(newFolderName);
-            _selectedFolders.Add(new FolderSelectionNullable()
+            _selectedFolders.Add(new FolderSelection_Indeterminatable()
             {
                 FolderName = newFolderName,
-                IsCheckedNullable = false
+                IsChecked = false,
+                IsIndeterminate = false
             });
         }
 
@@ -104,12 +107,11 @@ namespace VRC_Favourite_Manager.ViewModels
             {   
                 if (folder.Name != "Unclassified")
                 {
-                    if (_selectedFolders.FirstOrDefault(x => x.FolderName == folder.Name).IsCheckedNullable == null)
+                    if (_selectedFolders.FirstOrDefault(x => x.FolderName == folder.Name).IsIndeterminate)
                     {
-                        Debug.WriteLine("Folder " + folder.Name + " is null");
                         continue;
                     }
-                    else if (_selectedFolders.FirstOrDefault(x => x.FolderName == folder.Name).IsCheckedNullable == true)
+                    else if (_selectedFolders.FirstOrDefault(x => x.FolderName == folder.Name).IsChecked == true)
                     {
                         foreach (var SelectedWorld in SelectedWorlds)
                         {
@@ -137,30 +139,12 @@ namespace VRC_Favourite_Manager.ViewModels
         }
     }
 
-    public class FolderSelectionNullable : INotifyPropertyChanged
+    public class FolderSelection_Indeterminatable
     {
-        private bool? _isCheckedNullable;
-
         public string FolderName { get; set; }
 
-        public bool? IsCheckedNullable
-        {
-            get => _isCheckedNullable;
-            set
-            {
-                if (_isCheckedNullable != value)
-                {
-                    _isCheckedNullable = value;
-                    OnPropertyChanged(nameof(_isCheckedNullable));
-                }
-            }
-        }
+        public bool IsIndeterminate { get; set; }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        public bool IsChecked { get; set; }
     }
 }

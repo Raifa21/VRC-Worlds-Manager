@@ -15,6 +15,7 @@ using Windows.Foundation.Collections;
 using CommunityToolkit.Mvvm;
 using CommunityToolkit.Mvvm.Messaging;
 using System.Diagnostics;
+using VRC_Favourite_Manager.Common;
 
 namespace VRC_Favourite_Manager.Views
 {

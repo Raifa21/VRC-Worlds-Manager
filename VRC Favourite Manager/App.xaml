@@ -15,7 +15,7 @@
 
             <!-- Existing resources -->
             <common:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
-            <local:StringFormatConverter x:Key="StringFormatConverter"/>
+            <common:StringFormatConverter x:Key="StringFormatConverter"/>
 
             <!-- New resource -->
             <SolidColorBrush x:Key="TabViewButtonBackground" Color="LightGray"/>

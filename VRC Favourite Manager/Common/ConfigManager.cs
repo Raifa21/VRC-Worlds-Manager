@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using Tomlyn;
 
-namespace VRC_Favourite_Manager
+namespace VRC_Favourite_Manager.Common
 {
     public class ConfigManager
     {

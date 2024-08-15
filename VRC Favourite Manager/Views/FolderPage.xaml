@@ -9,10 +9,11 @@
     xmlns:converters="using:VRC_Favourite_Manager"
     xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:Interactions="using:Microsoft.Xaml.Interactions.Core"
-    xmlns:core="using:Microsoft.Xaml.Interactions.Core">
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:common="using:VRC_Favourite_Manager.Common">
 
     <Page.Resources>
-        <converters:StringFormatConverter x:Key="StringFormatConverter"/>
+        <common:StringFormatConverter x:Key="StringFormatConverter"/>
     </Page.Resources>
 
     <Page.DataContext>

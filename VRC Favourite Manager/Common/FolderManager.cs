@@ -170,7 +170,16 @@ namespace VRC_Favourite_Manager.Common
         {
             Debug.WriteLine($"Removing {world.WorldName} from {folderName}");
             var folder = _folders.FirstOrDefault(f => f.Name == folderName);
-            folder.Worlds.Remove(world);
+            // remove by worldId
+            var worldToRemove = folder.Worlds.FirstOrDefault(w => w.WorldId == world.WorldId);
+            if (worldToRemove != null)
+            {
+                folder.Worlds.Remove(worldToRemove);
+            }
+            else
+            {
+                Debug.WriteLine("World not found in folder");
+            }
             Debug.WriteLine($"Worlds in {folderName}: {folder.Worlds.Count}");
             var PlaceWorldInUnclassified = true;
             foreach(var f in _folders)
@@ -248,14 +257,9 @@ namespace VRC_Favourite_Manager.Common
             WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
         }
 
-        private void SaveFolders()
-        {
-            _jsonManager.SaveFolders(_folders);
-        }
-
         public void RenameFolder(string newName, string oldName)
         {
-            if(newName == oldName) return;
+            if (newName == oldName) return;
             if (oldName != "Unclassified")
             {
                 var index = 0;
@@ -276,6 +280,12 @@ namespace VRC_Favourite_Manager.Common
 
                 WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
             }
+            SaveFolders();
+        }
+
+        private void SaveFolders()
+        {
+            _jsonManager.SaveFolders(_folders);
         }
 
         public void ResetFolders()

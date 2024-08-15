@@ -36,5 +36,13 @@ namespace VRC_Favourite_Manager.Views
 
             this.Hide();
         }
+        private void IndeterminateButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is FolderSelection_Indeterminatable folder)
+            {
+                folder.IsIndeterminate = false;
+                folder.IsChecked = true;
+            }
+        }
     }
 }
