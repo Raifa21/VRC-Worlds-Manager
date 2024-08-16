@@ -68,7 +68,22 @@
                      Visibility="Collapsed" 
                      Foreground="Gray"
                      KeyDown="TextBox_KeyDown" 
-                     Margin="20 10"/>
+                     Margin="20 10"
+                     VerticalAlignment="Top"
+                     Height="20">
+                <Interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="LostFocus">
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBox}" PropertyName="Visibility" Value="Collapsed"/>
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility" Value="Visible"/>
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=RenameButton}" PropertyName="Visibility" Value="Visible"/>
+                    </core:EventTriggerBehavior>
+                    <core:EventTriggerBehavior EventName="ContextMenuClosing">
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBox}" PropertyName="Visibility" Value="Collapsed"/>
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility" Value="Visible"/>
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=RenameButton}" PropertyName="Visibility" Value="Visible"/>
+                    </core:EventTriggerBehavior>
+                </Interactivity:Interaction.Behaviors>
+            </TextBox>
         </StackPanel>
 
         <Button x:Name="MultiSelectButton" Margin="10,10,75,0" Content="Select" HorizontalAlignment="Right" VerticalAlignment="Top">
