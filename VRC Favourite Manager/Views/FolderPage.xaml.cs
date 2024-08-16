@@ -21,6 +21,7 @@ namespace VRC_Favourite_Manager.Views
     {
         private FolderPageViewModel _viewModel => (FolderPageViewModel)this.DataContext;
         private List<WorldModel> selectedItems;
+        private string folderName;
         public FolderPage()
         {
             this.InitializeComponent();
@@ -47,6 +48,18 @@ namespace VRC_Favourite_Manager.Views
                 RenameButton.Visibility = Visibility.Visible;
             }
         }
+        private void FolderRename_Start(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            _viewModel.IsRenaming = true;
+            folderName = _viewModel.FolderName;
+        }
+
+        private void FolderRename_Cancel(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            _viewModel.IsRenaming = false;
+            _viewModel.FolderName = folderName;
+        }
+
         private void TextBox_KeyDown(object sender, KeyRoutedEventArgs e)
         {
             if (e.Key == Windows.System.VirtualKey.Enter)

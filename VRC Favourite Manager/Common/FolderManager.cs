@@ -271,7 +271,10 @@ namespace VRC_Favourite_Manager.Common
                     newName = $"{name} ({index})";
                 }
                 var folder = _folders.FirstOrDefault(f => f.Name == oldName);
-                folder.Name = newName;
+                if (folder != null)
+                {
+                    folder.Name = newName;
+                }
 
                 if (_selectedFolder.Name == oldName)
                 {

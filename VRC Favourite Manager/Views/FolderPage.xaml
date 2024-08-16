@@ -52,7 +52,8 @@
                     VerticalAlignment="Top"
                     BorderThickness="1" 
                     BorderBrush="Transparent" 
-                    Background="Transparent">
+                    Background="Transparent"
+                    Click="FolderRename_Start">
                 <FontIcon Glyph="&#xE70F;" FontSize="16"/>
                 <Interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="Click">
@@ -70,7 +71,8 @@
                      KeyDown="TextBox_KeyDown" 
                      Margin="20 10"
                      VerticalAlignment="Top"
-                     Height="20">
+                     Height="20"
+                     LostFocus="FolderRename_Cancel">
                 <Interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="LostFocus">
                         <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBox}" PropertyName="Visibility" Value="Collapsed"/>
