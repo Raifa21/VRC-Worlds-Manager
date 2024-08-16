@@ -25,9 +25,8 @@ namespace VRC_Favourite_Manager.Views
         }
         private void CreateInstanceButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
-            // Handle instance creation logic here
             var world = (WorldModel)this.DataContext;
-            // Implement your logic for creating an instance
+            
         }
         private void InstanceType_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {

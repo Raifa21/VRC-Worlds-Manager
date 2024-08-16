@@ -25,7 +25,6 @@ namespace VRC_Favourite_Manager.Services
         Task<bool> Authenticate2FAAsync(string twoFactorCode, string twoFactorAuthType);
         Task<bool> LogoutAsync();
         Task<List<Models.WorldModel>> GetFavoriteWorldsAsync(int n, int offset);
-        Task<string> CreateInstanceAsync(string worldId, string instanceType);
     }
     public class VRChatAPIService : IVRChatAPIService
     {
@@ -37,6 +36,7 @@ namespace VRC_Favourite_Manager.Services
 
         private string _twoFactorAuthToken;
 
+        private string _userId;
 
         public VRChatAPIService()
         {
@@ -75,6 +75,7 @@ namespace VRC_Favourite_Manager.Services
             {
                 _authToken = authToken;
                 _twoFactorAuthToken = twoFactorAuthToken;
+                GetUserId();
                 return true;
             }
             return false;
@@ -97,6 +98,7 @@ namespace VRC_Favourite_Manager.Services
                 request.Headers.Add("Cookie", $"auth={authToken};twoFactorAuth={twoFactorAuthToken}");
                 var response = await _Client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
+                GetUserId();
                 return true;
             }
             catch (HttpRequestException e)
@@ -171,6 +173,8 @@ namespace VRC_Favourite_Manager.Services
                     throw new VRCRequiresTwoFactorAuthException("default");
                 }
                 else {
+                    JsonDocument.Parse(responseString).RootElement.TryGetProperty("id", out JsonElement id);
+                    _userId = id.GetString();
                     return true;
                 }
             }
@@ -180,6 +184,7 @@ namespace VRC_Favourite_Manager.Services
                 throw new VRCIncorrectCredentialsException();
             }
         }
+
 
         /// <summary>
         /// Generates a auth string according to VRC's API requirements.
@@ -195,6 +200,29 @@ namespace VRC_Favourite_Manager.Services
             var base64AuthString = Convert.ToBase64String(Encoding.UTF8.GetBytes(authString));
             Debug.WriteLine($"Basic {base64AuthString}");
             return $"Basic {base64AuthString}";
+        }
+
+        /// <summary>
+        /// Gets the user's ID from the API.
+        /// </summary>
+        private async void GetUserId()
+        {
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, "https://vrchat.com/api/1/auth/user?");
+                request.Headers.Add("Accept", "application/json");
+                request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
+                request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
+                var response = await _Client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var responseString = await response.Content.ReadAsStringAsync();
+                JsonDocument.Parse(responseString).RootElement.TryGetProperty("id", out JsonElement id);
+                _userId = id.GetString();
+            }
+            catch(HttpRequestException e)
+            {
+                Debug.WriteLine("Error: " + e.Message);
+            }
         }
 
 
@@ -342,7 +370,7 @@ namespace VRC_Favourite_Manager.Services
         /// <param name="instanceType">The instance type of the instance being created. Allowed parameters are: "public","friends+","friends","invite+","invite".</param>
         /// <returns>Returns the instanceId of the instance which was created.</returns>
         /// <exception cref="VRCNotLoggedInException">When the authentication tokens fails to authenticate the user.</exception>
-        public async Task<string> CreateInstanceAsync(string worldId, string instanceType)
+        public async Task CreateInstanceAsync(string worldId, string instanceType, string region)
         {
             try
             {
@@ -383,8 +411,14 @@ namespace VRC_Favourite_Manager.Services
                         break;
                 }
 
+                region = region.ToLower();
+                if (region == "usw")
+                {
+                    region = "us";
+                }
+
                 var content = new StringContent(
-                    $"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"{type}\",\n  \"region\": \"jp\",\n  \"ownerId\": \"<string>\",\n  \"queueEnabled\": false,\n  \"canRequestInvite\": {canRequestInvite},\n  \"inviteOnly\": {inviteOnly}\n}}",
+                    $"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"{type}\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"<string>\",\n  \"queueEnabled\": false,\n  \"canRequestInvite\": {canRequestInvite},\n  \"inviteOnly\": {inviteOnly}\n}}",
                     null, "application/json");
                 request.Content = content;
                 var response = await _Client.SendAsync(request);
@@ -394,7 +428,6 @@ namespace VRC_Favourite_Manager.Services
                 var createInstanceResponse = JsonSerializer.Deserialize<Models.CreateInstanceResponse>(responseString);
 
                 InviteSelfAsync(createInstanceResponse.WorldId, createInstanceResponse.InstanceId);
-                return createInstanceResponse.InstanceId;
             }
             catch (HttpRequestException)
             {
@@ -402,6 +435,12 @@ namespace VRC_Favourite_Manager.Services
             }
         }
 
+        public async Task CreateGroupInstanceAsync(string worldId, string region, string groupAccessType,
+            bool queueEnabled)
+        {
+
+        }
+             
         /// <summary>
         /// Invites the user to the instance provided.
         /// </summary>

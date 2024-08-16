@@ -46,9 +46,9 @@
                     <TextBlock Text="Create Instance" FontSize="18" FontWeight="Bold" Margin="0,0,0,0"/>
                         <StackPanel Padding="0" >
                             <StackPanel Spacing="10">
-                                <TextBlock Text="Instance Type" FontWeight="Bold" Margin="0,5,0,0"/>
+                                <TextBlock Text="Instance Type" FontWeight="Bold" Margin="0,14,0,0"/>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,0" Spacing="5">
-                                    <RadioButton GroupName="InstanceType" Content="Public" Checked="InstanceType_Checked" Padding="44,5,44,5"/>
+                                    <RadioButton GroupName="InstanceType" Content="Public" Checked="InstanceType_Checked" Padding="44,5,44,5" IsChecked="True"/>
                                     <RadioButton GroupName="InstanceType" Content="Group" Checked="InstanceType_Checked" Padding="42,5,42,5"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,0" Spacing="5">
@@ -60,12 +60,12 @@
                                     <RadioButton GroupName="InstanceType" Content="Invite" Checked="InstanceType_Checked" Padding="44,5,45,5" />
                                 </StackPanel>
                             </StackPanel>
-                            <TextBlock Text="Region" FontWeight="Bold" VerticalAlignment="Center" Margin="0,10,10,10"/>
+                            <TextBlock Text="Region" FontWeight="Bold" VerticalAlignment="Center" Margin="0,15,10,10"/>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,0" Spacing="5">
                                 <RadioButton GroupName="Region" Content="USW" Checked="Region_Checked" Padding="15,5,15,5"/>
                                     <RadioButton GroupName="Region" Content="USE" Checked="Region_Checked" Padding="17,5,17,5"/>
                                 <RadioButton GroupName="Region" Content="EU" Checked="Region_Checked" Padding="21,5,21,5"/>
-                                <RadioButton GroupName="Region" Content="JP" Checked="Region_Checked" Padding="22,5,22,5"/>
+                                <RadioButton GroupName="Region" Content="JP" Checked="Region_Checked" Padding="22,5,22,5" IsChecked="True"/>
                             </StackPanel>
                             <Button Content="Create Instance"
                                     VerticalAlignment="Bottom"
