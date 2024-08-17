@@ -35,7 +35,14 @@ namespace VRC_Favourite_Manager.Views
             if (_selectedInstanceType != "Group")
             {
                 WorldDetailsPopupViewModel viewModel = new WorldDetailsPopupViewModel(world);
-                viewModel.CreateInstanceAsync(world, _selectedInstanceType, _selectedRegion);
+                viewModel.CreateInstanceAsync(world.WorldId, _selectedInstanceType, _selectedRegion);
+            }
+            else
+            { 
+                this.Hide();
+
+                var createGroupInstance = new CreateGroupInstancePopup(world, _selectedRegion);
+                createGroupInstance.ShowAsync();
             }
         }
         private void AuthorLink_Click(object sender, RoutedEventArgs e)

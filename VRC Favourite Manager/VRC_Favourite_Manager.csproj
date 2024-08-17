@@ -17,6 +17,7 @@
     <None Remove="MainWindow.xaml" />
     <None Remove="Views\AddToFolderPopup.xaml" />
     <None Remove="Views\AuthenticationPage.xaml" />
+    <None Remove="Views\CreateGroupInstancePopup.xaml" />
     <None Remove="Views\FolderPage.xaml" />
     <None Remove="Views\MultiAddToFolderPopup.xaml" />
     <None Remove="Views\SettingsPage.xaml" />
@@ -60,6 +61,9 @@
     <None Update="App.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
+    <Page Update="Views\CreateGroupInstancePopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\MultiAddToFolderPopup.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>

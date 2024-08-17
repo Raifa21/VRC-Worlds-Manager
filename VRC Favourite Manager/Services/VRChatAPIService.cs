@@ -366,7 +366,6 @@ namespace VRC_Favourite_Manager.Services
                 Debug.WriteLine($"Deserialization error: {ex.Message}");
                 return null;
             }
-
         }
 
         /// <summary>
@@ -438,9 +437,10 @@ namespace VRC_Favourite_Manager.Services
                 response.EnsureSuccessStatusCode();
 
                 var responseString = await response.Content.ReadAsStringAsync();
-                var createInstanceResponse = JsonSerializer.Deserialize<Models.CreateInstanceResponse>(responseString);
+                JsonDocument.Parse(responseString).RootElement.TryGetProperty("instanceId", out JsonElement id);
+                var instanceId = id.GetString();
 
-                InviteSelfAsync(createInstanceResponse.WorldId, createInstanceResponse.InstanceId);
+                InviteSelfAsync(worldId, instanceId);
             }
             catch (HttpRequestException)
             {
@@ -448,10 +448,53 @@ namespace VRC_Favourite_Manager.Services
             }
         }
 
-        public async Task CreateGroupInstanceAsync(string worldId, string region, string groupAccessType,
+        public async Task CreateGroupInstanceAsync(string worldId, string groupId, string region, string groupAccessType, List<string> roleIds,
             bool queueEnabled)
         {
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Post, "https://vrchat.com/api/1/instances");
+                request.Headers.Add("Accept", "application/json");
+                request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
+                request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
 
+                region = region.ToLower();
+                //usw is represented as "us" in api
+                if (region == "usw")
+                {
+                    region = "us";
+                }
+
+                string roleIds_formatted = "[\n    ";
+                foreach(var roleId in roleIds)
+                {
+                    if (roleIds.IndexOf(roleId) != roleIds.Count - 1)
+                    {
+                        roleIds_formatted += $"\"{roleId}\",\n";
+                    }
+                    else
+                    {
+                        roleIds_formatted += $"\"{roleId}\"\n  ]";
+                    }
+                }
+
+                var content = new StringContent(
+                    $"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"group\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"{groupId}\",\n  \"roleIds\": {roleIds_formatted},\n  \"queueEnabled\": {queueEnabled},\n  \"groupAccessType\": \"{groupAccessType}\",\n  \"queueEnabled\": {queueEnabled},\n  \"canRequestInvite\": false,\n  \"inviteOnly\": false\n}}",
+                    null, "application/json");
+                request.Content = content;
+                var response = await _Client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+
+                var responseString = await response.Content.ReadAsStringAsync();
+                JsonDocument.Parse(responseString).RootElement.TryGetProperty("instanceId", out JsonElement id);
+                var instanceId = id.GetString();
+
+                InviteSelfAsync(worldId, instanceId);
+            }
+            catch (HttpRequestException)
+            {
+                throw new VRCNotLoggedInException();
+            }
         }
              
         /// <summary>
