@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Documents;
 using System;
 using System.Diagnostics;
 using VRC_Favourite_Manager.Models;
+using VRC_Favourite_Manager.ViewModels;
 using VRChat.API.Model;
 
 namespace VRC_Favourite_Manager.Views
@@ -12,12 +13,17 @@ namespace VRC_Favourite_Manager.Views
     public sealed partial class WorldDetailsPopup : ContentDialog
     {
         public WorldModel World { get; set; }
+        private string _selectedInstanceType;
+        private string _selectedRegion;
 
         public WorldDetailsPopup(WorldModel world)
         {
             this.InitializeComponent();
             this.World = world;
             this.DataContext = world;
+            
+            _selectedInstanceType = "Public";
+            _selectedRegion = "JP";
         }
         private void CloseButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
@@ -26,16 +32,10 @@ namespace VRC_Favourite_Manager.Views
         private void CreateInstanceButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
             var world = (WorldModel)this.DataContext;
-            
-        }
-        private void InstanceType_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-        {
-            RadioButton radioButton = sender as RadioButton;
-            if (radioButton != null)
+            if (_selectedInstanceType != "Group")
             {
-                string selectedInstanceType = radioButton.Content.ToString();
-                Debug.WriteLine("Selected Instance Type: " + selectedInstanceType);
-                // Handle the selection change, e.g., update the view model
+                WorldDetailsPopupViewModel viewModel = new WorldDetailsPopupViewModel(world);
+                viewModel.CreateInstanceAsync(world, _selectedInstanceType, _selectedRegion);
             }
         }
         private void AuthorLink_Click(object sender, RoutedEventArgs e)
@@ -48,15 +48,22 @@ namespace VRC_Favourite_Manager.Views
             var uri = $"https://vrchat.com/home/world/{World.WorldId}";
             Windows.System.Launcher.LaunchUriAsync(new Uri(uri));
         }
-
+        private void InstanceType_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            RadioButton radioButton = sender as RadioButton;
+            if (radioButton != null)
+            {
+                string selectedInstanceType = radioButton.Content.ToString();
+                _selectedInstanceType = selectedInstanceType;
+            }
+        }
         private void Region_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
             RadioButton radioButton = sender as RadioButton;
             if (radioButton != null)
             {
                 string selectedRegion = radioButton.Content.ToString();
-                Debug.WriteLine("Selected Region: " + selectedRegion);
-                // Handle the selection change, e.g., update the view model
+                _selectedRegion = selectedRegion;
             }
         }
     }

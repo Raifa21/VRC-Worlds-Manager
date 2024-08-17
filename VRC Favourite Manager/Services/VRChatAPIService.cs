@@ -108,6 +108,29 @@ namespace VRC_Favourite_Manager.Services
             }
         }
 
+        /// <summary>
+        /// Gets the user's ID from the API.
+        /// </summary>
+        private async void GetUserId()
+        {
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, "https://vrchat.com/api/1/auth/user?");
+                request.Headers.Add("Accept", "application/json");
+                request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
+                request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
+                var response = await _Client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var responseString = await response.Content.ReadAsStringAsync();
+                JsonDocument.Parse(responseString).RootElement.TryGetProperty("id", out JsonElement id);
+                _userId = id.GetString();
+            }
+            catch (HttpRequestException e)
+            {
+                Debug.WriteLine("Error: " + e.Message);
+            }
+        }
+
 
         /// <summary>
         /// Verifies if the user has provided the correct login credentials.
@@ -202,29 +225,6 @@ namespace VRC_Favourite_Manager.Services
             return $"Basic {base64AuthString}";
         }
 
-        /// <summary>
-        /// Gets the user's ID from the API.
-        /// </summary>
-        private async void GetUserId()
-        {
-            try
-            {
-                var request = new HttpRequestMessage(HttpMethod.Get, "https://vrchat.com/api/1/auth/user?");
-                request.Headers.Add("Accept", "application/json");
-                request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
-                request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
-                var response = await _Client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var responseString = await response.Content.ReadAsStringAsync();
-                JsonDocument.Parse(responseString).RootElement.TryGetProperty("id", out JsonElement id);
-                _userId = id.GetString();
-            }
-            catch(HttpRequestException e)
-            {
-                Debug.WriteLine("Error: " + e.Message);
-            }
-        }
-
 
         public async Task<bool> Authenticate2FAAsync(string twoFactorCode, string twoFactorAuthType)
         {
@@ -248,8 +248,14 @@ namespace VRC_Favourite_Manager.Services
                 var response = await _Client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
+                var responseString = await response.Content.ReadAsStringAsync();
+                JsonDocument.Parse(responseString).RootElement.TryGetProperty("id", out JsonElement id);
+                _userId = id.GetString();
+
+
                 // Pass the header to store the auth token.
                 StoreAuthToken(response.Headers);
+
 
                 return true;
             }
@@ -380,6 +386,7 @@ namespace VRC_Favourite_Manager.Services
                 request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
 
                 string type;
+                string ownerIdNullable;
                 bool canRequestInvite;
                 bool inviteOnly;
                 switch (instanceType)
@@ -388,37 +395,43 @@ namespace VRC_Favourite_Manager.Services
                         type = "public";
                         canRequestInvite = false;
                         inviteOnly = false;
+                        ownerIdNullable = null;
                         break;
                     case "friends+":
                         type = "hidden";
                         canRequestInvite = false;
                         inviteOnly = false;
+                        ownerIdNullable = _userId;
                         break;
                     case "friends":
                         type = "friends";
                         canRequestInvite = false;
                         inviteOnly = false;
+                        ownerIdNullable = _userId;
                         break;
                     case "invite+":
                         type = "private";
                         canRequestInvite = true;
                         inviteOnly = false;
+                        ownerIdNullable = _userId;
                         break;
                     default:
                         type = "private";
                         canRequestInvite = false;
                         inviteOnly = true;
+                        ownerIdNullable = _userId;
                         break;
                 }
 
                 region = region.ToLower();
+                //usw is represented as "us" in api
                 if (region == "usw")
                 {
                     region = "us";
                 }
 
                 var content = new StringContent(
-                    $"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"{type}\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"<string>\",\n  \"queueEnabled\": false,\n  \"canRequestInvite\": {canRequestInvite},\n  \"inviteOnly\": {inviteOnly}\n}}",
+                    $"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"{type}\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"{ownerIdNullable}\",\n  \"queueEnabled\": false,\n  \"canRequestInvite\": {canRequestInvite},\n  \"inviteOnly\": {inviteOnly}\n}}",
                     null, "application/json");
                 request.Content = content;
                 var response = await _Client.SendAsync(request);

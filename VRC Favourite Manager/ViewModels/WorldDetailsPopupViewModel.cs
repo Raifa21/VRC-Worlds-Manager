@@ -16,10 +16,10 @@ namespace VRC_Favourite_Manager.ViewModels
             _vrChatApiService = Application.Current.Resources["VRChatApiService"] as VRChatAPIService;
         }
 
-        public void CreateInstance(WorldModel world, string instanceType, string region)
+        public async void CreateInstanceAsync(WorldModel world, string instanceType, string region)
         {
             await _vrChatApiService.CreateInstanceAsync(world.WorldId, instanceType, region);
         }
-
     }
 }
+    
