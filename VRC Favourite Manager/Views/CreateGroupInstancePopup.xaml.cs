@@ -25,5 +25,18 @@ namespace VRC_Favourite_Manager.Views
             this.InitializeComponent();
             this.DataContext = new CreateGroupInstancePopupViewModel(world, region);
         }
+        private void CloseButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            this.Hide();
+        }
+        private void GroupSelected(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            Button button = sender as Button;
+            if (sender != null)
+            {
+                var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
+                viewModel.GroupSelected(button.Content.ToString());
+            }
+        }
     }
 }

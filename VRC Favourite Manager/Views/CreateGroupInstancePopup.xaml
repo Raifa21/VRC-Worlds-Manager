@@ -2,13 +2,48 @@
     x:Class="VRC_Favourite_Manager.Views.CreateGroupInstancePopup"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:local="using:VRC_Favourite_Manager.Views"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core">
 
-    <Grid>
-
+    <Grid Width="750" Height="600" HorizontalAlignment="Center">
+        <Button HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Click="CloseButton_Click"
+                Margin="0,-10,-10,0"
+                Style="{StaticResource CloseButtonStyle}">
+            <FontIcon Glyph="&#xE711;" />
+        </Button>
+        <StackPanel x:Name="GroupList" Margin="10,25,10,0">
+                <StackPanel Grid.Column="0" Margin="0,0,20,0" Padding="5,10,15,0" HorizontalAlignment="Left">
+                    <TextBlock Text="Select Group" />
+                    <ScrollViewer>
+                    <ItemsControl ItemsSource="{Binding Groups}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Click="GroupSelected">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse Height="100" Width="100">
+                                            <Ellipse.Fill>
+                                                <ImageBrush ImageSource="{Binding GroupIcon}" Stretch="UniformToFill"/>
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                        <TextBlock Text="{Binding GroupName}" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                    </StackPanel>
+                                    <interactivity:Interaction.Behaviors>
+                                        <core:EventTriggerBehavior EventName="Click">
+                                            <core:ChangePropertyAction TargetObject="{Binding ElementName=GroupList}" PropertyName="Visibility" Value="Collapsed"/>
+                                            <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiClickGrid}" PropertyName="Visibility" Value="Visible"/>
+                                        </core:EventTriggerBehavior>
+                                    </interactivity:Interaction.Behaviors>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+                </StackPanel>
+        </StackPanel>
     </Grid>
 </ContentDialog>
+     

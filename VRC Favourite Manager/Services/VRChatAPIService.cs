@@ -15,6 +15,7 @@ using VRC_Favourite_Manager.Common;
 using System.Text.Json;
 using Tomlyn;
 using Windows.Media.Protection.PlayReady;
+using VRC_Favourite_Manager.Models;
 
 namespace VRC_Favourite_Manager.Services
 {
@@ -495,6 +496,19 @@ namespace VRC_Favourite_Manager.Services
             {
                 throw new VRCNotLoggedInException();
             }
+        }
+        
+        public async Task<List<GetUserGroupsResponse>> GetGroupsAsync()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://vrchat.com/api/1/users/{_userId}/groups");
+            request.Headers.Add("Accept", "application/json");
+            request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
+            request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
+            var response = await _Client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync();
+            var responseJsonList = JsonSerializer.Deserialize<List<GetUserGroupsResponse>>(responseString);
+            return responseJsonList;
         }
              
         /// <summary>
