@@ -22,7 +22,7 @@
                     <ItemsControl ItemsSource="{Binding Groups}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Button Click="GroupSelected">
+                                <Button x:Name="{Binding GroupName}" Click="GroupSelected">
                                     <StackPanel Orientation="Horizontal">
                                         <Ellipse Height="100" Width="100">
                                             <Ellipse.Fill>

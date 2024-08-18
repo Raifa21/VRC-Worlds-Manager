@@ -16,6 +16,7 @@ using System.Text.Json;
 using Tomlyn;
 using Windows.Media.Protection.PlayReady;
 using VRC_Favourite_Manager.Models;
+using VRC_Favourite_Manager.ViewModels;
 
 namespace VRC_Favourite_Manager.Services
 {
@@ -449,7 +450,7 @@ namespace VRC_Favourite_Manager.Services
             }
         }
 
-        public async Task CreateGroupInstanceAsync(string worldId, string groupId, string region, string groupAccessType, List<string> roleIds,
+        public async Task CreateGroupInstanceAsync(string worldId, string groupId, string region, string instanceType, List<string> roleIds,
             bool queueEnabled)
         {
             try
@@ -466,7 +467,21 @@ namespace VRC_Favourite_Manager.Services
                     region = "us";
                 }
 
-                string roleIds_formatted = "[\n    ";
+                string groupAccessType;
+                switch (instanceType)
+                {
+                    case "group":
+                        groupAccessType = "members";
+                        break;
+                    case "group+":
+                        groupAccessType = "plus";
+                        break;
+                    default:
+                        groupAccessType = "public";
+                        break;
+                }
+
+                var roleIds_formatted = "[\n    ";
                 foreach(var roleId in roleIds)
                 {
                     if (roleIds.IndexOf(roleId) != roleIds.Count - 1)
@@ -500,15 +515,54 @@ namespace VRC_Favourite_Manager.Services
         
         public async Task<List<GetUserGroupsResponse>> GetGroupsAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://vrchat.com/api/1/users/{_userId}/groups");
-            request.Headers.Add("Accept", "application/json");
-            request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
-            request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
-            var response = await _Client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            var responseString = await response.Content.ReadAsStringAsync();
-            var responseJsonList = JsonSerializer.Deserialize<List<GetUserGroupsResponse>>(responseString);
-            return responseJsonList;
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://vrchat.com/api/1/users/{_userId}/groups");
+                request.Headers.Add("Accept", "application/json");
+                request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
+                request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
+                var response = await _Client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var responseString = await response.Content.ReadAsStringAsync();
+                var responseJsonList = JsonSerializer.Deserialize<List<GetUserGroupsResponse>>(responseString);
+                return responseJsonList;
+            }
+            catch (HttpRequestException)
+            {
+                throw new VRCNotLoggedInException();
+            }
+        }
+        
+
+        public async Task<List<GroupRolesModel>> GetGroupRolesAsync(string groupId)
+        {
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://vrchat.com/api/1/groups/{groupId}/roles");
+                request.Headers.Add("Accept", "application/json");
+                request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
+                request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
+                var response = await _Client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var responseString = await response.Content.ReadAsStringAsync();
+                var responseJsonList = JsonSerializer.Deserialize<List<GetGroupRolesResponse>>(responseString);
+                var roleIds = new List<GroupRolesModel>();
+                foreach (var role in responseJsonList)
+                {
+                    roleIds.Add(new GroupRolesModel
+                    {
+                        Name = role.Name,
+                        Id = role.Id,
+                        IsManagementRole = role.IsManagementRole,
+                        Order = role.Order
+                    });
+                }
+                return roleIds;
+            }
+            catch (HttpRequestException)
+            {
+                throw new VRCNotLoggedInException();
+            }
         }
              
         /// <summary>

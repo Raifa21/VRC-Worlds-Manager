@@ -12,7 +12,11 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly VRChatAPIService _vrChatApiService;
         private WorldModel _selectedWorld;
         private string _region;
+
         private GroupModel _selectedGroup;
+        private string _groupAccessType;
+        private List<string> _selectedRoles;
+        private bool _isQueueEnabled;
         private List<GroupModel> Groups { get; set; }
 
         public CreateGroupInstancePopupViewModel(WorldModel selectedWorld, string region)
@@ -22,6 +26,7 @@ namespace VRC_Favourite_Manager.ViewModels
             _region = region;
 
             Groups = new List<GroupModel>();
+            _selectedRoles = new List<string>();
             GetGroups();
         }
 
@@ -34,20 +39,31 @@ namespace VRC_Favourite_Manager.ViewModels
                 {
                     Name = group.Name,
                     Id = group.Id,
-                    Icon = group.Icon,
-                    GroupRoles = group.Roles
+                    Icon = group.IconUrl,
+                    GroupRoles = new List<GroupRolesModel>()
                 });
             }
         }
-        public async void CreateInstanceAsync()
-        {
-            await _vrChatApiService.CreateGroupInstanceAsync(_selectedWorld.WorldId, _region);
-        }
-
         public void GroupSelected(string groupName)
         {
-            _selectedGroup = group;
+            _selectedGroup = Groups.Find(group => group.Name == groupName);
         }
+
+        public async void AccessTypeSelectedAsync(string instanceType)
+        {
+            _groupAccessType = instanceType.ToLower();
+            if (_groupAccessType == "group")
+            {
+                _selectedGroup.GroupRoles = await _vrChatApiService.GetGroupRolesAsync(_selectedGroup.Id);
+            }
+        }
+
+        public async void CreateInstanceAsync()
+        {
+            await _vrChatApiService.CreateGroupInstanceAsync(_selectedWorld.WorldId, _selectedGroup.Id, _region,
+                _groupAccessType, _selectedRoles, _isQueueEnabled);
+        }
+
 
     }
     public class GroupModel()
@@ -55,6 +71,17 @@ namespace VRC_Favourite_Manager.ViewModels
         public string Name { get; set; }
         public string Id { get; set; }
         public string Icon { get; set; }
-        public List<string> GroupRoles { get; set; }
+        public List<GroupRolesModel> GroupRoles { get; set; }
+    }
+
+    public class GroupRolesModel()
+    {
+        public string Name { get; set; }
+
+        public string Id { get; set; }
+
+        public bool IsManagementRole { get; set; }
+
+        public int Order { get; set; }
     }
 }

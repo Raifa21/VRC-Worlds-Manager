@@ -35,7 +35,7 @@ namespace VRC_Favourite_Manager.Views
             if (sender != null)
             {
                 var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
-                viewModel.GroupSelected(button.Content.ToString());
+                viewModel.GroupSelected(button.Name);
             }
         }
     }
