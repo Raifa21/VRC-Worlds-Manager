@@ -14,6 +14,7 @@ namespace VRC_Favourite_Manager.ViewModels
         private string _region;
 
         private GroupModel _selectedGroup;
+        private List<string> _userRoles;
         private string _groupAccessType;
         private List<string> _selectedRoles;
         private bool _isQueueEnabled;
@@ -44,18 +45,17 @@ namespace VRC_Favourite_Manager.ViewModels
                 });
             }
         }
-        public void GroupSelected(string groupName)
+        public async void GroupSelected(string groupName)
         {
             _selectedGroup = Groups.Find(group => group.Name == groupName);
+            _selectedGroup.GroupRoles = await _vrChatApiService.GetGroupRolesAsync(_selectedGroup.Id);
+            _userRoles = await _vrChatApiService.GetUserRoleAsync(_selectedGroup.Id);
+            
         }
 
-        public async void AccessTypeSelectedAsync(string instanceType)
+        public void AccessTypeSelected(string instanceType)
         {
             _groupAccessType = instanceType.ToLower();
-            if (_groupAccessType == "group")
-            {
-                _selectedGroup.GroupRoles = await _vrChatApiService.GetGroupRolesAsync(_selectedGroup.Id);
-            }
         }
 
         public async void CreateInstanceAsync()
@@ -79,6 +79,8 @@ namespace VRC_Favourite_Manager.ViewModels
         public string Name { get; set; }
 
         public string Id { get; set; }
+
+        public List<string> Permissions { get; set; }
 
         public bool IsManagementRole { get; set; }
 

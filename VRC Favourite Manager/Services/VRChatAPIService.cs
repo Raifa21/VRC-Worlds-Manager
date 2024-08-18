@@ -553,6 +553,7 @@ namespace VRC_Favourite_Manager.Services
                     {
                         Name = role.Name,
                         Id = role.Id,
+                        Permissions = role.Permissions,
                         IsManagementRole = role.IsManagementRole,
                         Order = role.Order
                     });
@@ -564,6 +565,28 @@ namespace VRC_Favourite_Manager.Services
                 throw new VRCNotLoggedInException();
             }
         }
+
+        public async Task<List<string>> GetUserRoleAsync(string groupId)
+        {
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://vrchat.com/api/1/groups/{groupId}/members/{_userId}");
+                request.Headers.Add("Accept", "application/json");
+                request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
+                request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
+                var response = await _Client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var responseString = await response.Content.ReadAsStringAsync();
+                var responseJson = JsonSerializer.Deserialize<GetGroupMemberResponse>(responseString);
+                return responseJson.RoleIds;
+            }
+            catch(HttpRequestException)
+            {
+                throw new VRCNotLoggedInException();
+            }
+        }
+
+
              
         /// <summary>
         /// Invites the user to the instance provided.
