@@ -38,5 +38,20 @@ namespace VRC_Favourite_Manager.Views
                 viewModel.GroupSelected(button.Name);
             }
         }
+
+        private void SelectInstanceType(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            Button button = sender as Button;
+            if (sender != null)
+            {
+                var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
+                viewModel.AccessTypeSelected(button.Name);
+            }
+        }
+
+        private void SelectRoles(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            
+        }
     }
 }

@@ -5,7 +5,8 @@
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:local="using:VRC_Favourite_Manager.Views"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
-    xmlns:core="using:Microsoft.Xaml.Interactions.Core">
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:viewModels="using:VRC_Favourite_Manager.ViewModels">
 
     <Grid Width="750" Height="600" HorizontalAlignment="Center">
         <Button HorizontalAlignment="Right"
@@ -16,7 +17,7 @@
             <FontIcon Glyph="&#xE711;" />
         </Button>
         <StackPanel x:Name="GroupList" Margin="10,25,10,0">
-                <StackPanel Grid.Column="0" Margin="0,0,20,0" Padding="5,10,15,0" HorizontalAlignment="Left">
+                <StackPanel Margin="0,0,20,0" Padding="5,10,15,0" HorizontalAlignment="Left">
                     <TextBlock Text="Select Group" />
                     <ScrollViewer>
                     <ItemsControl ItemsSource="{Binding Groups}">
@@ -44,6 +45,22 @@
                 </ScrollViewer>
                 </StackPanel>
         </StackPanel>
+        <ScrollViewer x:Name="SelectAllowedRoles">
+            <StackPanel>
+                <ListView ItemsSource="{Binding GroupRoles}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:GroupRolesModel">
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                          IsEnabled="{Binding IsManagementRole, Converter={StaticResource InverseBooleanConverter}}"/>
+                                <TextBlock Text="{Binding Name}" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <Button Content="Next" Click="SelectRoles"/>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </ContentDialog>
      
