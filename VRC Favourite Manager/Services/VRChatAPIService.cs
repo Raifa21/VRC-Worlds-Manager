@@ -544,6 +544,7 @@ namespace VRC_Favourite_Manager.Services
                 request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
                 var response = await _Client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
+
                 var responseString = await response.Content.ReadAsStringAsync();
                 var responseJsonList = JsonSerializer.Deserialize<List<GetGroupRolesResponse>>(responseString);
                 var roleIds = new List<GroupRolesModel>();
@@ -560,8 +561,9 @@ namespace VRC_Favourite_Manager.Services
                 }
                 return roleIds;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
+                Debug.WriteLine("Error: " + e.Message);
                 throw new VRCNotLoggedInException();
             }
         }

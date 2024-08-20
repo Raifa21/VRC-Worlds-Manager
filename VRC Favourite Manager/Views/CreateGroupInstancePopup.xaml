@@ -22,6 +22,10 @@
                 Style="{StaticResource CloseButtonStyle}">
             <FontIcon Glyph="&#xE711;" />
         </Button>
+        <ProgressRing IsActive="{Binding IsLoading}" Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+        <Button Content="Cancel" Command="{Binding CancelLoadingCommand}" Visibility="{Binding ShowCancelButton, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
         <StackPanel x:Name="GroupList" Margin="10,25,10,0">
                 <StackPanel Margin="0,0,20,0" Padding="5,10,15,0" HorizontalAlignment="Left">
                     <TextBlock Text="Select Group" />
@@ -41,7 +45,6 @@
                                     <interactivity:Interaction.Behaviors>
                                         <core:EventTriggerBehavior EventName="Click">
                                             <core:ChangePropertyAction TargetObject="{Binding ElementName=GroupList}" PropertyName="Visibility" Value="Collapsed"/>
-                                            <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectInstanceType}" PropertyName="Visibility" Value="Visible"/>
                                         </core:EventTriggerBehavior>
                                     </interactivity:Interaction.Behaviors>
                                     <Button.CommandParameter>
@@ -54,7 +57,7 @@
                 </ScrollViewer>
                 </StackPanel>
         </StackPanel>
-        <StackPanel x:Name="SelectInstanceType" Visibility="Collapsed">
+        <StackPanel x:Name="SelectInstanceType" Visibility="{Binding IsGroupRolesLoadingComplete, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Button x:Name="Restricted" Content="Group" Click="SelectType" IsEnabled="{Binding CanCreateGroupOnly}" Visibility="{Binding CanCreateRestricted, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="Click">

@@ -1,8 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
 using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Models;
@@ -10,11 +16,33 @@ using VRC_Favourite_Manager.Services;
 
 namespace VRC_Favourite_Manager.ViewModels
 {
-    public class CreateGroupInstancePopupViewModel
+    public class CreateGroupInstancePopupViewModel : ObservableObject
     {
         private readonly VRChatAPIService _vrChatApiService;
+        private CancellationTokenSource _cancellationTokenSource;
         private WorldModel _selectedWorld;
         private string _region;
+
+        private bool _isLoading;
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set => SetProperty(ref _isLoading, value);
+        }
+
+        private string _message;
+        public string Message
+        {
+            get => _message;
+            set => SetProperty(ref _message, value);
+        }
+
+        private bool _showCancelButton;
+        public bool ShowCancelButton
+        {
+            get => _showCancelButton;
+            set => SetProperty(ref _showCancelButton, value);
+        }
 
         private bool _canCreateGroupInstance;
         public bool CanCreateGroupInstance
@@ -74,14 +102,27 @@ namespace VRC_Favourite_Manager.ViewModels
             }
         }
 
+        private bool _isGroupRolesLoadingComplete;
+        public bool IsGroupRolesLoadingComplete
+        {
+            get => _isGroupRolesLoadingComplete;
+            set
+            {
+                _isGroupRolesLoadingComplete = value;
+                OnPropertyChanged();
+            }
+        }
+
+
         private GroupModel _selectedGroup;
         private List<string> _userRoles;
         private string _groupAccessType;
         private List<string> _selectedRoles;
         private bool _isQueueEnabled;
 
-        
-        public List<GroupModel> Groups { get; set; }
+        public ICommand CancelLoadingCommand { get; }
+
+        public ObservableCollection<GroupModel> Groups { get; set; }
 
         public CreateGroupInstancePopupViewModel(WorldModel selectedWorld, string region)
         {
@@ -89,60 +130,178 @@ namespace VRC_Favourite_Manager.ViewModels
             _selectedWorld = selectedWorld;
             _region = region;
 
-            Groups = new List<GroupModel>();
+            Groups = new ObservableCollection<GroupModel>();
             _selectedRoles = new List<string>();
             GetGroups();
 
+
+            IsGroupRolesLoadingComplete = false;
             CanCreateGroupInstance = false;
+            CancelLoadingCommand = new RelayCommand(CancelLoading);
         }
 
         private async void GetGroups()
         {
-            var groups = await _vrChatApiService.GetGroupsAsync();
-            foreach (var group in groups)
-            {
-                Groups.Add(new GroupModel
-                {
-                    Name = group.Name,
-                    Id = group.Id,
-                    Privacy = group.Privacy,
-                    Icon = group.IconUrl,
-                    GroupRoles = new List<GroupRolesModel>()
-                });
+            IsLoading = true;
+            ShowCancelButton = false;
+            Message = "Loading...";
 
-                Debug.WriteLine(group.Name);
+            _cancellationTokenSource = new CancellationTokenSource();
+            var cancellationToken = _cancellationTokenSource.Token;
+
+            try
+            {
+                var delayTask = Task.Delay(TimeSpan.FromSeconds(15), cancellationToken);
+                var groupsTask = _vrChatApiService.GetGroupsAsync();
+
+                if (await Task.WhenAny(groupsTask, delayTask) == delayTask)
+                {
+                    Message = "Please use the official site. Loading is taking too long.";
+                    ShowCancelButton = true;
+                    return;
+                }
+
+                var groups = await groupsTask;
+
+                if (groups == null || !groups.Any())
+                {
+                    Message = "You have no groups, please create or join a group to create a group instance.";
+                }
+                else
+                {
+                    Groups.Clear();
+                    foreach (var group in groups)
+                    {
+                        Groups.Add(new GroupModel
+                        {
+                            Name = group.Name,
+                            Id = group.GroupId,
+                            Privacy = group.Privacy,
+                            Icon = group.IconUrl,
+                            GroupRoles = new List<GroupRolesModel>()
+                        });
+                    }
+                    Message = string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                Message = $"An error occurred: {ex.Message}";
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
+
+        public void CancelLoading()
+        {
+            _cancellationTokenSource?.Cancel();
+            Message = "Loading canceled.";
+            IsLoading = false;
+        }
+
         public async void GroupSelected(string groupName)
         {
-            _selectedGroup = Groups.Find(group => group.Name == groupName);
-            _selectedGroup.GroupRoles = await _vrChatApiService.GetGroupRolesAsync(_selectedGroup.Id);
-            _userRoles = await _vrChatApiService.GetUserRoleAsync(_selectedGroup.Id);
+            IsLoading = true;
+            ShowCancelButton = false;
+            Message = "Loading group roles...";
 
+            _cancellationTokenSource = new CancellationTokenSource();
+            var cancellationToken = _cancellationTokenSource.Token;
+
+            try
+            {
+                _selectedGroup = Groups.FirstOrDefault(group => group.Name == groupName);
+
+                if (_selectedGroup == null)
+                {
+                    Message = "Group not found.";
+                    return;
+                }
+
+                Debug.WriteLine($"Selected group: {_selectedGroup.Name}");
+                Debug.WriteLine($"Selected group ID: {_selectedGroup.Id}");
+
+                var delayTask = Task.Delay(TimeSpan.FromSeconds(15), cancellationToken);
+                var groupRolesTask = _vrChatApiService.GetGroupRolesAsync(_selectedGroup.Id);
+                var userRolesTask = _vrChatApiService.GetUserRoleAsync(_selectedGroup.Id);
+
+                var allTasks = Task.WhenAll(groupRolesTask, userRolesTask);
+
+                if (await Task.WhenAny(allTasks, delayTask) == delayTask)
+                {
+                    Message = "Please use the official site. Loading is taking too long.";
+                    ShowCancelButton = true;
+                    return;
+                }
+
+                _selectedGroup.GroupRoles = await groupRolesTask;
+                _userRoles = await userRolesTask;
+
+                UpdatePermissions();
+
+                Message = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                Message = $"An error occurred: {ex.Message}";
+            }
+            finally
+            {
+                IsLoading = false;
+                IsGroupRolesLoadingComplete = true;
+                Debug.WriteLine("Group roles loaded.");
+                Debug.WriteLine($"User roles: {_userRoles.Count}");
+                Debug.WriteLine(CanCreateGroupInstance
+                    ? "User can create group instance."
+                    : "User cannot create group instance.");
+                Debug.WriteLine(CanCreateRestricted
+                    ? "User can create restricted group instance."
+                    : "User cannot create restricted group instance.");
+                Debug.WriteLine(CanCreateGroupOnly
+                    ? "User can create group only group instance."
+                    : "User cannot create group only group instance.");
+                Debug.WriteLine(CanCreateGroupPlus
+                    ? "User can create group plus group instance."
+                    : "User cannot create group plus group instance.");
+                Debug.WriteLine(CanCreateGroupPublic
+                    ? "User can create public group instance."
+                    : "User cannot create public group instance.");
+
+            }
+        }
+
+        private void UpdatePermissions()
+        {
             var permissions = new List<string>();
             foreach (var role in _userRoles)
             {
-                var groupRole = _selectedGroup.GroupRoles.Find(groupRole => groupRole.Name == role);
+                var groupRole = _selectedGroup.GroupRoles.Find(gr => gr.Id == role);
                 if (groupRole != null)
                 {
-                    foreach(var permission in groupRole.Permissions)
+
+                    foreach (var permission in groupRole.Permissions)
                     {
-                        if(!permissions.Contains(permission))
+                        if (!permissions.Contains(permission))
                         {
                             permissions.Add(permission);
                         }
                     }
                 }
             }
+            foreach(var permission in permissions)
+            {
+                Debug.WriteLine($"Permission: {permission}");
+            }
 
-            _canCreateRestricted = permissions.Contains("group-instance-restricted-create") || permissions.Contains("*");
-            _canCreateGroupOnly = permissions.Contains("group-instance-open-create") || permissions.Contains("*");
-            _canCreateGroupPlus = permissions.Contains("group-instance-plus-create") || permissions.Contains("*");
-            _canCreateGroupPublic = (permissions.Contains("group-instance-public-create") || permissions.Contains("*")) && _selectedGroup.Privacy == "default";
+            CanCreateRestricted = permissions.Contains("group-instance-restricted-create") || permissions.Contains("*");
+            CanCreateGroupOnly = permissions.Contains("group-instance-open-create") || permissions.Contains("*");
+            CanCreateGroupPlus = permissions.Contains("group-instance-plus-create") || permissions.Contains("*");
+            CanCreateGroupPublic = (permissions.Contains("group-instance-public-create") || permissions.Contains("*")) && _selectedGroup.Privacy == "default";
 
-            _canCreateGroupInstance =
-                (_canCreateGroupOnly || _canCreateGroupPlus || _canCreateGroupPublic || _canCreateRestricted) &&
-                (permissions.Contains("group-instance-join") || permissions.Contains("*"));
+            CanCreateGroupInstance = (_canCreateGroupOnly || _canCreateGroupPlus || _canCreateGroupPublic || _canCreateRestricted) &&
+                                     (permissions.Contains("group-instance-join") || permissions.Contains("*"));
         }
 
         public void AccessTypeSelected(string instanceType)
