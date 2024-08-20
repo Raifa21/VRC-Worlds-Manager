@@ -42,6 +42,7 @@ namespace VRC_Favourite_Manager.Views
                 this.Hide();
 
                 var createGroupInstance = new CreateGroupInstancePopup(world, _selectedRegion);
+                createGroupInstance.XamlRoot = this.XamlRoot;
                 createGroupInstance.ShowAsync();
             }
         }

@@ -6,7 +6,13 @@
     xmlns:local="using:VRC_Favourite_Manager.Views"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
-    xmlns:viewModels="using:VRC_Favourite_Manager.ViewModels">
+    xmlns:viewModels="using:VRC_Favourite_Manager.ViewModels"
+    xmlns:common="using:VRC_Favourite_Manager.Common">
+
+    <ContentDialog.Resources>
+        <common:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <common:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
+    </ContentDialog.Resources>
 
     <Grid Width="750" Height="600" HorizontalAlignment="Center">
         <Button HorizontalAlignment="Right"
@@ -23,21 +29,24 @@
                     <ItemsControl ItemsSource="{Binding Groups}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Button x:Name="{Binding GroupName}" Click="GroupSelected">
+                                <Button Click="GroupSelected">
                                     <StackPanel Orientation="Horizontal">
                                         <Ellipse Height="100" Width="100">
                                             <Ellipse.Fill>
-                                                <ImageBrush ImageSource="{Binding GroupIcon}" Stretch="UniformToFill"/>
+                                                <ImageBrush ImageSource="{Binding Icon}" Stretch="UniformToFill"/>
                                             </Ellipse.Fill>
                                         </Ellipse>
-                                        <TextBlock Text="{Binding GroupName}" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                        <TextBlock x:Name="GroupName"  Text="{Binding Name}" VerticalAlignment="Center" Margin="10,0,0,0"/>
                                     </StackPanel>
                                     <interactivity:Interaction.Behaviors>
                                         <core:EventTriggerBehavior EventName="Click">
                                             <core:ChangePropertyAction TargetObject="{Binding ElementName=GroupList}" PropertyName="Visibility" Value="Collapsed"/>
-                                            <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiClickGrid}" PropertyName="Visibility" Value="Visible"/>
+                                            <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectInstanceType}" PropertyName="Visibility" Value="Visible"/>
                                         </core:EventTriggerBehavior>
                                     </interactivity:Interaction.Behaviors>
+                                    <Button.CommandParameter>
+                                        <Binding Path="Name"/>
+                                    </Button.CommandParameter>
                                 </Button>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -45,8 +54,42 @@
                 </ScrollViewer>
                 </StackPanel>
         </StackPanel>
-        <ScrollViewer x:Name="SelectAllowedRoles">
-            <StackPanel>
+        <StackPanel x:Name="SelectInstanceType" Visibility="Collapsed">
+            <Button x:Name="Restricted" Content="Group" Click="SelectType" IsEnabled="{Binding CanCreateGroupOnly}" Visibility="{Binding CanCreateRestricted, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="Click">
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectInstanceType}" PropertyName="Visibility" Value="Collapsed"/>
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectGroupRoles}" PropertyName="Visibility" Value="Visible"/>
+                    </core:EventTriggerBehavior>
+                </interactivity:Interaction.Behaviors>
+            </Button>
+            <Button x:Name="Group"  Content="Group" Click="SelectType" IsEnabled="{Binding CanCreateGroupOnly}" Visibility="{Binding CanCreateRestricted, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                <interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="Click">
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectInstanceType}" PropertyName="Visibility" Value="Collapsed"/>
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectGroupRoles}" PropertyName="Visibility" Value="Visible"/>
+                    </core:EventTriggerBehavior>
+                </interactivity:Interaction.Behaviors>
+            </Button>
+            <Button x:Name="GroupPlus" Content="Group Plus" Click="SelectType" IsEnabled="{Binding CanCreateGroupPlus}">
+                <interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="Click">
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectInstanceType}" PropertyName="Visibility" Value="Collapsed"/>
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectGroupRoles}" PropertyName="Visibility" Value="Visible"/>
+                    </core:EventTriggerBehavior>
+                </interactivity:Interaction.Behaviors>
+            </Button>
+            <Button x:Name="Public" Content="Public" Click="SelectType" IsEnabled="{Binding CanCreateGroupPublic}">
+                <interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="Click">
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectInstanceType}" PropertyName="Visibility" Value="Collapsed"/>
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectGroupRoles}" PropertyName="Visibility" Value="Visible"/>
+                    </core:EventTriggerBehavior>
+                </interactivity:Interaction.Behaviors>
+            </Button>
+        </StackPanel>
+        <StackPanel x:Name="SelectGroupRoles" Visibility="Collapsed">
+            <ScrollViewer>
                 <ListView ItemsSource="{Binding GroupRoles}">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:GroupRolesModel">
@@ -58,9 +101,9 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-                <Button Content="Next" Click="SelectRoles"/>
-            </StackPanel>
-        </ScrollViewer>
+            </ScrollViewer>
+            <Button Content="Next" Click="SelectRoles"/>
+        </StackPanel>
     </Grid>
 </ContentDialog>
      

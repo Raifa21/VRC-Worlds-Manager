@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Microsoft.UI.Xaml;
 using VRC_Favourite_Manager.Common;
@@ -78,11 +79,13 @@ namespace VRC_Favourite_Manager.ViewModels
         private string _groupAccessType;
         private List<string> _selectedRoles;
         private bool _isQueueEnabled;
-        private List<GroupModel> Groups { get; set; }
+
+        
+        public List<GroupModel> Groups { get; set; }
 
         public CreateGroupInstancePopupViewModel(WorldModel selectedWorld, string region)
         {
-            _vrChatApiService = Application.Current.Resources["VRChatApiService"] as VRChatAPIService;
+            _vrChatApiService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
             _selectedWorld = selectedWorld;
             _region = region;
 
@@ -106,6 +109,8 @@ namespace VRC_Favourite_Manager.ViewModels
                     Icon = group.IconUrl,
                     GroupRoles = new List<GroupRolesModel>()
                 });
+
+                Debug.WriteLine(group.Name);
             }
         }
         public async void GroupSelected(string groupName)
@@ -130,14 +135,14 @@ namespace VRC_Favourite_Manager.ViewModels
                 }
             }
 
-            _canCreateRestricted = permissions.Contains("group-instance-restricted-create");
-            _canCreateGroupOnly = permissions.Contains("group-instance-open-create");
-            _canCreateGroupPlus = permissions.Contains("group-instance-plus-create");
-            _canCreateGroupPublic = permissions.Contains("group-instance-public-create") && _selectedGroup.Privacy == "default";
+            _canCreateRestricted = permissions.Contains("group-instance-restricted-create") || permissions.Contains("*");
+            _canCreateGroupOnly = permissions.Contains("group-instance-open-create") || permissions.Contains("*");
+            _canCreateGroupPlus = permissions.Contains("group-instance-plus-create") || permissions.Contains("*");
+            _canCreateGroupPublic = (permissions.Contains("group-instance-public-create") || permissions.Contains("*")) && _selectedGroup.Privacy == "default";
 
             _canCreateGroupInstance =
                 (_canCreateGroupOnly || _canCreateGroupPlus || _canCreateGroupPublic || _canCreateRestricted) &&
-                permissions.Contains("group-instance-join");
+                (permissions.Contains("group-instance-join") || permissions.Contains("*"));
         }
 
         public void AccessTypeSelected(string instanceType)

@@ -35,17 +35,17 @@ namespace VRC_Favourite_Manager.Views
             if (sender != null)
             {
                 var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
-                viewModel.GroupSelected(button.Name);
+                viewModel.GroupSelected(button.CommandParameter as string);
             }
         }
 
-        private void SelectInstanceType(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        private void SelectType(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
             Button button = sender as Button;
             if (sender != null)
             {
                 var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
-                viewModel.AccessTypeSelected(button.Name);
+                viewModel.AccessTypeSelected(button.Content.ToString());
             }
         }
 
