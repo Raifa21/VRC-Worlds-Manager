@@ -44,26 +44,25 @@ namespace VRC_Favourite_Manager.ViewModels
             set => SetProperty(ref _showCancelButton, value);
         }
 
+        private bool _isGroupRolesLoadingComplete;
+        public bool IsGroupRolesLoadingComplete
+        {
+            get => _isGroupRolesLoadingComplete;
+            set => SetProperty(ref _isGroupRolesLoadingComplete, value);
+        }
+
         private bool _canCreateGroupInstance;
         public bool CanCreateGroupInstance
         {
             get => _canCreateGroupInstance;
-            set
-            {
-                _canCreateGroupInstance = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _canCreateGroupInstance, value);
         }
 
         private bool _canCreateRestricted;
         public bool CanCreateRestricted
         {
             get => _canCreateRestricted;
-            set
-            {
-                _canCreateRestricted = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _canCreateRestricted, value);
         }
 
         private bool _canCreateGroupOnly;
@@ -71,11 +70,7 @@ namespace VRC_Favourite_Manager.ViewModels
         public bool CanCreateGroupOnly
         {
             get => _canCreateGroupOnly;
-            set
-            {
-                _canCreateGroupOnly = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _canCreateGroupOnly, value);
         }
 
         private bool _canCreateGroupPlus;
@@ -83,11 +78,7 @@ namespace VRC_Favourite_Manager.ViewModels
         public bool CanCreateGroupPlus
         {
             get => _canCreateGroupPlus;
-            set
-            {
-                _canCreateGroupPlus = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _canCreateGroupPlus, value);
         }
         
         private bool _canCreateGroupPublic;
@@ -95,23 +86,9 @@ namespace VRC_Favourite_Manager.ViewModels
         public bool CanCreateGroupPublic
         {
             get => _canCreateGroupPublic;
-            set
-            {
-                _canCreateGroupPublic = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _canCreateGroupPublic, value);
         }
 
-        private bool _isGroupRolesLoadingComplete;
-        public bool IsGroupRolesLoadingComplete
-        {
-            get => _isGroupRolesLoadingComplete;
-            set
-            {
-                _isGroupRolesLoadingComplete = value;
-                OnPropertyChanged();
-            }
-        }
 
 
         private GroupModel _selectedGroup;
@@ -124,6 +101,8 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public ObservableCollection<GroupModel> Groups { get; set; }
 
+        public ObservableCollection<GroupRolesModel> GroupRoles { get; set; }
+
         public CreateGroupInstancePopupViewModel(WorldModel selectedWorld, string region)
         {
             _vrChatApiService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
@@ -135,7 +114,6 @@ namespace VRC_Favourite_Manager.ViewModels
             GetGroups();
 
 
-            IsGroupRolesLoadingComplete = false;
             CanCreateGroupInstance = false;
             CancelLoadingCommand = new RelayCommand(CancelLoading);
         }
@@ -203,6 +181,7 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public async void GroupSelected(string groupName)
         {
+            IsGroupRolesLoadingComplete = false;
             IsLoading = true;
             ShowCancelButton = false;
             Message = "Loading group roles...";
@@ -213,7 +192,19 @@ namespace VRC_Favourite_Manager.ViewModels
             try
             {
                 _selectedGroup = Groups.FirstOrDefault(group => group.Name == groupName);
-
+                GroupRoles = new ObservableCollection<GroupRolesModel>();
+                foreach(var groupRole in _selectedGroup.GroupRoles)
+                {
+                    GroupRoles.Add(new GroupRolesModel
+                    {
+                        Name = groupRole.Name,
+                        Id = groupRole.Id,
+                        Permissions = groupRole.Permissions,
+                        IsManagementRole = groupRole.IsManagementRole,
+                        Order = groupRole.Order,
+                        IsSelected = false
+                    });
+                }
                 if (_selectedGroup == null)
                 {
                     Message = "Group not found.";

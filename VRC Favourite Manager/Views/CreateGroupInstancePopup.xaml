@@ -22,6 +22,8 @@
                 Style="{StaticResource CloseButtonStyle}">
             <FontIcon Glyph="&#xE711;" />
         </Button>
+
+
         <ProgressRing IsActive="{Binding IsLoading}" Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
         <Button Content="Cancel" Command="{Binding CancelLoadingCommand}" Visibility="{Binding ShowCancelButton, Converter={StaticResource BooleanToVisibilityConverter}}" />
@@ -57,6 +59,8 @@
                 </ScrollViewer>
                 </StackPanel>
         </StackPanel>
+
+
         <StackPanel x:Name="SelectInstanceType" Visibility="{Binding IsGroupRolesLoadingComplete, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Button x:Name="Restricted" Content="Group" Click="SelectType" IsEnabled="{Binding CanCreateGroupOnly}" Visibility="{Binding CanCreateRestricted, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <interactivity:Interaction.Behaviors>
@@ -91,6 +95,8 @@
                 </interactivity:Interaction.Behaviors>
             </Button>
         </StackPanel>
+
+
         <StackPanel x:Name="SelectGroupRoles" Visibility="Collapsed">
             <ScrollViewer>
                 <ListView ItemsSource="{Binding GroupRoles}">
