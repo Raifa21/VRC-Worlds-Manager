@@ -231,6 +231,21 @@ namespace VRC_Favourite_Manager.ViewModels
                 _userRoles = await userRolesTask;
 
                 UpdatePermissions();
+                
+                var allRoles = new List<SelectRolesModel>();
+                foreach (var groupRole in _selectedGroup.GroupRoles)
+                {
+                    allRoles.Add(new SelectRolesModel
+                    {
+                        Name = groupRole.Name,
+                        IsManagementRole = groupRole.IsManagementRole,
+                        Order = groupRole.Order,
+                        DependentRoles = new List<GroupRolesModel>()
+                    });
+                }
+
+                GenerateDependentRoles(allRoles);
+
 
                 Message = string.Empty;
             }
@@ -295,6 +310,39 @@ namespace VRC_Favourite_Manager.ViewModels
                                      (permissions.Contains("group-instance-join") || permissions.Contains("*"));
         }
 
+        public static void GenerateDependentRoles(List<SelectRolesModel> allRoles)
+        {
+            // Sort the roles based on their Order property
+            var sortedRoles = allRoles.OrderBy(role => role.Order).ToList();
+
+            foreach (var role in sortedRoles)
+            {
+                if (role.IsManagementRole)
+                {
+                    var dependentRoles = new List<GroupRolesModel>();
+                    for (int i = sortedRoles.IndexOf(role) + 1; i < sortedRoles.Count; i++)
+                    {
+                        if (sortedRoles[i].IsManagementRole)
+                        {
+                            break;
+                        }
+                        else{
+                            dependentRoles.Add(new GroupRolesModel
+                            {
+                                Name = sortedRoles[i].Name,
+                                Id = sortedRoles[i].Id,
+                                Permissions = sortedRoles[i].Permissions,
+                                IsManagementRole = sortedRoles[i].IsManagementRole,
+                                Order = sortedRoles[i].Order,
+                                IsSelected = false
+                            });
+                        }
+                    }
+                    role.DependentRoles = dependentRoles;
+
+                }
+            }
+        }
         public void AccessTypeSelected(string instanceType)
         {
             _groupAccessType = instanceType.ToLower();
@@ -341,5 +389,13 @@ namespace VRC_Favourite_Manager.ViewModels
         public int Order { get; set; }
 
         public bool IsSelected { get; set; }
+    }
+
+    public class SelectRolesModel()
+    {
+        public string Name { get; set; }
+        public bool IsManagementRole { get; set; }
+        public int Order { get; set; }
+        public List<GroupRolesModel> DependentRoles { get; set; } = new List<GroupRolesModel>();
     }
 }
