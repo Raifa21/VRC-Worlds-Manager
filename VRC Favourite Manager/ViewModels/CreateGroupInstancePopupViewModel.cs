@@ -14,6 +14,7 @@ using Microsoft.UI.Xaml;
 using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
+using VRChat.API.Model;
 
 namespace VRC_Favourite_Manager.ViewModels
 {
@@ -21,7 +22,7 @@ namespace VRC_Favourite_Manager.ViewModels
     {
         private readonly VRChatAPIService _vrChatApiService;
         private readonly WorldModel _selectedWorld;
-        private readonly string _region;
+        public string Region;
 
         private CancellationTokenSource _cancellationTokenSource;
 
@@ -52,6 +53,7 @@ namespace VRC_Favourite_Manager.ViewModels
             get => _isGroupRolesLoadingComplete;
             set => SetProperty(ref _isGroupRolesLoadingComplete, value);
         }
+
 
         private bool _canCreateGroupInstance;
         public bool CanCreateGroupInstance
@@ -91,13 +93,18 @@ namespace VRC_Favourite_Manager.ViewModels
             set => SetProperty(ref _canCreateGroupPublic, value);
         }
 
+        private bool _isQueueEnabled;
+        public bool IsQueueEnabled
+        {
+            get => _isQueueEnabled;
+            set => SetProperty(ref _isQueueEnabled, value);
+        }
 
 
         private GroupModel _selectedGroup;
         private List<string> _userRoles;
         private string _groupAccessType;
         private List<string> _selectedRoles;
-        private bool _isQueueEnabled;
 
         public ICommand CancelLoadingCommand { get; }
 
@@ -107,13 +114,27 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public ObservableCollection<SelectRolesModel> SelectRoles { get; set; }
 
-        public bool EveryoneIsSelected { get; set; }
+        private bool _everyoneIsSelected;
+        public bool EveryoneIsSelected
+        {
+            get => _everyoneIsSelected;
+            set => SetProperty(ref _everyoneIsSelected, value);
+        }
+
+        // These are for displaying content on the UI
+        public string ThumbnailImageUrl { get; set; }
+        public string GroupIcon { get; set; }
+        public string GroupName { get; set; }
+        public string GroupAccessType { get; set; }
+        public bool IsRoleRestricted { get; set; }
+        public string RolesThatHaveAccess { get; set; }
 
         public CreateGroupInstancePopupViewModel(WorldModel selectedWorld, string region)
         {
             _vrChatApiService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
             _selectedWorld = selectedWorld;
-            _region = region;
+            ThumbnailImageUrl = selectedWorld.ThumbnailImageUrl;
+            Region = region;
 
             Groups = new ObservableCollection<GroupModel>();
             _selectedRoles = new List<string>();
@@ -125,6 +146,10 @@ namespace VRC_Favourite_Manager.ViewModels
 
             SelectRoles = new ObservableCollection<SelectRolesModel>();
             EveryoneIsSelected = false;
+            IsQueueEnabled = false;
+
+
+            IsRoleRestricted = false;
         }
 
         private async void GetGroups()
@@ -201,6 +226,8 @@ namespace VRC_Favourite_Manager.ViewModels
             try
             {
                 _selectedGroup = Groups.FirstOrDefault(group => group.Name == groupName);
+                GroupIcon = _selectedGroup.Icon;
+                GroupName = _selectedGroup.Name;
                 GroupRoles = new ObservableCollection<GroupRolesModel>();
                 foreach(var groupRole in _selectedGroup.GroupRoles)
                 {
@@ -261,6 +288,12 @@ namespace VRC_Favourite_Manager.ViewModels
                 SelectRoles = allRoles;
 
                 Message = string.Empty;
+
+                if (!CanCreateGroupInstance)
+                {
+                    Message = "You do not have the required permissions to create a group instance.";
+                }
+                IsGroupRolesLoadingComplete = true;
             }
             catch (Exception ex)
             {
@@ -269,7 +302,6 @@ namespace VRC_Favourite_Manager.ViewModels
             finally
             {
                 IsLoading = false;
-                IsGroupRolesLoadingComplete = true;
                 Debug.WriteLine("Group roles loaded.");
                 Debug.WriteLine($"User roles: {_userRoles.Count}");
                 Debug.WriteLine(CanCreateGroupInstance
@@ -395,17 +427,49 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public void AccessTypeSelected(string instanceType)
         {
+            GroupAccessType = instanceType;
             _groupAccessType = instanceType.ToLower();
         }
 
-        public void RolesSelected(List<string> roles)
+        public void RolesSelected()
         {
-            _selectedRoles = roles;
+            if(EveryoneIsSelected)
+            {
+                _selectedRoles.Add(_selectedGroup.GroupRoles.Find(gr => gr.Name == "Everyone").Id);
+            }
+            else
+            {
+                foreach (var role in SelectRoles)
+                {
+                    if (role.IsSelected)
+                    {
+                        _selectedRoles.Add(_selectedGroup.GroupRoles.Find(gr => gr.Name == role.Name).Id);
+                    }
+                }
+            }
+
+            IsRoleRestricted = true;
+            RolesThatHaveAccess = "";
+            foreach (var role in _selectedRoles)
+            {
+                RolesThatHaveAccess += _selectedGroup.GroupRoles.Find(gr => gr.Id == role).Name + ", ";
+            } 
+            //remove the last comma
+            RolesThatHaveAccess = RolesThatHaveAccess.Remove(RolesThatHaveAccess.Length - 2);
+        }
+
+        public void InvertInstanceQueue()
+        {
+            IsQueueEnabled = !IsQueueEnabled;
         }
 
         public async void CreateInstanceAsync()
         {
-            await _vrChatApiService.CreateGroupInstanceAsync(_selectedWorld.WorldId, _selectedGroup.Id, _region,
+            if (!_selectedRoles.Any())
+            {
+                _selectedRoles.Add(_selectedGroup.GroupRoles.Find(gr => gr.Name == "Everyone").Id);
+            }
+            await _vrChatApiService.CreateGroupInstanceAsync(_selectedWorld.WorldId, _selectedGroup.Id, Region,
                 _groupAccessType, _selectedRoles, _isQueueEnabled);
         }
     }
@@ -428,12 +492,22 @@ namespace VRC_Favourite_Manager.ViewModels
         public bool IsSelected { get; set; }
     }
 
-    public class SelectRolesModel
+    public class SelectRolesModel : ObservableObject
     {
         public string Name { get; set; }
         public bool IsManagementRole { get; set; }
-        public bool IsSelected { get; set; }
-        public bool IsDisabled { get; set; }
+        private bool _isSelected;
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set => SetProperty(ref _isSelected, value);
+        }
+        private bool _isDisabled;
+        public bool IsDisabled
+        {
+            get => _isDisabled;
+            set => SetProperty(ref _isDisabled, value);
+        }
         public int Order { get; set; }
         public List<int> DependentRoles { get; set; }
     }

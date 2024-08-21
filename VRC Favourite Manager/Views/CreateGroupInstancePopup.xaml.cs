@@ -48,7 +48,6 @@ namespace VRC_Favourite_Manager.Views
                 viewModel.AccessTypeSelected(button.Content.ToString());
             }
         }
-
         private void SelectRolesChanged_Checked(object sender, RoutedEventArgs e)
         {
             var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
@@ -58,6 +57,30 @@ namespace VRC_Favourite_Manager.Views
         {
             var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
             viewModel.SelectRolesChanged_UnChecked();
+        }
+
+        private void RolesSelected(object sender, RoutedEventArgs e)
+        {
+            var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
+            viewModel.RolesSelected();
+        }
+        private void Region_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            RadioButton radioButton = sender as RadioButton;
+            if (radioButton != null)
+            {
+                string selectedRegion = radioButton.Content.ToString();
+                var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
+                viewModel.Region = selectedRegion;
+            }
+        }
+
+        private void CreateInstance(object sender, RoutedEventArgs e)
+        {
+            var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
+            viewModel.CreateInstanceAsync();
+
+            this.Hide();
         }
     }
 }
