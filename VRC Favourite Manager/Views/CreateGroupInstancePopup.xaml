@@ -32,32 +32,32 @@
         <StackPanel x:Name="GroupList" Margin="10,25,10,0">
                 <StackPanel Margin="0,0,20,0" Padding="5,10,15,0" HorizontalAlignment="Left">
                     <TextBlock Text="Select Group" />
-                    <ScrollViewer>
-                    <ItemsControl ItemsSource="{Binding Groups}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Button Click="GroupSelected">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Ellipse Height="30" Width="30">
-                                            <Ellipse.Fill>
-                                                <ImageBrush ImageSource="{Binding Icon}" Stretch="UniformToFill"/>
-                                            </Ellipse.Fill>
-                                        </Ellipse>
-                                        <TextBlock x:Name="GroupName"  Text="{Binding Name}" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                                    </StackPanel>
-                                    <interactivity:Interaction.Behaviors>
-                                        <core:EventTriggerBehavior EventName="Click">
-                                            <core:ChangePropertyAction TargetObject="{Binding ElementName=GroupList}" PropertyName="Visibility" Value="Collapsed"/>
-                                        </core:EventTriggerBehavior>
-                                    </interactivity:Interaction.Behaviors>
-                                    <Button.CommandParameter>
-                                        <Binding Path="Name"/>
-                                    </Button.CommandParameter>
-                                </Button>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
+                    <ScrollViewer HorizontalScrollBarVisibility="Visible">
+                        <ItemsControl ItemsSource="{Binding Groups}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Click="GroupSelected">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Ellipse Height="30" Width="30">
+                                                <Ellipse.Fill>
+                                                    <ImageBrush ImageSource="{Binding Icon}" Stretch="UniformToFill"/>
+                                                </Ellipse.Fill>
+                                            </Ellipse>
+                                            <TextBlock x:Name="GroupName"  Text="{Binding Name}" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                        </StackPanel>
+                                        <interactivity:Interaction.Behaviors>
+                                            <core:EventTriggerBehavior EventName="Click">
+                                                <core:ChangePropertyAction TargetObject="{Binding ElementName=GroupList}" PropertyName="Visibility" Value="Collapsed"/>
+                                            </core:EventTriggerBehavior>
+                                        </interactivity:Interaction.Behaviors>
+                                        <Button.CommandParameter>
+                                            <Binding Path="Name"/>
+                                        </Button.CommandParameter>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
                 </StackPanel>
         </StackPanel>
 
@@ -110,7 +110,7 @@
             <ScrollViewer>
                 <ListView ItemsSource="{Binding SelectRoles}">
                     <ListView.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:GroupRolesModel">
+                        <DataTemplate x:DataType="viewModels:SelectRolesModel">
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
                                           IsEnabled="{Binding IsDisabled, Converter={StaticResource InverseBooleanConverter}}"
@@ -133,74 +133,80 @@
         </StackPanel>
 
         <StackPanel x:Name="CreateGroupInstance" Visibility="Collapsed" HorizontalAlignment="Center">
-            <TextBlock x:Name="GroupInstanceOverview" Text="Group" />
-            <Viewbox Width="300" Height="225">
+            <TextBlock x:Name="GroupInstanceOverview" Text="Create Group Instance" />
+            <Viewbox Width="300" Height="225" Margin="0,10">
                 <Grid Width="300" Height="225">
                     <Image Source="{Binding ThumbnailImageUrl}" Stretch="Fill" Width="300" Height="225"/>
                 </Grid>
             </Viewbox>
-            <Button>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Group"></TextBlock>
-                    <Ellipse Height="30" Width="30">
-                        <Ellipse.Fill>
-                            <ImageBrush ImageSource="{Binding GroupIcon}" Stretch="UniformToFill"/>
-                        </Ellipse.Fill>
-                    </Ellipse>
-                    <TextBlock x:Name="GroupName"  Text="{Binding GroupName}" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                </StackPanel>
-                <interactivity:Interaction.Behaviors>
-                    <core:EventTriggerBehavior EventName="Click">
-                        <core:ChangePropertyAction TargetObject="{Binding ElementName=CreateGroupInstance}" PropertyName="Visibility" Value="Collapsed"/>
-                        <core:ChangePropertyAction TargetObject="{Binding ElementName=GroupList}" PropertyName="Visibility" Value="Visible"/>
-                    </core:EventTriggerBehavior>
-                </interactivity:Interaction.Behaviors>
-            </Button>
-            <Button>
-                <StackPanel>
-                <TextBlock Text="Instance Type" />
-                <TextBlock Text="{Binding GroupAccessType}" />
-                </StackPanel>
-                <interactivity:Interaction.Behaviors>
-                    <core:EventTriggerBehavior EventName="Click">
-                        <core:ChangePropertyAction TargetObject="{Binding ElementName=CreateGroupInstance}" PropertyName="Visibility" Value="Collapsed"/>
-                        <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectInstanceType}" PropertyName="Visibility" Value="Visible"/>
-                    </core:EventTriggerBehavior>
-                </interactivity:Interaction.Behaviors>
-            </Button>
-            <Button Visibility="{Binding IsRoleRestricted, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <StackPanel>
-                    <TextBlock Text="Roles which have access" />
-                    <TextBlock Text="{Binding RolesThatHaveAccess}"></TextBlock>
-                </StackPanel>
-                <interactivity:Interaction.Behaviors>
-                    <core:EventTriggerBehavior EventName="Click">
-                        <core:ChangePropertyAction TargetObject="{Binding ElementName=CreateGroupInstance}" PropertyName="Visibility" Value="Collapsed"/>
-                        <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectGroupRoles}" PropertyName="Visibility" Value="Visible"/>
-                    </core:EventTriggerBehavior>
-                </interactivity:Interaction.Behaviors>
-            </Button>
-            <Button Click="{Binding InvertInstanceQueue}" >
-                <StackPanel>
-                    <TextBlock Text="Instance Queue" />
+            <StackPanel BorderThickness="0,0,0,1" BorderBrush="Black" Padding="0,5">
+                <TextBlock Text="Group" FontSize="12" />
+                <Button BorderThickness="0" CornerRadius="0" Background="Transparent" Width="300">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Enable Instance Queue" VerticalAlignment="Center"/>
-                        <CheckBox IsChecked="{Binding IsQueueEnabled, Mode=TwoWay}" />
+                        <Ellipse Height="20" Width="20">
+                            <Ellipse.Fill>
+                                <ImageBrush ImageSource="{Binding GroupIcon}" Stretch="UniformToFill"/>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <TextBlock x:Name="GroupName"  Text="{Binding GroupName}" VerticalAlignment="Center" Margin="10,0,0,0"/>
                     </StackPanel>
-                </StackPanel>
-            </Button>
-            <StackPanel BorderThickness="0,1" BorderBrush="Black" Padding="0,5">
-                <TextBlock Text="Region" />
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,0" Spacing="5">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="Click">
+                            <core:ChangePropertyAction TargetObject="{Binding ElementName=CreateGroupInstance}" PropertyName="Visibility" Value="Collapsed"/>
+                            <core:ChangePropertyAction TargetObject="{Binding ElementName=GroupList}" PropertyName="Visibility" Value="Visible"/>
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </Button>
+            </StackPanel>
+            <StackPanel  BorderThickness="0,0,0,1" BorderBrush="Black" Padding="0,5">
+                <TextBlock Text="Instance Type" FontSize="12" />
+                <Button BorderThickness="0" CornerRadius="0" Background="Transparent" Width="300">
+                    <StackPanel>
+                        <TextBlock Text="{Binding GroupAccessType}" />
+                    </StackPanel>
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="Click">
+                            <core:ChangePropertyAction TargetObject="{Binding ElementName=CreateGroupInstance}" PropertyName="Visibility" Value="Collapsed"/>
+                            <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectInstanceType}" PropertyName="Visibility" Value="Visible"/>
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </Button>
+            </StackPanel>
+            <StackPanel  BorderThickness="0,0,0,1" BorderBrush="Black" Padding="0,5" Visibility="{Binding IsRoleRestricted, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="Roles which have access" FontSize="12"/>
+                <Button BorderThickness="0" CornerRadius="0" Background="Transparent" Width="300">
+                    <StackPanel>
+                        <TextBlock Text="{Binding RolesThatHaveAccess}" />
+                    </StackPanel>
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="Click">
+                            <core:ChangePropertyAction TargetObject="{Binding ElementName=CreateGroupInstance}" PropertyName="Visibility" Value="Collapsed"/>
+                            <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectGroupRoles}" PropertyName="Visibility" Value="Visible"/>
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </Button>
+            </StackPanel>
+            <StackPanel BorderThickness="0,0,0,1" BorderBrush="Black" Padding="0,5">
+                <TextBlock Text="Instance Queue" FontSize="12"/>
+                <Button Click="InvertInstanceQueue" BorderThickness="0" CornerRadius="0" Background="Transparent" Width="300" Height="35">
+                    <StackPanel Height="25">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Enable Instance Queue" VerticalAlignment="Center" Margin="0,-6,0,0"/>
+                            <CheckBox IsChecked="{Binding IsQueueEnabled, Mode=TwoWay}" Margin="110,-6,0,0" />
+                        </StackPanel>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+            <StackPanel BorderThickness="0,0,0,1" BorderBrush="Black" Padding="0,5">
+                <TextBlock Text="Region" FontSize="12" Margin="0,0,0,5"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,0" Spacing="18">
                     <RadioButton GroupName="Region" Content="USW" Checked="Region_Checked" Padding="15,5,15,5"/>
                     <RadioButton GroupName="Region" Content="USE" Checked="Region_Checked" Padding="17,5,17,5"/>
                     <RadioButton GroupName="Region" Content="EU" Checked="Region_Checked" Padding="21,5,21,5"/>
                     <RadioButton GroupName="Region" Content="JP" Checked="Region_Checked" Padding="22,5,22,5" IsChecked="True"/>
                 </StackPanel>
             </StackPanel>
-
-
-            <Button Content="Create" Click="CreateInstance"/>
+            <Button Content="Create Instance" Click="CreateInstance" Margin="0,5,0,0" Width="300"/>
         </StackPanel>
     </Grid>
 </ContentDialog>

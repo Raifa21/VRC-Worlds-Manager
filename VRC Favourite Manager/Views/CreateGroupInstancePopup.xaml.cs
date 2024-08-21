@@ -64,6 +64,13 @@ namespace VRC_Favourite_Manager.Views
             var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
             viewModel.RolesSelected();
         }
+
+        private void InvertInstanceQueue(object sender, RoutedEventArgs e)
+        {
+            var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
+            viewModel.InvertInstanceQueue();
+        }
+
         private void Region_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
             RadioButton radioButton = sender as RadioButton;
@@ -71,10 +78,12 @@ namespace VRC_Favourite_Manager.Views
             {
                 string selectedRegion = radioButton.Content.ToString();
                 var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
-                viewModel.Region = selectedRegion;
+                if(viewModel != null)
+                {
+                    viewModel.Region = selectedRegion;
+                }
             }
         }
-
         private void CreateInstance(object sender, RoutedEventArgs e)
         {
             var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
