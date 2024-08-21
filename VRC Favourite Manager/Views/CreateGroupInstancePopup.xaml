@@ -66,7 +66,6 @@
             <Button x:Name="Restricted" Content="Group" Click="SelectType" IsEnabled="{Binding CanCreateGroupOnly}" Visibility="{Binding CanCreateRestricted, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="Click">
-                        <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectInstanceType}" PropertyName="Visibility" Value="Collapsed"/>
                         <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectGroupRoles}" PropertyName="Visibility" Value="Visible"/>
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
@@ -74,7 +73,6 @@
             <Button x:Name="Group"  Content="Group" Click="SelectType" IsEnabled="{Binding CanCreateGroupOnly}" Visibility="{Binding CanCreateRestricted, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="Click">
-                        <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectInstanceType}" PropertyName="Visibility" Value="Collapsed"/>
                         <core:ChangePropertyAction TargetObject="{Binding ElementName=CreateGroupInstance}" PropertyName="Visibility" Value="Visible"/>
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
@@ -82,7 +80,6 @@
             <Button x:Name="GroupPlus" Content="Group Plus" Click="SelectType" IsEnabled="{Binding CanCreateGroupPlus}">
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="Click">
-                        <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectInstanceType}" PropertyName="Visibility" Value="Collapsed"/>
                         <core:ChangePropertyAction TargetObject="{Binding ElementName=CreateGroupInstance}" PropertyName="Visibility" Value="Visible"/>
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
@@ -90,16 +87,14 @@
             <Button x:Name="Public" Content="Public" Click="SelectType" IsEnabled="{Binding CanCreateGroupPublic}">
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="Click">
-                        <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectInstanceType}" PropertyName="Visibility" Value="Collapsed"/>
                         <core:ChangePropertyAction TargetObject="{Binding ElementName=CreateGroupInstance}" PropertyName="Visibility" Value="Visible"/>
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
             </Button>
-            <Button x:Name="GoBack" Content="Go Back" Visibility="{Binding CanCreateGroupInstance, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+            <Button x:Name="GoBack" Content="Go Back" Click="HideInstanceSelect">
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="Click">
                         <core:ChangePropertyAction TargetObject="{Binding ElementName=GroupList}" PropertyName="Visibility" Value="Visible"/>
-                        <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectInstanceType}" PropertyName="Visibility" Value="Collapsed"/>
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
             </Button>
@@ -160,14 +155,13 @@
             </StackPanel>
             <StackPanel  BorderThickness="0,0,0,1" BorderBrush="Black" Padding="0,5">
                 <TextBlock Text="Instance Type" FontSize="12" />
-                <Button BorderThickness="0" CornerRadius="0" Background="Transparent" Width="300">
+                <Button BorderThickness="0" CornerRadius="0" Background="Transparent" Width="300" Click="ShowInstanceSelect">
                     <StackPanel>
                         <TextBlock Text="{Binding GroupAccessType}" />
                     </StackPanel>
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="Click">
                             <core:ChangePropertyAction TargetObject="{Binding ElementName=CreateGroupInstance}" PropertyName="Visibility" Value="Collapsed"/>
-                            <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectInstanceType}" PropertyName="Visibility" Value="Visible"/>
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
                 </Button>

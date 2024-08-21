@@ -103,7 +103,6 @@ namespace VRC_Favourite_Manager.ViewModels
 
         private GroupModel _selectedGroup;
         private List<string> _userRoles;
-        private string _groupAccessType;
         private List<string> _selectedRoles;
 
         public ICommand CancelLoadingCommand { get; }
@@ -123,11 +122,41 @@ namespace VRC_Favourite_Manager.ViewModels
 
         // These are for displaying content on the UI
         public string ThumbnailImageUrl { get; set; }
-        public string GroupIcon { get; set; }
-        public string GroupName { get; set; }
-        public string GroupAccessType { get; set; }
-        public bool IsRoleRestricted { get; set; }
-        public string RolesThatHaveAccess { get; set; }
+        private string _groupIcon;
+        public string GroupIcon
+        {
+            get => _groupIcon;
+            set => SetProperty(ref _groupIcon, value);
+        }
+        
+        private string _groupName;
+        public string GroupName
+        {
+            get => _groupName;
+            set => SetProperty(ref _groupName, value);
+        }
+
+        private string _groupAccessType;
+        public string GroupAccessType
+        {
+            get => _groupAccessType;
+            set => SetProperty(ref _groupAccessType, value);
+        }
+
+        private bool _isRoleRestricted;
+        public bool IsRoleRestricted
+        {
+            get => _isRoleRestricted;
+            set => SetProperty(ref _isRoleRestricted, value);
+        }
+        
+        private string _rolesThatHaveAccess;
+        public string RolesThatHaveAccess
+        {
+            get => _rolesThatHaveAccess;
+            set => SetProperty(ref _rolesThatHaveAccess, value);
+        }
+        
 
         public CreateGroupInstancePopupViewModel(WorldModel selectedWorld, string region)
         {
@@ -148,6 +177,7 @@ namespace VRC_Favourite_Manager.ViewModels
             EveryoneIsSelected = false;
             IsQueueEnabled = false;
 
+            IsGroupRolesLoadingComplete = false;
 
             IsRoleRestricted = false;
         }
@@ -215,8 +245,8 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public async void GroupSelected(string groupName)
         {
-            IsGroupRolesLoadingComplete = false;
             IsLoading = true;
+            IsGroupRolesLoadingComplete = false;
             ShowCancelButton = false;
             Message = "Loading group roles...";
 
@@ -266,21 +296,29 @@ namespace VRC_Favourite_Manager.ViewModels
                 _selectedGroup.GroupRoles = await groupRolesTask;
                 _userRoles = await userRolesTask;
 
+                Debug.WriteLine($"Group roles: {_selectedGroup.GroupRoles.Count}");
+                Debug.WriteLine($"User roles: {_userRoles.Count}");
+
+                _userRoles.Add(_selectedGroup.GroupRoles.Find(gr => gr.Name == "Everyone").Id);
+
+
                 UpdatePermissions();
                 
                 var allRoles = new ObservableCollection<SelectRolesModel>();
                 foreach (var groupRole in _selectedGroup.GroupRoles)
                 {
-                    if(groupRole.Name != "Everyone")
-                    allRoles.Add(new SelectRolesModel
+                    if (groupRole.Name != "Everyone")
                     {
-                        Name = groupRole.Name,
-                        IsManagementRole = groupRole.IsManagementRole,
-                        IsSelected = false,
-                        IsDisabled = false,
-                        Order = groupRole.Order,
-                        DependentRoles = new List<int>()
-                    });
+                        allRoles.Add(new SelectRolesModel
+                        {
+                            Name = groupRole.Name,
+                            IsManagementRole = groupRole.IsManagementRole,
+                            IsSelected = false,
+                            IsDisabled = false,
+                            Order = groupRole.Order,
+                            DependentRoles = new List<int>()
+                        });
+                    }
                 }
 
                 GenerateDependentRoles(allRoles);
@@ -291,17 +329,23 @@ namespace VRC_Favourite_Manager.ViewModels
 
                 if (!CanCreateGroupInstance)
                 {
+                    Debug.WriteLine("User does not have the required permissions to create a group instance.");
                     Message = "You do not have the required permissions to create a group instance.";
                 }
-                IsGroupRolesLoadingComplete = true;
+                else
+                {
+                    Debug.WriteLine("User has the required permissions to create a group instance.");
+                }
             }
             catch (Exception ex)
             {
                 Message = $"An error occurred: {ex.Message}";
+                Debug.WriteLine($"An error occurred: {ex.Message}");
             }
             finally
             {
                 IsLoading = false;
+                IsGroupRolesLoadingComplete = true;
                 Debug.WriteLine("Group roles loaded.");
                 Debug.WriteLine($"User roles: {_userRoles.Count}");
                 Debug.WriteLine(CanCreateGroupInstance
@@ -374,59 +418,69 @@ namespace VRC_Favourite_Manager.ViewModels
                     foreach (var dependentRole in sortedRoles.Where(r => r.IsManagementRole))
                     {
                         role.DependentRoles.Add(dependentRole.Order);
+                        Debug.WriteLine($"Role: {role.Name} Dependent on: {dependentRole.Name}");
                     }
                 }
             }
         }
 
-        public void SelectRolesChanged_Checked()
+        public void SelectRolesChanged()
         {
             Debug.WriteLine("Checkbox updated");
-            //check which roles are selected, and select+disable all dependent roles
-            foreach (var role in SelectRoles)
-            {
-                if (role.IsSelected)
-                {
-                    foreach (var dependentRole in SelectRoles.Where(r => role.DependentRoles.Contains(r.Order)))
-                    {
-                        dependentRole.IsSelected = true;
-                        dependentRole.IsDisabled = true;
-                    }
-                }
-            }
 
             EveryoneIsSelected = false;
-        }
-        public void SelectRolesChanged_UnChecked()
-        {
-            Debug.WriteLine("Checkbox updated");
-            //uncheck all dependent roles
-            foreach (var role in SelectRoles)
+
+            var isAnyRoleSelected = SelectRoles.Any(role => role.IsSelected && role.Order != 0);
+            var isNonManagementRoleSelected =
+                SelectRoles.Where(role => !role.IsManagementRole).Any(role => role.IsSelected);
+
+            if (isAnyRoleSelected)
             {
-                if (!role.IsSelected)
+                var owner = SelectRoles.First(role => role.Order == 0);
+                owner.IsSelected = true;
+                owner.IsDisabled = true;
+            }
+            else
+            {
+                var owner = SelectRoles.First(role => role.Order == 0);
+                if (owner.IsSelected && !owner.IsDisabled)
                 {
-                    foreach (var dependentRole in SelectRoles.Where(r => role.DependentRoles.Contains(r.Order)))
+                    owner.IsSelected = false;
+                    owner.IsDisabled = false;
+                }
+                if(!owner.IsSelected && !owner.IsDisabled)
+                {
+                    EveryoneIsSelected = true;
+                }
+            }
+
+            if (isNonManagementRoleSelected)
+            {
+                var managementRoles = SelectRoles.Where(role => role.IsManagementRole);
+                foreach (var role in managementRoles)
+                {
+                    role.IsSelected = true;
+                    role.IsDisabled = true;
+                }
+            }
+            else
+            {
+                var managementRoles = SelectRoles.Where(role => role.IsManagementRole);
+                foreach (var role in managementRoles)
+                {
+                    if (role.IsSelected && !role.IsDisabled)
                     {
-                        dependentRole.IsSelected = false;
-                        dependentRole.IsDisabled = false;
+                        role.IsSelected = true;
+                        role.IsDisabled = true;
                     }
                 }
             }
-            foreach (var role in SelectRoles)
-            {
-                if (role.IsSelected)
-                {
-                    foreach (var dependentRole in SelectRoles.Where(r => role.DependentRoles.Contains(r.Order)))
-                    {
-                        dependentRole.IsSelected = true;
-                        dependentRole.IsDisabled = true;
-                    }
-                }
-            }
+
         }
 
         public void AccessTypeSelected(string instanceType)
         {
+            Debug.WriteLine("Access type selected" + instanceType);
             GroupAccessType = instanceType;
             _groupAccessType = instanceType.ToLower();
         }
@@ -496,6 +550,7 @@ namespace VRC_Favourite_Manager.ViewModels
     {
         public string Name { get; set; }
         public bool IsManagementRole { get; set; }
+
         private bool _isSelected;
         public bool IsSelected
         {

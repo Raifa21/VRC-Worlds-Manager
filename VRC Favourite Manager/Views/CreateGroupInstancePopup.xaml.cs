@@ -36,6 +36,10 @@ namespace VRC_Favourite_Manager.Views
             {
                 var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
                 viewModel.GroupSelected(button.CommandParameter as string);
+                if (button.Name == "Restricted")
+                {
+                    viewModel.IsRoleRestricted = true;
+                }
             }
         }
 
@@ -46,17 +50,31 @@ namespace VRC_Favourite_Manager.Views
             {
                 var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
                 viewModel.AccessTypeSelected(button.Content.ToString());
+                viewModel.IsGroupRolesLoadingComplete = false;
             }
         }
+
+        private void ShowInstanceSelect(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
+            viewModel.IsGroupRolesLoadingComplete = true;
+        }
+
+        private void HideInstanceSelect(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
+            viewModel.IsGroupRolesLoadingComplete = false;
+        }
+
         private void SelectRolesChanged_Checked(object sender, RoutedEventArgs e)
         {
             var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
-            viewModel.SelectRolesChanged_Checked();
+            viewModel.SelectRolesChanged();
         }
         private void SelectRolesChanged_Unchecked(object sender, RoutedEventArgs e)
         {
             var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
-            viewModel.SelectRolesChanged_UnChecked();
+            viewModel.SelectRolesChanged();
         }
 
         private void RolesSelected(object sender, RoutedEventArgs e)
