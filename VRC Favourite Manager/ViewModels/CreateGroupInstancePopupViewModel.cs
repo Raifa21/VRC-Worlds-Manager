@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -19,9 +20,10 @@ namespace VRC_Favourite_Manager.ViewModels
     public class CreateGroupInstancePopupViewModel : ObservableObject
     {
         private readonly VRChatAPIService _vrChatApiService;
+        private readonly WorldModel _selectedWorld;
+        private readonly string _region;
+
         private CancellationTokenSource _cancellationTokenSource;
-        private WorldModel _selectedWorld;
-        private string _region;
 
         private bool _isLoading;
         public bool IsLoading
@@ -103,6 +105,10 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public ObservableCollection<GroupRolesModel> GroupRoles { get; set; }
 
+        public ObservableCollection<SelectRolesModel> SelectRoles { get; set; }
+
+        public bool EveryoneIsSelected { get; set; }
+
         public CreateGroupInstancePopupViewModel(WorldModel selectedWorld, string region)
         {
             _vrChatApiService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
@@ -116,6 +122,9 @@ namespace VRC_Favourite_Manager.ViewModels
 
             CanCreateGroupInstance = false;
             CancelLoadingCommand = new RelayCommand(CancelLoading);
+
+            SelectRoles = new ObservableCollection<SelectRolesModel>();
+            EveryoneIsSelected = false;
         }
 
         private async void GetGroups()
@@ -232,20 +241,24 @@ namespace VRC_Favourite_Manager.ViewModels
 
                 UpdatePermissions();
                 
-                var allRoles = new List<SelectRolesModel>();
+                var allRoles = new ObservableCollection<SelectRolesModel>();
                 foreach (var groupRole in _selectedGroup.GroupRoles)
                 {
+                    if(groupRole.Name != "Everyone")
                     allRoles.Add(new SelectRolesModel
                     {
                         Name = groupRole.Name,
                         IsManagementRole = groupRole.IsManagementRole,
+                        IsSelected = false,
+                        IsDisabled = false,
                         Order = groupRole.Order,
-                        DependentRoles = new List<GroupRolesModel>()
+                        DependentRoles = new List<int>()
                     });
                 }
 
                 GenerateDependentRoles(allRoles);
 
+                SelectRoles = allRoles;
 
                 Message = string.Empty;
             }
@@ -310,39 +323,76 @@ namespace VRC_Favourite_Manager.ViewModels
                                      (permissions.Contains("group-instance-join") || permissions.Contains("*"));
         }
 
-        public static void GenerateDependentRoles(List<SelectRolesModel> allRoles)
+        private static void GenerateDependentRoles(ObservableCollection<SelectRolesModel> allRoles)
         {
-            // Sort the roles based on their Order property
             var sortedRoles = allRoles.OrderBy(role => role.Order).ToList();
 
             foreach (var role in sortedRoles)
             {
-                if (role.IsManagementRole)
+                if(role.IsManagementRole)
                 {
-                    var dependentRoles = new List<GroupRolesModel>();
-                    for (int i = sortedRoles.IndexOf(role) + 1; i < sortedRoles.Count; i++)
+                    if (role.Order != 0)
                     {
-                        if (sortedRoles[i].IsManagementRole)
-                        {
-                            break;
-                        }
-                        else{
-                            dependentRoles.Add(new GroupRolesModel
-                            {
-                                Name = sortedRoles[i].Name,
-                                Id = sortedRoles[i].Id,
-                                Permissions = sortedRoles[i].Permissions,
-                                IsManagementRole = sortedRoles[i].IsManagementRole,
-                                Order = sortedRoles[i].Order,
-                                IsSelected = false
-                            });
-                        }
+                        role.DependentRoles.Add(0);
                     }
-                    role.DependentRoles = dependentRoles;
 
+                }
+                else
+                {
+                    foreach (var dependentRole in sortedRoles.Where(r => r.IsManagementRole))
+                    {
+                        role.DependentRoles.Add(dependentRole.Order);
+                    }
                 }
             }
         }
+
+        public void SelectRolesChanged_Checked()
+        {
+            Debug.WriteLine("Checkbox updated");
+            //check which roles are selected, and select+disable all dependent roles
+            foreach (var role in SelectRoles)
+            {
+                if (role.IsSelected)
+                {
+                    foreach (var dependentRole in SelectRoles.Where(r => role.DependentRoles.Contains(r.Order)))
+                    {
+                        dependentRole.IsSelected = true;
+                        dependentRole.IsDisabled = true;
+                    }
+                }
+            }
+
+            EveryoneIsSelected = false;
+        }
+        public void SelectRolesChanged_UnChecked()
+        {
+            Debug.WriteLine("Checkbox updated");
+            //uncheck all dependent roles
+            foreach (var role in SelectRoles)
+            {
+                if (!role.IsSelected)
+                {
+                    foreach (var dependentRole in SelectRoles.Where(r => role.DependentRoles.Contains(r.Order)))
+                    {
+                        dependentRole.IsSelected = false;
+                        dependentRole.IsDisabled = false;
+                    }
+                }
+            }
+            foreach (var role in SelectRoles)
+            {
+                if (role.IsSelected)
+                {
+                    foreach (var dependentRole in SelectRoles.Where(r => role.DependentRoles.Contains(r.Order)))
+                    {
+                        dependentRole.IsSelected = true;
+                        dependentRole.IsDisabled = true;
+                    }
+                }
+            }
+        }
+
         public void AccessTypeSelected(string instanceType)
         {
             _groupAccessType = instanceType.ToLower();
@@ -358,14 +408,6 @@ namespace VRC_Favourite_Manager.ViewModels
             await _vrChatApiService.CreateGroupInstanceAsync(_selectedWorld.WorldId, _selectedGroup.Id, _region,
                 _groupAccessType, _selectedRoles, _isQueueEnabled);
         }
-
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
     }
     public class GroupModel()
     {
@@ -379,23 +421,20 @@ namespace VRC_Favourite_Manager.ViewModels
     public class GroupRolesModel()
     {
         public string Name { get; set; }
-
         public string Id { get; set; }
-
         public List<string> Permissions { get; set; }
-
         public bool IsManagementRole { get; set; }
-
         public int Order { get; set; }
-
         public bool IsSelected { get; set; }
     }
 
-    public class SelectRolesModel()
+    public class SelectRolesModel
     {
         public string Name { get; set; }
         public bool IsManagementRole { get; set; }
+        public bool IsSelected { get; set; }
+        public bool IsDisabled { get; set; }
         public int Order { get; set; }
-        public List<GroupRolesModel> DependentRoles { get; set; } = new List<GroupRolesModel>();
+        public List<int> DependentRoles { get; set; }
     }
 }

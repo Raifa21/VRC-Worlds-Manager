@@ -12,6 +12,7 @@
     <ContentDialog.Resources>
         <common:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <common:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
+        <common:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
     </ContentDialog.Resources>
 
     <Grid Width="750" Height="600" HorizontalAlignment="Center">
@@ -98,13 +99,16 @@
 
 
         <StackPanel x:Name="SelectGroupRoles" Visibility="Collapsed">
+            <CheckBox IsChecked="{Binding EveryoneIsSelected, Mode=TwoWay}"></CheckBox>
             <ScrollViewer>
-                <ListView ItemsSource="{Binding GroupRoles}">
+                <ListView ItemsSource="{Binding SelectRoles}">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:GroupRolesModel">
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                          IsEnabled="{Binding IsManagementRole, Converter={StaticResource InverseBooleanConverter}}"/>
+                                          IsEnabled="{Binding IsDisabled, Converter={StaticResource InverseBooleanConverter}}"
+                                          Checked="SelectRolesChanged_Checked"
+                                          Unchecked="SelectRolesChanged_UnChecked"/>
                                 <TextBlock Text="{Binding Name}" Margin="8,0,0,0"/>
                             </StackPanel>
                         </DataTemplate>

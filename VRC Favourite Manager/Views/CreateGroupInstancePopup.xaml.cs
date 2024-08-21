@@ -49,9 +49,15 @@ namespace VRC_Favourite_Manager.Views
             }
         }
 
-        private void SelectRoles(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        private void SelectRolesChanged_Checked(object sender, RoutedEventArgs e)
         {
-            
+            var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
+            viewModel.SelectRolesChanged_Checked();
+        }
+        private void SelectRolesChanged_Unchecked(object sender, RoutedEventArgs e)
+        {
+            var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
+            viewModel.SelectRolesChanged_UnChecked();
         }
     }
 }
