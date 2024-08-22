@@ -124,8 +124,8 @@
                                 <Image Source="{Binding ThumbnailImageUrl}" Stretch="Fill" Width="240" Height="180"/>
                             </Grid>
                         </Viewbox>
-                        <TextBlock Text="{Binding WorldName}" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='By {0}'}"/>
+                        <TextBlock Text="{Binding WorldName}" FontWeight="Bold" TextTrimming="CharacterEllipsis" Width="240"/>
+                        <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='By {0}'}" TextTrimming="CharacterEllipsis" Width="240"/>
                     </StackPanel>
                 </DataTemplate>
             </muxc:GridView.ItemTemplate>

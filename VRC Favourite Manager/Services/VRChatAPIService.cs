@@ -388,38 +388,32 @@ namespace VRC_Favourite_Manager.Services
 
                 string type;
                 string ownerIdNullable;
-                bool canRequestInvite;
-                bool inviteOnly;
+                string canRequestInvite;
                 switch (instanceType)
                 {
                     case "public":
                         type = "public";
-                        canRequestInvite = false;
-                        inviteOnly = false;
+                        canRequestInvite = "false";
                         ownerIdNullable = null;
                         break;
                     case "friends+":
                         type = "hidden";
-                        canRequestInvite = false;
-                        inviteOnly = false;
+                        canRequestInvite = "false";
                         ownerIdNullable = _userId;
                         break;
                     case "friends":
                         type = "friends";
-                        canRequestInvite = false;
-                        inviteOnly = false;
+                        canRequestInvite = "false";
                         ownerIdNullable = _userId;
                         break;
                     case "invite+":
                         type = "private";
-                        canRequestInvite = true;
-                        inviteOnly = false;
+                        canRequestInvite = "true";
                         ownerIdNullable = _userId;
                         break;
                     default:
                         type = "private";
-                        canRequestInvite = false;
-                        inviteOnly = true;
+                        canRequestInvite = "false";
                         ownerIdNullable = _userId;
                         break;
                 }
@@ -431,12 +425,18 @@ namespace VRC_Favourite_Manager.Services
                     region = "us";
                 }
 
+                Debug.WriteLine($"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"{type}\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"{ownerIdNullable}\",\n  \"queueEnabled\": false,\n  \"canRequestInvite\": {canRequestInvite}\n }}");
+
                 var content = new StringContent(
-                    $"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"{type}\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"{ownerIdNullable}\",\n  \"queueEnabled\": false,\n  \"canRequestInvite\": {canRequestInvite},\n  \"inviteOnly\": {inviteOnly}\n}}",
+                    $"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"{type}\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"{ownerIdNullable}\",\n  \"queueEnabled\": false,\n  \"canRequestInvite\": {canRequestInvite}\n }}",
                     null, "application/json");
                 request.Content = content;
+
+
                 var response = await _Client.SendAsync(request);
+
                 response.EnsureSuccessStatusCode();
+
 
                 var responseString = await response.Content.ReadAsStringAsync();
                 JsonDocument.Parse(responseString).RootElement.TryGetProperty("instanceId", out JsonElement id);
@@ -444,8 +444,9 @@ namespace VRC_Favourite_Manager.Services
 
                 InviteSelfAsync(worldId, instanceId);
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
+                Debug.WriteLine("Error: " + e.Message);
                 throw new VRCNotLoggedInException();
             }
         }
@@ -504,6 +505,10 @@ namespace VRC_Favourite_Manager.Services
                 var responseString = await response.Content.ReadAsStringAsync();
                 JsonDocument.Parse(responseString).RootElement.TryGetProperty("instanceId", out JsonElement id);
                 var instanceId = id.GetString();
+                if (instanceId.Length >= 5)
+                {
+                    instanceId = instanceId.Substring(0, 5);
+                }
 
                 InviteSelfAsync(worldId, instanceId);
             }
@@ -598,25 +603,22 @@ namespace VRC_Favourite_Manager.Services
         /// <exception cref="VRCFailedToCreateInviteException">When the invite has failed to be created.</exception>
         private async void InviteSelfAsync(string worldId, string instanceId)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, $"https://vrchat.com/api/1/instances/{worldId}:{instanceId}/invite");
-            request.Headers.Add("Accept", "application/json");
-            request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
-            request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
-            var content =
-                new StringContent(
-                    $"{{\n  \"worldId\": \"{worldId}\",\n  \"instanceId\": \"{instanceId}\",\n  \"userId\": \"<string>\"\n}}",
-                    null, "application/json");
-            request.Content = content;
-            var response = await _Client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            
-            var responseString = await response.Content.ReadAsStringAsync();
-            var inviteResponse = JsonSerializer.Deserialize<Models.SendSelfInviteResponse>(responseString);
-            if (inviteResponse.Status_code != 200)
+            try
             {
-                throw new VRCFailedToCreateInviteException();
-            }
+                var request = new HttpRequestMessage(HttpMethod.Post, $"https://vrchat.com/api/1/invite/myself/to/{worldId}:{instanceId}");
+                request.Headers.Add("Accept", "application/json");
+                request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
+                request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
 
+
+
+                var response = await _Client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+            }
+            catch (HttpRequestException)
+            {
+                throw new VRCNotLoggedInException();
+            }
         }
     }
 }

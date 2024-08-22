@@ -476,7 +476,7 @@ namespace VRC_Favourite_Manager.ViewModels
                     GroupAccessType = "Group";
                     IsRoleRestricted = true;
                     break;
-                case "GroupOnly":
+                case "Group":
                     GroupAccessType = "Group";
                     break;
                 case "GroupPlus":

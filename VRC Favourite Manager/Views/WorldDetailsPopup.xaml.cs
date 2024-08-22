@@ -36,6 +36,7 @@ namespace VRC_Favourite_Manager.Views
             {
                 WorldDetailsPopupViewModel viewModel = new WorldDetailsPopupViewModel(world);
                 viewModel.CreateInstanceAsync(world.WorldId, _selectedInstanceType, _selectedRegion);
+                this.Hide();
             }
             else
             { 
