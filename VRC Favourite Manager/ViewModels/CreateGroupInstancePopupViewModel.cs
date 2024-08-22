@@ -155,6 +155,7 @@ namespace VRC_Favourite_Manager.ViewModels
             get => _isRoleRestricted;
             set => SetProperty(ref _isRoleRestricted, value);
         }
+
         
         private string _rolesThatHaveAccess;
         public string RolesThatHaveAccess
@@ -186,6 +187,7 @@ namespace VRC_Favourite_Manager.ViewModels
             IsGroupRolesLoadingComplete = false;
 
             IsRoleRestricted = false;
+
         }
 
         private async void GetGroups()
@@ -466,8 +468,25 @@ namespace VRC_Favourite_Manager.ViewModels
         public void AccessTypeSelected(string instanceType)
         {
             Debug.WriteLine("Access type selected" + instanceType);
-            GroupAccessType = instanceType;
-            IsRoleRestricted = (GroupAccessType == "Group");
+
+            IsRoleRestricted = false;
+            switch (instanceType)
+            {
+                case "Restricted":
+                    GroupAccessType = "Group";
+                    IsRoleRestricted = true;
+                    break;
+                case "GroupOnly":
+                    GroupAccessType = "Group";
+                    break;
+                case "GroupPlus":
+                    GroupAccessType = "Group+";
+                    break;
+                case "Public":
+                    GroupAccessType = "Group Public";
+                    break;
+            }
+            
             
         }
 

@@ -49,7 +49,7 @@ namespace VRC_Favourite_Manager.Views
             if (sender != null)
             {
                 var viewModel = (CreateGroupInstancePopupViewModel)this.DataContext;
-                viewModel.AccessTypeSelected(button.Content.ToString());
+                viewModel.AccessTypeSelected(button.Name);
                 viewModel.IsGroupRolesLoadingComplete = false;
             }
         }
