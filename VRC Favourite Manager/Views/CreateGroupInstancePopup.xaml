@@ -28,7 +28,7 @@
         <Button Content="Cancel" Command="{Binding CancelLoadingCommand}" Visibility="{Binding ShowCancelButton, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
         <Grid x:Name="GroupList" Margin="10">
-            <TextBlock Text="Select Group" FontWeight="Bold" />
+            <TextBlock Text="Select Group" FontWeight="Bold" Margin="0,-10,0,0" HorizontalAlignment="Center"/>
             <Grid Margin="0,0,20,0" Padding="5,10,15,0">
                 <ScrollViewer Margin="0,25,0,0" >
                     <ItemsControl ItemsSource="{Binding Groups}">
@@ -62,7 +62,15 @@
 
 
         <Grid x:Name="SelectInstanceType" Visibility="{Binding IsGroupRolesLoadingComplete, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="10" >
-            <TextBlock Text="Select Group Instance Type" FontWeight="Bold" />
+            <Button x:Name="GoBack_SelectInstanceType" Click="HideInstanceSelect" Margin="-15,-600,0,0" BorderThickness="0" Background="Transparent">
+                <FontIcon Glyph="&#xE72B;" FontSize="20"/>
+                <interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="Click">
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=GroupList}" PropertyName="Visibility" Value="Visible"/>
+                    </core:EventTriggerBehavior>
+                </interactivity:Interaction.Behaviors>
+            </Button>
+            <TextBlock Text="Select Group Instance Type" FontWeight="Bold" Margin="0,-10,0,0" HorizontalAlignment="Center"/>
             <Button x:Name="Restricted" Click="SelectType" IsEnabled="{Binding CanCreateGroupOnly}" Visibility="{Binding CanCreateRestricted, Converter={StaticResource BooleanToVisibilityConverter}}" Height="175" Width="330" Margin="0,-350,0,0" BorderThickness="0" Background="Transparent">
                 <Grid Margin="0,0,0,0">
                     <TextBlock Text="Group" HorizontalAlignment="Left" Margin="0,-30,0,0" FontWeight="Bold"/>
@@ -113,33 +121,36 @@
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
             </Button>
-            <Button x:Name="GoBack" Content="Go Back" Click="HideInstanceSelect" Margin="0,550,0,0">
+        </Grid>
+
+        <Grid x:Name="SelectGroupRoles" Visibility="Collapsed">
+            <Button x:Name="GoBack_SelectGroupRoles" Click="ShowInstanceSelect"  Margin="-5,-600,0,0" BorderThickness="0" Background="Transparent">
+                <FontIcon Glyph="&#xE72B;" />
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="Click">
-                        <core:ChangePropertyAction TargetObject="{Binding ElementName=GroupList}" PropertyName="Visibility" Value="Visible"/>
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectGroupRoles}" PropertyName="Visibility" Value="Collapsed"/>
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
             </Button>
-        </Grid>
-
-        <StackPanel x:Name="SelectGroupRoles" Visibility="Collapsed">
-            <CheckBox IsChecked="{Binding EveryoneIsSelected, Mode=TwoWay}"></CheckBox>
-            <ScrollViewer>
+            <TextBlock Text="Select Roles" FontWeight="Bold" Margin="0,0,0,0" HorizontalAlignment="Center"/>
+            <CheckBox IsChecked="{Binding EveryoneIsSelected, Mode=TwoWay}" Margin="16,50,0,0" VerticalAlignment="Top"/>
+            <TextBlock Text="Everyone" Margin="55,56,0,0" />
+            <ScrollViewer Height="460" Padding="0" Margin="0,30,0,0">
                 <ListView ItemsSource="{Binding SelectRoles}">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:SelectRolesModel">
-                            <StackPanel Orientation="Horizontal">
+                            <Grid>
                                 <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
                                           IsEnabled="{Binding IsDisabled, Converter={StaticResource InverseBooleanConverter}}"
                                           Checked="SelectRolesChanged_Checked"
                                           Unchecked="SelectRolesChanged_Unchecked"/>
-                                <TextBlock Text="{Binding Name}" Margin="8,0,0,0"/>
-                            </StackPanel>
+                                <TextBlock Text="{Binding Name}" Margin="38,6,0,0" HorizontalAlignment="Left"/>
+                            </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
             </ScrollViewer>
-            <Button Content="Next" Click="RolesSelected">
+            <Button Content="Next" Click="RolesSelected" HorizontalAlignment="Center"  Margin="0,550,0,0" Padding="100,10">
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="Click">
                         <core:ChangePropertyAction TargetObject="{Binding ElementName=SelectGroupRoles}" PropertyName="Visibility" Value="Collapsed"/>
@@ -147,10 +158,10 @@
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
             </Button>
-        </StackPanel>
+        </Grid>
 
         <StackPanel x:Name="CreateGroupInstance" Visibility="Collapsed" HorizontalAlignment="Center">
-            <TextBlock x:Name="GroupInstanceOverview" Text="Create Group Instance" FontWeight="Bold"/>
+            <TextBlock x:Name="GroupInstanceOverview" Text="Create Group Instance" FontWeight="Bold" HorizontalAlignment="Center"/>
             <Viewbox Width="300" Height="225" Margin="0,10">
                 <Grid Width="300" Height="225">
                     <Image Source="{Binding ThumbnailImageUrl}" Stretch="Fill" Width="300" Height="225"/>
