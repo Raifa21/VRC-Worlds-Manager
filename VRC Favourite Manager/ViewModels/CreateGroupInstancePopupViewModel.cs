@@ -127,6 +127,8 @@ namespace VRC_Favourite_Manager.ViewModels
 
         // These are for displaying content on the UI
         public string ThumbnailImageUrl { get; set; }
+
+
         private string _groupIcon;
         public string GroupIcon
         {
@@ -263,6 +265,7 @@ namespace VRC_Favourite_Manager.ViewModels
             {
                 _selectedGroup = Groups.First(group => group.Name == groupName);
                 GroupIcon = _selectedGroup.Icon;
+                Debug.WriteLine($"Selected group: {GroupIcon}");
                 GroupName = _selectedGroup.Name;
                 GroupRoles = new ObservableCollection<GroupRolesModel>();
                 foreach(var groupRole in _selectedGroup.GroupRoles)
@@ -463,8 +466,12 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public void AccessTypeSelected(string instanceType)
         {
-            Debug.WriteLine("Access type selected" + instanceType);
+            Debug.WriteLine("Access type selected: " + instanceType);
             _groupAccessType = instanceType;
+            if(GroupAccessType != "Group")
+            {
+                IsRoleRestricted = false;
+            }
         }
 
         public void RolesSelected()
