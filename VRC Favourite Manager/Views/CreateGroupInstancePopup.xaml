@@ -180,7 +180,7 @@
                     </interactivity:Interaction.Behaviors>
                 </Button>
             </StackPanel>
-            <StackPanel BorderThickness="0,0,0,1" BorderBrush="Black" Padding="0,5">
+            <StackPanel BorderThickness="0,0,0,1" BorderBrush="Black" Padding="0,2">
                 <TextBlock Text="Instance Queue" FontSize="12"/>
                 <Button Click="InvertInstanceQueue" BorderThickness="0" CornerRadius="0" Background="Transparent" Width="300" Height="35">
                     <StackPanel Height="25">
@@ -191,7 +191,7 @@
                     </StackPanel>
                 </Button>
             </StackPanel>
-            <StackPanel BorderThickness="0,0,0,1" BorderBrush="Black" Padding="0,5">
+            <StackPanel  Padding="0,5">
                 <TextBlock Text="Region" FontSize="12" Margin="0,0,0,5"/>
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,0" Spacing="18">
                     <RadioButton GroupName="Region" Content="USW" Checked="Region_Checked" Padding="15,5,15,5"/>
