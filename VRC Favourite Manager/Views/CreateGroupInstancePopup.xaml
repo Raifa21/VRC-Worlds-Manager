@@ -16,9 +16,7 @@
     </ContentDialog.Resources>
 
     <Grid Width="350" Height="620" HorizontalAlignment="Center">
-        <Button HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                Click="CloseButton_Click"
+        <Button Click="CloseButton_Click"
                 Margin="0,-10,-10,0"
                 Style="{StaticResource CloseButtonStyle}">
             <FontIcon Glyph="&#xE711;" />
@@ -29,40 +27,42 @@
 
         <Button Content="Cancel" Command="{Binding CancelLoadingCommand}" Visibility="{Binding ShowCancelButton, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-        <StackPanel x:Name="GroupList" Margin="10,25,10,0">
-                <StackPanel Margin="0,0,20,0" Padding="5,10,15,0">
-                    <TextBlock Text="Select Group" FontWeight="Bold" />
-                    <ScrollViewer HorizontalScrollBarVisibility="Auto">
-                        <ItemsControl ItemsSource="{Binding Groups}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Button Click="GroupSelected">
-                                        <StackPanel Orientation="Horizontal">
-                                            <Ellipse Height="30" Width="30">
-                                                <Ellipse.Fill>
-                                                    <ImageBrush ImageSource="{Binding Icon}" Stretch="UniformToFill"/>
-                                                </Ellipse.Fill>
-                                            </Ellipse>
-                                        <TextBlock x:Name="GroupName"  Text="{Binding Name}" VerticalAlignment="Center" Margin="10,0,0,0" TextTrimming="CharacterEllipsis" Width="280"/>
-                                        </StackPanel>
-                                        <interactivity:Interaction.Behaviors>
-                                            <core:EventTriggerBehavior EventName="Click">
-                                                <core:ChangePropertyAction TargetObject="{Binding ElementName=GroupList}" PropertyName="Visibility" Value="Collapsed"/>
-                                            </core:EventTriggerBehavior>
-                                        </interactivity:Interaction.Behaviors>
-                                        <Button.CommandParameter>
-                                            <Binding Path="Name"/>
-                                        </Button.CommandParameter>
-                                    </Button>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </ScrollViewer>
-                </StackPanel>
-        </StackPanel>
+        <Grid x:Name="GroupList" Margin="10">
+            <TextBlock Text="Select Group" FontWeight="Bold" />
+            <Grid Margin="0,0,20,0" Padding="5,10,15,0">
+                <ScrollViewer Margin="0,25,0,0" >
+                    <ItemsControl ItemsSource="{Binding Groups}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Click="GroupSelected" Width="300" BorderThickness="0" Background="Transparent" CornerRadius="0" Margin="0" Padding="0">
+                                    <Grid BorderBrush="Black" BorderThickness="0,0,0,1" Width="270" Height="38" HorizontalAlignment="Left">
+                                        <Ellipse Height="30" Width="30" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                            <Ellipse.Fill>
+                                                <ImageBrush ImageSource="{Binding Icon}" Stretch="UniformToFill"/>
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                        <TextBlock x:Name="GroupName"  Text="{Binding Name}" VerticalAlignment="Center" Margin="0,0,0,0" TextTrimming="CharacterEllipsis" Width="200"/>
+                                        <FontIcon Glyph="&#xE76C;" HorizontalAlignment="Right" FontSize="20" Margin="0,0,6,0"/>
+                                    </Grid>
+                                    <interactivity:Interaction.Behaviors>
+                                        <core:EventTriggerBehavior EventName="Click">
+                                            <core:ChangePropertyAction TargetObject="{Binding ElementName=GroupList}" PropertyName="Visibility" Value="Collapsed"/>
+                                        </core:EventTriggerBehavior>
+                                    </interactivity:Interaction.Behaviors>
+                                    <Button.CommandParameter>
+                                        <Binding Path="Name"/>
+                                    </Button.CommandParameter>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
 
 
-        <StackPanel x:Name="SelectInstanceType" Visibility="{Binding IsGroupRolesLoadingComplete, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <Grid Visibility="{Binding IsGroupRolesLoadingComplete, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="10">
+            <TextBlock Text="Select Group Instance Type" FontWeight="Bold" />
             <Button x:Name="Restricted" Content="Group" Click="SelectType" IsEnabled="{Binding CanCreateGroupOnly}" Visibility="{Binding CanCreateRestricted, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="Click">
@@ -98,7 +98,7 @@
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
             </Button>
-        </StackPanel>
+        </Grid>
 
         <StackPanel x:Name="SelectGroupRoles" Visibility="Collapsed">
             <CheckBox IsChecked="{Binding EveryoneIsSelected, Mode=TwoWay}"></CheckBox>
@@ -138,7 +138,7 @@
                 <TextBlock Text="Group" FontSize="12" FontWeight="Bold"/>
                 <Button BorderThickness="0" CornerRadius="0" Background="Transparent" Width="300" Padding="0,5">
                     <Grid Width="300">
-                        <TextBlock x:Name="GroupName"  Text="{Binding GroupName}" VerticalAlignment="Center" Margin="0,0,0,0" TextAlignment="Left" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis" Width="280"/>
+                        <TextBlock Text="{Binding GroupName}" VerticalAlignment="Center" Margin="0,0,0,0" TextAlignment="Left" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis" Width="280"/>
                         <FontIcon Glyph="&#xE76C;" HorizontalAlignment="Right" FontSize="20" Margin="0,0,0,0"/>
                     </Grid>
                     <interactivity:Interaction.Behaviors>
@@ -198,7 +198,7 @@
                     <RadioButton GroupName="Region" Content="JP" Checked="Region_Checked" Padding="22,5,22,5" IsChecked="True"/>
                 </StackPanel>
             </StackPanel>
-            <Button Content="Create Instance" Click="CreateInstance" Margin="0,25,0,0" Width="300"/>
+            <Button Content="Create Instance" Click="CreateInstance" Margin="0,25,0,0" Width="300" VerticalAlignment="Bottom"/>
         </StackPanel>
     </Grid>
 </ContentDialog>

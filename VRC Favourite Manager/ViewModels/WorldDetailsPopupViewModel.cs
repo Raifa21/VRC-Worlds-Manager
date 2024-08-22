@@ -13,7 +13,7 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public WorldDetailsPopupViewModel(WorldModel selectedWorld)
         {
-            _vrChatApiService = Application.Current.Resources["VRChatApiService"] as VRChatAPIService;
+            _vrChatApiService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
         }
 
         public async void CreateInstanceAsync(string worldId, string instanceType, string region)

@@ -128,7 +128,6 @@ namespace VRC_Favourite_Manager.ViewModels
         // These are for displaying content on the UI
         public string ThumbnailImageUrl { get; set; }
 
-
         private string _groupIcon;
         public string GroupIcon
         {
@@ -466,12 +465,10 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public void AccessTypeSelected(string instanceType)
         {
-            Debug.WriteLine("Access type selected: " + instanceType);
-            _groupAccessType = instanceType;
-            if(GroupAccessType != "Group")
-            {
-                IsRoleRestricted = false;
-            }
+            Debug.WriteLine("Access type selected" + instanceType);
+            GroupAccessType = instanceType;
+            IsRoleRestricted = (GroupAccessType == "Group");
+            
         }
 
         public void RolesSelected()
