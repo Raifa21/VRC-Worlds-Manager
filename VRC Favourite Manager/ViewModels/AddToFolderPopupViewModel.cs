@@ -39,6 +39,8 @@ namespace VRC_Favourite_Manager.ViewModels
             SelectedWorld = selectedWorld;
 
             UpdateFolderSelection(_folderManager.Folders);
+
+            Debug.WriteLine(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
         }
 
         public void UpdateFolderSelection(ObservableCollection<FolderModel> Folders)

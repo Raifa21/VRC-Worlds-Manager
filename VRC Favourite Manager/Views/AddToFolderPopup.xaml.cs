@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using Microsoft.UI.Xaml;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.ViewModels;
 
@@ -12,10 +13,25 @@ namespace VRC_Favourite_Manager.Views
         {
             this.InitializeComponent();
             this.DataContext = new AddToFolderPopupViewModel(selectedWorld);
+
+            if (Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
+            {
+                this.SelectFolders.Text = "フォルダに追加";
+                this.SubSelectFoldersText.Text = "フォルダを選択";
+                this.ConfirmButton.Content = "追加";
+                this.AddFolderButton.Content = "フォルダを追加";
+            }
+            else
+            {
+                this.SelectFolders.Text = "Add to Folder";
+                this.SubSelectFoldersText.Text = "Select folders";
+                this.ConfirmButton.Content = "Confirm";
+                this.AddFolderButton.Content = "Add Folder";
+            }
         }
 
 
-        private void CloseButton_Click(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        private void CloseButton_Click(object o, RoutedEventArgs routedEventArgs)
         {
             var viewModel = (AddToFolderPopupViewModel)this.DataContext;
             viewModel.CancelSelection();
@@ -28,7 +44,7 @@ namespace VRC_Favourite_Manager.Views
             viewModel.AddFolder();
         }
 
-        private void ConfirmButton_Click(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        private void ConfirmButton_Click(object o, RoutedEventArgs routedEventArgs)
         {
             var viewModel = (AddToFolderPopupViewModel)this.DataContext;
             viewModel.ConfirmSelection();

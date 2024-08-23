@@ -40,6 +40,7 @@ namespace VRC_Favourite_Manager.ViewModels
             UpdateFolderSelection(_folderManager.Folders);
 
             Debug.WriteLine(selectedWorlds.Count);
+
         }
 
         public void UpdateFolderSelection(ObservableCollection<FolderModel> Folders)

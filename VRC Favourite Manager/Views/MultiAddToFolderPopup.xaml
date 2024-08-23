@@ -4,11 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:common="using:VRC_Favourite_Manager.Common"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
-    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
-    PrimaryButtonText="Cancel"
-    PrimaryButtonClick="CloseButton_Click"
-    SecondaryButtonText="Confirm"
-    SecondaryButtonClick="ConfirmButton_Click">
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core">
 
     <ContentDialog.Resources>
         <common:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
@@ -16,33 +12,41 @@
     </ContentDialog.Resources>
 
     <Grid Width="260" Height="500" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <StackPanel Margin="10,10,10,10">
-            <Viewbox Width="240" Height="180" Margin="0,0,0,0">
-            </Viewbox>
-            <TextBlock Text="Select Folders" FontSize="14" FontWeight="Bold" Margin="0,20,0,10"/>
-            <Grid Height="175" Margin="2,25,0,0">
-                <ScrollViewer>
-                    <ItemsControl ItemsSource="{Binding SelectedFolders}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Button x:Name="IndeterminateButton" Content="{Binding FolderName}" Background="Gray"  Margin="0,0,0,10" Visibility="{Binding IsIndeterminate, Converter={StaticResource BooleanToVisibilityConverter}}" Click="IndeterminateButton_Click">
-                                        <interactivity:Interaction.Behaviors>
-                                            <core:EventTriggerBehavior EventName="Click">
-                                                <core:ChangePropertyAction TargetObject="{Binding ElementName=IndeterminateButton}" PropertyName="Visibility" Value="Collapsed"/>
-                                                <core:ChangePropertyAction TargetObject="{Binding ElementName=ToggleButton}" PropertyName="Visibility" Value="Visible"/>
-                                            </core:EventTriggerBehavior>
-                                        </interactivity:Interaction.Behaviors>
-                                    </Button>
-                                    <ToggleButton x:Name="ToggleButton" Content="{Binding FolderName}" IsChecked="{Binding IsChecked, Mode=TwoWay}" Margin="0,0,0,10" Visibility="{Binding IsIndeterminate, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-            </Grid>
+        <Button Click="CloseButton_Click"
+                Margin="0,-10,-17,0"
+                Style="{StaticResource CloseButtonStyle}">
+            <FontIcon Glyph="&#xE711;" />
+        </Button>
+        <Viewbox Width="240" Height="180" Margin="0,0,0,0">
+        </Viewbox>
+        <TextBlock x:Name="SelectFolders" FontSize="14" FontWeight="Bold" Margin="0,0,0,10" HorizontalAlignment="Center"/>
 
-            <Button Content="Add Folder" Click="AddFolderButton_Click" Margin="0,0,0,0" />
-        </StackPanel>
+        <TextBlock x:Name="SelectedText" TextWrapping="WrapWholeWords" TextTrimming="WordEllipsis" Width="250" Height="120" Margin="0,-300,0,0"/>
+        <TextBlock x:Name="SubSelectFoldersText" Margin="5,-150,0,0" VerticalAlignment="Center"/>
+
+        <Grid Height="175" Margin="3,75,0,0">
+            <ScrollViewer>
+                <ItemsControl ItemsSource="{Binding SelectedFolders}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Button x:Name="IndeterminateButton" Content="{Binding FolderName}" Background="Gray"  Margin="0,0,0,10" Visibility="{Binding IsIndeterminate, Converter={StaticResource BooleanToVisibilityConverter}}" Click="IndeterminateButton_Click">
+                                    <interactivity:Interaction.Behaviors>
+                                        <core:EventTriggerBehavior EventName="Click">
+                                            <core:ChangePropertyAction TargetObject="{Binding ElementName=IndeterminateButton}" PropertyName="Visibility" Value="Collapsed"/>
+                                            <core:ChangePropertyAction TargetObject="{Binding ElementName=ToggleButton}" PropertyName="Visibility" Value="Visible"/>
+                                        </core:EventTriggerBehavior>
+                                    </interactivity:Interaction.Behaviors>
+                                </Button>
+                                <ToggleButton x:Name="ToggleButton" Content="{Binding FolderName}" IsChecked="{Binding IsChecked, Mode=TwoWay}" Margin="0,0,0,10" Visibility="{Binding IsIndeterminate, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+        <Button x:Name="AddFolderButton" Click="AddFolderButton_Click" Margin="3,330,0,0" />
+
+        <Button x:Name="ConfirmButton" Content="Confirm" Click="ConfirmButton_Click" Margin="0,25,0,0" Width="260" VerticalAlignment="Bottom"/>
     </Grid>
 </ContentDialog>

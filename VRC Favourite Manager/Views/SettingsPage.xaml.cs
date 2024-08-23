@@ -26,11 +26,6 @@ namespace VRC_Favourite_Manager.Views
             this.InitializeComponent();
 
             RefreshPage(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
-            WeakReferenceMessenger.Default.Register<LanguageChangedMessage>(this, (r, m) =>
-            {
-                Debug.WriteLine("Language changed to " + m.LanguageCode);
-                RefreshPage(m.LanguageCode);
-            });
         }
 
         private void Language_Checked(object sender, RoutedEventArgs e)
@@ -43,10 +38,10 @@ namespace VRC_Favourite_Manager.Views
                 switch (radioButton.Tag.ToString())
                 {
                     case "Japanese":
-                        languageCode = "ja-JP";
+                        languageCode = "ja";
                         break;
                     case "English":
-                        languageCode = "en-US";
+                        languageCode = "en";
                         break;
                 }
 
@@ -59,12 +54,13 @@ namespace VRC_Favourite_Manager.Views
 
         private void RefreshPage(string languageCode)
         {
-            if (languageCode == "ja-JP")
+            if (languageCode == "ja")
             {
                 this.SettingsTitle.Text = "設定";
                 this.LanguageTitle.Text = "言語";
                 this.JapaneseRadioButton.Content = "日本語";
                 this.JapaneseRadioButton.IsChecked = true;
+                this.EnglishRadioButton.IsChecked = false;
                 this.EnglishRadioButton.Content = "英語";
                 this.ResetButton.Content = "リセット";
 
@@ -76,6 +72,7 @@ namespace VRC_Favourite_Manager.Views
                 this.JapaneseRadioButton.Content = "Japanese";
                 this.EnglishRadioButton.Content = "English";
                 this.EnglishRadioButton.IsChecked = true;
+                this.JapaneseRadioButton.IsChecked = false;
                 this.ResetButton.Content = "Reset";
             }
         }
@@ -84,6 +81,7 @@ namespace VRC_Favourite_Manager.Views
         {
             Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = languageCode;
             WeakReferenceMessenger.Default.Send(new LanguageChangedMessage(languageCode));
+            RefreshPage(languageCode);
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)

@@ -24,6 +24,7 @@ namespace VRC_Favourite_Manager.Views
             
             _selectedInstanceType = "Public";
             _selectedRegion = "JP";
+
         }
         private void CloseButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
