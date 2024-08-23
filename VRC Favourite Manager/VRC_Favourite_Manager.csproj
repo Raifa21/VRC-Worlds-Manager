@@ -20,6 +20,7 @@
     <None Remove="Views\CreateGroupInstancePopup.xaml" />
     <None Remove="Views\FolderPage.xaml" />
     <None Remove="Views\MultiAddToFolderPopup.xaml" />
+    <None Remove="Views\RemovePopup.xaml" />
     <None Remove="Views\SettingsPage.xaml" />
     <None Remove="Views\TwoFactorAuthPopup.xaml" />
     <None Remove="Views\WorldDetailsPopup.xaml" />
@@ -61,6 +62,9 @@
     <None Update="App.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
+    <Page Update="Views\RemovePopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\CreateGroupInstancePopup.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

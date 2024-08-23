@@ -109,10 +109,9 @@ namespace VRC_Favourite_Manager.Views
 
         private void ViewDetails_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
-            var flyoutItem = sender as MenuFlyoutItem;
-            var originalElement = FlyoutBase.GetAttachedFlyout(flyoutItem).Target;
+            Debug.WriteLine("ViewDetails_Click");
 
-            if (originalElement is FrameworkElement { DataContext: WorldModel selectedWorld })
+            if (sender is FrameworkElement { DataContext: WorldModel selectedWorld })
             {
                 var dialog = new WorldDetailsPopup(selectedWorld)
                 {
@@ -121,6 +120,7 @@ namespace VRC_Favourite_Manager.Views
                 dialog.ShowAsync();
             }
         }
+
 
         private async void MoveToAnotherFolder_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
@@ -156,11 +156,15 @@ namespace VRC_Favourite_Manager.Views
             }
         }
 
-        private void Remove_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        private async void Remove_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
             if (sender is FrameworkElement { DataContext: WorldModel selectedWorld })
             {
-                _viewModel.RemoveFromFolder(selectedWorld);
+                var removePopup = new RemovePopup(selectedWorld, _viewModel.FolderName)
+                {
+                    XamlRoot = this.Content.XamlRoot
+                };
+                await removePopup.ShowAsync();
             }
         }
         protected override void OnNavigatedFrom(NavigationEventArgs e)

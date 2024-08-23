@@ -169,8 +169,7 @@ namespace VRC_Favourite_Manager.Common
         public void RemoveFromFolder(WorldModel world, string folderName)
         {
             Debug.WriteLine($"Removing {world.WorldName} from {folderName}");
-            var folder = _folders.FirstOrDefault(f => f.Name == folderName);
-            // remove by worldId
+            var folder = _folders.First(f => f.Name == folderName);
             var worldToRemove = folder.Worlds.FirstOrDefault(w => w.WorldId == world.WorldId);
             if (worldToRemove != null)
             {
@@ -210,6 +209,27 @@ namespace VRC_Favourite_Manager.Common
 
             SaveFolders();
         }
+
+        public void MoveToHiddenFolder(WorldModel world)
+        {
+            var folder = _folders.First(f => f.Name == "Unclassified");
+            var worldToRemove = folder.Worlds.FirstOrDefault(w => w.WorldId == world.WorldId);
+            if (worldToRemove != null)
+            {
+                folder.Worlds.Remove(worldToRemove);
+            }
+            else
+            {
+                Debug.WriteLine("World not found in folder");
+            }
+            folder = _folders.First(f => f.Name == "Hidden");
+            folder.Worlds.Add(world);
+
+            WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
+
+            SaveFolders();
+        }
+
 
         public string AddFolder(string folderName)
         {
