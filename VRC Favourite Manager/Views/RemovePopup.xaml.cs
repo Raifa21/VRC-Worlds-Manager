@@ -12,10 +12,10 @@ namespace VRC_Favourite_Manager.Views
     public sealed partial class RemovePopup : ContentDialog
     {
         
-        public RemovePopup(List<WorldModel> selectedWorlds, string folderName)
+        public RemovePopup(List<WorldModel> selectedWorlds)
         {
             this.InitializeComponent();
-            this.DataContext = new RemovePopupViewModel(selectedWorlds, folderName);
+            this.DataContext = new RemovePopupViewModel(selectedWorlds);
             var text = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "選択されたワールド： " : "Selected Worlds: ";
             foreach (var selectedWorld in selectedWorlds)
             {

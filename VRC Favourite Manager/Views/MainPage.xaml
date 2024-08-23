@@ -12,7 +12,7 @@
                         IsBackButtonVisible="Collapsed"
                         SelectionChanged="NavigationView_SelectionChanged">
             <NavigationView.MenuItems>
-                <NavigationViewItem x:Name="AllWorldsItem" Icon="Globe" Tag="AllWorlds"/>
+                <NavigationViewItem x:Name="AllWorldsItem" Icon="Globe" Tag="AllWorldsPage"/>
                 <NavigationViewItem x:Name="FoldersItem" >
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xF12B;" />
@@ -25,7 +25,7 @@
                         <FontIcon Glyph="&#xE713;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem x:Name="LogoutItem">
+                <NavigationViewItem x:Name="LogoutItem" Tag="Logout">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xF3B1;" />
                     </NavigationViewItem.Icon>

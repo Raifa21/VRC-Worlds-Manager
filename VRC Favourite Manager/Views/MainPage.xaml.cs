@@ -26,7 +26,7 @@ namespace VRC_Favourite_Manager.Views
             viewModel = new MainViewModel();
             this.DataContext = viewModel;
 
-            NavigateToFolderPage();
+            NavigateToAllWorldsPage();
             RefreshPage(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
 
             var folders = viewModel.FoldersNavigationViewItems;
@@ -105,6 +105,9 @@ namespace VRC_Favourite_Manager.Views
             {
                 switch (selectedItem)
                 {
+                    case "AllWorldsPage":
+                        ContentFrame.Navigate(typeof(AllWorldsPage));
+                        break;
                     case "SettingsPage":
                         ContentFrame.Navigate(typeof(SettingsPage));
                         break;
@@ -122,9 +125,9 @@ namespace VRC_Favourite_Manager.Views
                 ContentFrame.Navigate(typeof(FolderPage));
             }
         }
-        private void NavigateToFolderPage()
+        private void NavigateToAllWorldsPage()
         {
-            ContentFrame.Navigate(typeof(FolderPage));
+            ContentFrame.Navigate(typeof(AllWorldsPage));
         }
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {

@@ -19,68 +19,32 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 
 namespace VRC_Favourite_Manager.Views
 {
-    public sealed partial class FolderPage : Page
+    public sealed partial class AllWorldsPage : Page
     {
-        private FolderPageViewModel _viewModel => (FolderPageViewModel)this.DataContext;
+        private AllWorldsPageViewModel _viewModel => (AllWorldsPageViewModel)this.DataContext;
         private List<WorldModel> selectedItems;
         private string folderName;
 
 
-        public FolderPage()
+        public AllWorldsPage()
         {
             this.InitializeComponent();
             this.DataContext = _viewModel;
-            this.DataContextChanged += FolderPage_DataContextChanged;
             
             selectedItems = new List<WorldModel>();
-
-            RenameButton.Visibility = Visibility.Collapsed;
             MultiClickGrid.Visibility = Visibility.Collapsed;
 
             if (Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
             {
                 this.MultiSelectButton.Content = "選択";
                 this.MultiSelectButton_Cancel.Content = "キャンセル";
+                this.FolderNameTextBlock.Text = "ワールド一覧";
             }
             else
             {
                 this.MultiSelectButton.Content = "Select";
                 this.MultiSelectButton_Cancel.Content = "Cancel";
-            }
-        }
-        private void FolderPage_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
-        {
-            if (args.NewValue is FolderPageViewModel viewModel)
-            {
-                UpdateVisibility();
-            }
-        }
-
-        private void UpdateVisibility()
-        {
-            if(_viewModel.FolderName != "Unclassified")
-            {
-                RenameButton.Visibility = Visibility.Visible;
-            }
-        }
-        private void FolderRename_Start(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-        {
-            _viewModel.IsRenaming = true;
-            folderName = _viewModel.FolderName;
-        }
-
-        private void FolderRename_Cancel(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-        {
-            _viewModel.IsRenaming = false;
-            _viewModel.FolderName = folderName;
-        }
-
-        private void TextBox_KeyDown(object sender, KeyRoutedEventArgs e)
-        {
-            if (e.Key == Windows.System.VirtualKey.Enter)
-            {
-                _viewModel.RenameFolder(FolderNameTextBox.Text);
-                _viewModel.IsRenaming = false;
+                this.FolderNameTextBlock.Text = "Worlds";
             }
         }
 

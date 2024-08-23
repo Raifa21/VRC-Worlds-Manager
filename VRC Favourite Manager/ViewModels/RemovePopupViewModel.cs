@@ -21,10 +21,9 @@ namespace VRC_Favourite_Manager.ViewModels
         
         private string _selectedFolder;
 
-        public RemovePopupViewModel(List<WorldModel> selectedWorld, string folderName)
+        public RemovePopupViewModel(List<WorldModel> selectedWorld)
         {
             _selectedWorld = selectedWorld;
-            _selectedFolder = folderName;
             _folderManager = Application.Current.Resources["FolderManager"] as FolderManager;
         }
         
