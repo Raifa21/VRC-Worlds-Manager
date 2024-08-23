@@ -12,10 +12,6 @@
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:common="using:VRC_Favourite_Manager.Common">
 
-    <Page.Resources>
-        <common:StringFormatConverter x:Key="StringFormatConverter"/>
-    </Page.Resources>
-
     <Page.DataContext>
         <viewModels:FolderPageViewModel/>
     </Page.DataContext>
@@ -36,6 +32,10 @@
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBox}" PropertyName="Visibility" Value="Collapsed"/>
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=RenameButton}" PropertyName="Visibility" Value="Visible"/>
                 </core:DataTriggerBehavior>
+                <core:DataTriggerBehavior Binding="{Binding ChangeFolderNameLang}" ComparisonCondition="Equal" Value="true">
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility"  Value="Collapsed" />
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderUnclassified_JP}" PropertyName="Visibility"  Value="Visible" />
+                </core:DataTriggerBehavior>
             </Interactivity:Interaction.Behaviors>
             <!-- TextBlock displayed when not renaming -->
             <TextBlock x:Name="FolderNameTextBlock" 
@@ -43,7 +43,14 @@
                        FontSize="24" 
                        FontWeight="Bold" 
                        Margin="20 10"/>
-            <!-- Button displayed when not renaming -->
+            <TextBlock x:Name="FolderUnclassified_JP"
+                       Text="未分類"
+                       Visibility="Collapsed"
+                       FontFamily="Meiryo"
+                       FontSize="24" 
+                       FontWeight="Bold" 
+                       Margin="20 10"/>
+                <!-- Button displayed when not renaming -->
             <!-- Button hidden when file is "Unclassified" -->
             <Button x:Name="RenameButton"
                     Visibility="Collapsed" 
@@ -114,9 +121,9 @@
                     <StackPanel Margin="10"> 
                         <StackPanel.ContextFlyout>
                             <MenuFlyout>
-                                <MenuFlyoutItem Text="View Details" Click="ViewDetails_Click"/>
-                                <MenuFlyoutItem Text="Move to Another Folder" Click="MoveToAnotherFolder_Click"/>
-                                <MenuFlyoutItem Text="Remove" Click="Remove_Click"/>
+                                <MenuFlyoutItem x:Name="ViewDetailsFlyout" Click="ViewDetails_Click"/>
+                                <MenuFlyoutItem x:Name="MoveToAnotherFolderFlyout" Click="MoveToAnotherFolder_Click"/>
+                                <MenuFlyoutItem x:Name="RemoveFlyout" Click="Remove_Click"/>
                             </MenuFlyout>
                         </StackPanel.ContextFlyout>
                         <Viewbox Width="240" Height="180">
@@ -136,8 +143,8 @@
                     <StackPanel Margin="10">
                         <StackPanel.ContextFlyout>
                             <MenuFlyout>
-                                <MenuFlyoutItem Text="Move to Another Folder" Click="MultiMoveToAnotherFolder_Click"/>
-                                <MenuFlyoutItem Text="Remove" Click="Remove_Click"/>
+                                <MenuFlyoutItem x:Name="MoveToAnotherFolderFlyout" Click="MultiMoveToAnotherFolder_Click"/>
+                                <MenuFlyoutItem x:Name="RemoveFlyout" Click="Remove_Click"/>
                             </MenuFlyout>
                         </StackPanel.ContextFlyout>
                         <Viewbox Width="240" Height="180">

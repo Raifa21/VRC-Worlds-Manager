@@ -35,11 +35,13 @@ namespace VRC_Favourite_Manager.Views
                 FoldersItem.MenuItems.Add(folder);
             }
 
+            GenerateFolders();
 
             WeakReferenceMessenger.Default.Register<LanguageChangedMessage>(this, (r, m) =>
             {
                 Debug.WriteLine("Language changed to " + m.LanguageCode);
                 RefreshPage(m.LanguageCode);
+                GenerateFolders();
             });
             WeakReferenceMessenger.Default.Register<FolderUpdatedMessage>(this, (r, m) =>
             {
@@ -50,7 +52,7 @@ namespace VRC_Favourite_Manager.Views
 
         private void RefreshPage(string languageCode)
         {
-            if (languageCode == "ja-JP")
+            if (languageCode == "ja")
             {
                 this.AllWorldsItem.Content = "すべてのワールド";
                 this.FoldersItem.Content = "フォルダ";
@@ -72,6 +74,14 @@ namespace VRC_Favourite_Manager.Views
             FoldersItem.MenuItems.Clear();
             foreach (var folder in folders)
             {
+                if((string)folder.Content == "Unclassified" && Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
+                {
+                    folder.Content = "未分類";
+                }
+                if((string)folder.Content == "Unclassified" && Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "en")
+                {
+                    folder.Content = "Unclassified";
+                }
                 FoldersItem.MenuItems.Add(folder);
                 if (folder.IsSelected)
                 {

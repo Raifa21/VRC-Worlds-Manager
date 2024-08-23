@@ -58,6 +58,8 @@ namespace VRC_Favourite_Manager.ViewModels
         public ICommand AddFolderCommand { get; }
         public ICommand RefreshCommand { get; }
 
+        public bool ChangeFolderNameLang{ get; set; }
+
         public FolderPageViewModel()
         {
             _folderManager = Application.Current.Resources["FolderManager"] as FolderManager;
@@ -66,6 +68,8 @@ namespace VRC_Favourite_Manager.ViewModels
             Worlds = new ObservableCollection<WorldModel>();
             _folderName = _folderManager?.SelectedFolder?.Name;
             _isRenaming = false;
+
+            ChangeFolderNameLang = (_folderName == "Unclassified" && Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja");
 
             MoveWorldCommand = new RelayCommand<Tuple<WorldModel, string>>(MoveWorld);
             AddFolderCommand = new RelayCommand<string>(AddFolder);
