@@ -17,7 +17,7 @@
                 <Image Source="{Binding SelectedWorld.ThumbnailImageUrl}" Stretch="Fill" Width="252" Height="189"/>
             </Grid>
         </Viewbox>
-        <TextBlock x:Name="SubSelectFoldersText" Margin="5,-50,0,0" VerticalAlignment="Center" FontWeight="500"/>
+        <TextBlock x:Name="SubSelectFoldersText" Margin="5,-50,0,0" VerticalAlignment="Center" FontWeight="Semibold"/>
         <Grid Height="175" Margin="2,165,0,0">
             <ScrollViewer>
                 <ItemsControl ItemsSource="{Binding SelectedFolders}">

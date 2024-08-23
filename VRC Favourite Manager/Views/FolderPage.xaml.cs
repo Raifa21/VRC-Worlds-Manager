@@ -14,6 +14,8 @@ using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml.Navigation;
 using VRC_Favourite_Manager.Common;
 using System.Linq;
+using VRChat.API.Model;
+using Microsoft.UI.Xaml.Controls.Primitives;
 
 namespace VRC_Favourite_Manager.Views
 {
@@ -22,6 +24,8 @@ namespace VRC_Favourite_Manager.Views
         private FolderPageViewModel _viewModel => (FolderPageViewModel)this.DataContext;
         private List<WorldModel> selectedItems;
         private string folderName;
+
+
         public FolderPage()
         {
             this.InitializeComponent();
@@ -32,6 +36,17 @@ namespace VRC_Favourite_Manager.Views
 
             RenameButton.Visibility = Visibility.Collapsed;
             MultiClickGrid.Visibility = Visibility.Collapsed;
+
+            if (Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
+            {
+                this.MultiSelectButton.Content = "‘I‘ð";
+                this.MultiSelectButton_Cancel.Content = "ƒLƒƒƒ“ƒZƒ‹";
+            }
+            else
+            {
+                this.MultiSelectButton.Content = "Select";
+                this.MultiSelectButton_Cancel.Content = "Cancel";
+            }
         }
         private void FolderPage_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
@@ -94,7 +109,10 @@ namespace VRC_Favourite_Manager.Views
 
         private void ViewDetails_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
-            if(sender is FrameworkElement { DataContext: WorldModel selectedWorld })
+            var flyoutItem = sender as MenuFlyoutItem;
+            var originalElement = FlyoutBase.GetAttachedFlyout(flyoutItem).Target;
+
+            if (originalElement is FrameworkElement { DataContext: WorldModel selectedWorld })
             {
                 var dialog = new WorldDetailsPopup(selectedWorld)
                 {

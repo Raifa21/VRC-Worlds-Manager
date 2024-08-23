@@ -16,7 +16,7 @@
         <viewModels:FolderPageViewModel/>
     </Page.DataContext>
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" x:Name="Grid">
         <Button Command ="{Binding RefreshCommand}" Margin="10,12,25,0" Padding="5" BorderThickness="1" BorderBrush="Transparent" Background="Transparent" CornerRadius="8" HorizontalAlignment="Right" VerticalAlignment="Top">
             <FontIcon Glyph="&#xE72C;" FontSize="16"/>
         </Button>
@@ -26,6 +26,7 @@
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility" Value="Visible"/>
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBox}" PropertyName="Visibility" Value="Collapsed"/>
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=RenameButton}" PropertyName="Visibility" Value="Collapsed"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=RemoveFlyout}" PropertyName="Visibility" Value="Collapsed" />
                 </core:DataTriggerBehavior>
                 <core:DataTriggerBehavior Binding="{Binding FolderName}" ComparisonCondition="NotEqual" Value="Unclassified">
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility" Value="Visible"/>
@@ -105,7 +106,7 @@
                 </core:EventTriggerBehavior>
             </Interactivity:Interaction.Behaviors>
         </Button>
-        <Button x:Name="MultiSelectButton_Cancel" Margin="10,10,75,0" Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Top" Visibility="Collapsed" Click="GridView_ClearSelection">
+        <Button x:Name="MultiSelectButton_Cancel" Margin="10,10,75,0" HorizontalAlignment="Right" VerticalAlignment="Top" Visibility="Collapsed" Click="GridView_ClearSelection">
             <Interactivity:Interaction.Behaviors>
                 <core:EventTriggerBehavior EventName="Click">
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=SingleClickGrid}" PropertyName="Visibility" Value="Visible"/>
@@ -121,9 +122,15 @@
                     <StackPanel Margin="10"> 
                         <StackPanel.ContextFlyout>
                             <MenuFlyout>
-                                <MenuFlyoutItem x:Name="ViewDetailsFlyout" Click="ViewDetails_Click"/>
-                                <MenuFlyoutItem x:Name="MoveToAnotherFolderFlyout" Click="MoveToAnotherFolder_Click"/>
-                                <MenuFlyoutItem x:Name="RemoveFlyout" Click="Remove_Click"/>
+                                <MenuFlyoutItem 
+                                    Text="{Binding DataContext.ViewDetailsText, ElementName=Grid}"
+                                    Click="ViewDetails_Click"/>
+                                <MenuFlyoutItem 
+                                    Text="{Binding DataContext.MoveToAnotherFolderText, ElementName=Grid}"
+                                    Click="MoveToAnotherFolder_Click"/>
+                                <MenuFlyoutItem 
+                                    Text="{Binding DataContext.RemoveFromFolderText, ElementName=Grid}"
+                                    Click="Remove_Click"/>
                             </MenuFlyout>
                         </StackPanel.ContextFlyout>
                         <Viewbox Width="240" Height="180">
@@ -143,8 +150,12 @@
                     <StackPanel Margin="10">
                         <StackPanel.ContextFlyout>
                             <MenuFlyout>
-                                <MenuFlyoutItem x:Name="MoveToAnotherFolderFlyout" Click="MultiMoveToAnotherFolder_Click"/>
-                                <MenuFlyoutItem x:Name="RemoveFlyout" Click="Remove_Click"/>
+                                <MenuFlyoutItem 
+                                    Text="{Binding DataContext.MoveToAnotherFolderText, ElementName=Grid}"
+                                    Click="MoveToAnotherFolder_Click"/>
+                                <MenuFlyoutItem 
+                                    Text="{Binding DataContext.RemoveFromFolderText, ElementName=Grid}"
+                                    Click="Remove_Click"/>
                             </MenuFlyout>
                         </StackPanel.ContextFlyout>
                         <Viewbox Width="240" Height="180">

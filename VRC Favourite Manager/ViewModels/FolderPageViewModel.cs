@@ -60,6 +60,11 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public bool ChangeFolderNameLang{ get; set; }
 
+        public string ViewDetailsText { get; set; }
+        public string MoveToAnotherFolderText { get; set; }
+        public string RemoveFromFolderText { get; set; }
+        public bool IsUnclassified { get; set; }
+
         public FolderPageViewModel()
         {
             _folderManager = Application.Current.Resources["FolderManager"] as FolderManager;
@@ -76,6 +81,12 @@ namespace VRC_Favourite_Manager.ViewModels
             RefreshCommand = new RelayCommand(async () => await RefreshWorldsAsync());
 
             UpdateWorlds();
+
+            ViewDetailsText = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "詳細" : "View Details";
+            MoveToAnotherFolderText = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "別のフォルダに移動" : "Move to another folder";
+            RemoveFromFolderText = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "フォルダから削除" : "Remove from folder";
+            IsUnclassified = _folderName == "Unclassified";
+
 
             WeakReferenceMessenger.Default.Register<FolderUpdatedMessage>(this, (r, m) =>
             {
