@@ -160,13 +160,25 @@ namespace VRC_Favourite_Manager.Views
         {
             if (sender is FrameworkElement { DataContext: WorldModel selectedWorld })
             {
-                var removePopup = new RemovePopup(selectedWorld, _viewModel.FolderName)
+                var selectedWorldList = new List<WorldModel> { selectedWorld };
+                var removePopup = new RemovePopup(selectedWorldList, _viewModel.FolderName)
                 {
                     XamlRoot = this.Content.XamlRoot
                 };
                 await removePopup.ShowAsync();
             }
         }
+
+        private async void MultiRemove_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            var removePopup = new RemovePopup(selectedItems, _viewModel.FolderName)
+            {
+                XamlRoot = this.Content.XamlRoot
+            };
+            await removePopup.ShowAsync();
+            
+        }
+
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);

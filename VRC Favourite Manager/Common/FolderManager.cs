@@ -54,8 +54,6 @@ namespace VRC_Favourite_Manager.Common
                 Debug.WriteLine(folder.Name);
             }
             _selectedFolder = _folders.FirstOrDefault();
-
-            PrintFolders();
         }
 
         public void LoadFolders()
@@ -82,10 +80,9 @@ namespace VRC_Favourite_Manager.Common
             {
                 Debug.WriteLine("File not found");
                 AddFolder("Unclassified");
+                AddFolder("Hidden");
                 SaveFolders();
             }
-
-            PrintFolders();
         }
         public void InitializeFolders(ObservableCollection<WorldModel> worlds)
         {
@@ -101,6 +98,7 @@ namespace VRC_Favourite_Manager.Common
             else
             {
                 AddFolder("Unclassified");
+                AddFolder("Hidden");
                 InitializeFolders(worlds);
             }
             SaveFolders();
@@ -212,22 +210,26 @@ namespace VRC_Favourite_Manager.Common
 
         public void MoveToHiddenFolder(WorldModel world)
         {
-            var folder = _folders.First(f => f.Name == "Unclassified");
-            var worldToRemove = folder.Worlds.FirstOrDefault(w => w.WorldId == world.WorldId);
-            if (worldToRemove != null)
+            //add to hidden folder
+            _folders.First(f => f.Name == "Hidden").Worlds.Add(world);
+
+
+            foreach (var folder in _folders)
             {
-                folder.Worlds.Remove(worldToRemove);
+                if (folder.Name == "Hidden")
+                {
+                    continue;
+                }
+                if (folder.Worlds.Any(w => w.WorldId == world.WorldId))
+                {
+                    folder.Worlds.Remove(world);
+                }
             }
-            else
-            {
-                Debug.WriteLine("World not found in folder");
-            }
-            folder = _folders.First(f => f.Name == "Hidden");
-            folder.Worlds.Add(world);
 
             WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
 
             SaveFolders();
+
         }
 
 
@@ -320,16 +322,6 @@ namespace VRC_Favourite_Manager.Common
             WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
         }
 
-        public void PrintFolders()
-        {
-            foreach (var folder in _folders) {
-                Debug.WriteLine(folder.Name);
-                foreach (var world in folder.Worlds)
-                {
-                    Debug.WriteLine(world.WorldName);
-                }
-            }
-        }
         public void ChangeSelectedFolder(FolderModel folder)
         {
             _selectedFolder = folder;

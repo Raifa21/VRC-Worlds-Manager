@@ -12,10 +12,10 @@
             <FontIcon Glyph="&#xE711;" />
         </Button>
         <TextBlock x:Name="DeleteWorlds" FontSize="14" FontWeight="Bold" Margin="0,0,0,0" HorizontalAlignment="Center"/>
-        <TextBlock x:Name="ConfirmMessage" Margin="2,40,0,0" TextWrapping="WrapWholeWords"/>
-        <TextBlock x:Name="ConfirmExplanation" Margin="2,80,0,0" FontSize="11"/>
-        <TextBlock x:Name="SelectedWorld" Margin="2,130,0,0" TextTrimming="CharacterEllipsis" Width="300" FontSize="11" />
+        <TextBlock x:Name="ConfirmMessage" Margin="2,30,0,0" TextWrapping="WrapWholeWords"/>
+        <TextBlock x:Name="ConfirmExplanation" Margin="2,50,0,0" FontSize="11" TextWrapping="WrapWholeWords"/>
+        <TextBlock x:Name="SelectedWorld" Margin="2,80,0,0" TextTrimming="CharacterEllipsis" TextWrapping="WrapWholeWords" Height="50" Width="300" FontSize="11" />
 
-        <Button x:Name="ConfirmButton" Click="ConfirmButton_Click" Margin="0,25,0,0" Width="300" VerticalAlignment="Bottom" Background="Red"/>
+        <Button x:Name="ConfirmButton" Click="ConfirmButton_Click" Margin="0,25,0,0" Width="300"  VerticalAlignment="Bottom" Background="Red" />
     </Grid>
 </ContentDialog>

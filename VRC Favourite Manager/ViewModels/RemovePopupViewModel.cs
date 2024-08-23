@@ -17,11 +17,11 @@ namespace VRC_Favourite_Manager.ViewModels
     {
         private readonly FolderManager _folderManager;
 
-        private WorldModel _selectedWorld;
+        private List<WorldModel> _selectedWorld;
         
         private string _selectedFolder;
 
-        public RemovePopupViewModel(WorldModel selectedWorld, string folderName)
+        public RemovePopupViewModel(List<WorldModel> selectedWorld, string folderName)
         {
             _selectedWorld = selectedWorld;
             _selectedFolder = folderName;
@@ -30,13 +30,9 @@ namespace VRC_Favourite_Manager.ViewModels
         
         public void RemoveFromFolder()
         {
-            if (_selectedFolder != "Unclassified")
+            foreach(var world in _selectedWorld)
             {
-                _folderManager.RemoveFromFolder(_selectedWorld, _selectedFolder);
-            }
-            else
-            {
-                _folderManager.MoveToHiddenFolder(_selectedWorld);
+                _folderManager.MoveToHiddenFolder(world);
             }
         }
     }

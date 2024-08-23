@@ -74,11 +74,15 @@ namespace VRC_Favourite_Manager.Views
             FoldersItem.MenuItems.Clear();
             foreach (var folder in folders)
             {
+                if((string)folder.Content == "Hidden")
+                {
+                    continue;
+                }
                 if((string)folder.Content == "Unclassified" && Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
                 {
                     folder.Content = "–¢•ª—Þ";
                 }
-                if((string)folder.Content == "Unclassified" && Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "en")
+                else if((string)folder.Content == "Unclassified" && Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "en")
                 {
                     folder.Content = "Unclassified";
                 }

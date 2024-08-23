@@ -152,10 +152,10 @@
                             <MenuFlyout>
                                 <MenuFlyoutItem 
                                     Text="{Binding DataContext.MoveToAnotherFolderText, ElementName=Grid}"
-                                    Click="MoveToAnotherFolder_Click"/>
+                                    Click="MultiMoveToAnotherFolder_Click"/>
                                 <MenuFlyoutItem 
                                     Text="{Binding DataContext.RemoveFromFolderText, ElementName=Grid}"
-                                    Click="Remove_Click"/>
+                                    Click="MultiRemove_Click"/>
                             </MenuFlyout>
                         </StackPanel.ContextFlyout>
                         <Viewbox Width="240" Height="180">
