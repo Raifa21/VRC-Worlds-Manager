@@ -10,7 +10,8 @@
     SecondaryButtonClick="ContentDialog_SecondaryButtonClick">
 
     <StackPanel>
-        <TextBlock Text="Please enter the 2FA code sent to your email." Margin="0,0,0,10"/>
-        <TextBox x:Name="OtpTextBox" Header="OTP" />
+        <TextBlock x:Name="Subtitle" Margin="0,0,0,10"/>
+        <TextBlock x:Name="Description" Margin="0,0,0,10"/>
+        <TextBox x:Name="OtpTextBox" />
     </StackPanel>
 </ContentDialog>

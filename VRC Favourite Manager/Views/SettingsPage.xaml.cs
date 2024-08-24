@@ -98,6 +98,13 @@ namespace VRC_Favourite_Manager.Views
             Frame.Navigate(typeof(HiddenFolderPage));
         }
 
+        private void ResetButton_Clicked(object sender, RoutedEventArgs e)
+        {
+            var resetPopup = new ResetPopup();
+            resetPopup.XamlRoot = this.Content.XamlRoot;
+            resetPopup.ShowAsync();
+        }
+
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);

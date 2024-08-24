@@ -97,6 +97,8 @@ namespace VRC_Favourite_Manager.ViewModels
             rootFrame.Navigate(typeof(MainPage));
             mainWindow.Content = rootFrame;
             mainWindow.Activate();
+
+            ((App)Application.Current).mainWindow.Close();
         }
 
     }

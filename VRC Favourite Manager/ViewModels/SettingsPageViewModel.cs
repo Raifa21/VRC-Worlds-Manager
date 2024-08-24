@@ -15,20 +15,18 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly VRChatAPIService _vrChatAPIService;
         private readonly WorldManager _worldManager;
         private readonly FolderManager _folderManager;
-        public ICommand ResetCommand { get; }
 
         public SettingsPageViewModel()
         {
             _folderManager = Application.Current.Resources["FolderManager"] as FolderManager;
             _worldManager = Application.Current.Resources["WorldManager"] as WorldManager;
 
-            ResetCommand = new RelayCommand(Reset);
 
             Debug.WriteLine("SettingsPageViewModel created");
         }
 
 
-        private async void Reset()
+        public async void Reset()
         {
             _folderManager.ResetFolders();
             _worldManager.ResetWorlds();

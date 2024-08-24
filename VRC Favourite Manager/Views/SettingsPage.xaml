@@ -31,7 +31,7 @@
             <TextBlock x:Name="WorldManagementTitle" FontSize="18" FontWeight="Bold" Margin="0,20,0,0" />
             <StackPanel Orientation="Horizontal" BorderThickness="0,1,0,0" BorderBrush="Black" Padding="0,10,0,0" Margin="0,0,0,20" Spacing="10">
                 <Button x:Name="HiddenFolder" Click="HiddenFolder_Clicked" Padding="10,5,10,5"/>
-                <Button x:Name="ResetButton" Command="{Binding ResetCommand}" Padding="10,5,10,5" Background="Red" Foreground="White"/>
+                <Button x:Name="ResetButton" Click="ResetButton_Clicked" Padding="10,5,10,5" Background="Red" Foreground="White"/>
             </StackPanel>
 
         </StackPanel>

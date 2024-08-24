@@ -45,10 +45,13 @@ namespace VRC_Favourite_Manager.ViewModels
         {
             await _vrChatAPIService.LogoutAsync();
             var rootFrame = new Frame();
-            mainWindow = ((App)Application.Current).mainWindow;
+            mainWindow = new MainWindow();
             rootFrame.Navigate(typeof(AuthenticationPage));
             mainWindow.Content = rootFrame;
             mainWindow.Activate();
+
+
+            ((App)Application.Current).mainWindow.Close();
         }
 
         private void OnFolderManagerPropertyChanged(object sender, PropertyChangedEventArgs e)
