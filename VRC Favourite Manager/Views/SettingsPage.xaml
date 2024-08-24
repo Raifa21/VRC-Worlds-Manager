@@ -18,9 +18,19 @@
         <StackPanel Padding="20">
             <TextBlock x:Name="SettingsTitle" FontSize="24" FontWeight="Bold" Margin="0,0,0,20"/>
             <TextBlock x:Name="LanguageTitle" FontSize="18" FontWeight="Bold" />
-            <StackPanel Orientation="Horizontal" BorderThickness="0,1,0,0" BorderBrush="Black">
+            <StackPanel Orientation="Horizontal" BorderThickness="0,1,0,0" BorderBrush="Black" Padding="0,10,0,0" Margin="0,0,0,20">
                 <RadioButton Tag="Japanese" x:Name="JapaneseRadioButton" Checked="Language_Checked" Padding="10,5,10,5"/>
                 <RadioButton Tag="English" x:Name="EnglishRadioButton" Checked="Language_Checked" Padding="10,5,10,5"/>
+            </StackPanel>
+            <TextBlock>
+                <Run x:Name="LookingForTranslators"/>
+                <Hyperlink Click="Hyperlink_OnClick">
+                    <Run x:Name="HyperlinkText" />
+                </Hyperlink>
+            </TextBlock>
+            <TextBlock x:Name="HiddenTitle" FontSize="18" FontWeight="Bold" />
+            <StackPanel Orientation="Horizontal" BorderThickness="0,1,0,0" BorderBrush="Black" Padding="0,10,0,0" Margin="0,0,0,20">
+                <RadioButton Tag="Japanese" x:Name="HiddenFolder" Checked="Language_Checked" Padding="10,5,10,5"/>
             </StackPanel>
 
 

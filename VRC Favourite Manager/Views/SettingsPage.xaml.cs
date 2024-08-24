@@ -15,6 +15,7 @@ using Windows.Foundation.Collections;
 using CommunityToolkit.Mvvm;
 using CommunityToolkit.Mvvm.Messaging;
 using System.Diagnostics;
+using Microsoft.UI.Xaml.Documents;
 using VRC_Favourite_Manager.Common;
 
 namespace VRC_Favourite_Manager.Views
@@ -59,9 +60,13 @@ namespace VRC_Favourite_Manager.Views
                 this.SettingsTitle.Text = "設定";
                 this.LanguageTitle.Text = "言語";
                 this.JapaneseRadioButton.Content = "日本語";
+                this.EnglishRadioButton.Content = "英語";
                 this.JapaneseRadioButton.IsChecked = true;
                 this.EnglishRadioButton.IsChecked = false;
-                this.EnglishRadioButton.Content = "英語";
+                this.LookingForTranslators.Text = "他言語の対応は後日追加予定です。対応言語の要望は";
+                this.HyperlinkText.Text = "こちら";
+                this.HiddenTitle.Text = "非表示フォルダ";
+                this.HiddenFolder.Content = "非表示";
                 this.ResetButton.Content = "リセット";
 
             }
@@ -73,6 +78,10 @@ namespace VRC_Favourite_Manager.Views
                 this.EnglishRadioButton.Content = "English";
                 this.EnglishRadioButton.IsChecked = true;
                 this.JapaneseRadioButton.IsChecked = false;
+                this.LookingForTranslators.Text = "Support for other languages will be added later. Requests for supported languages can be made ";
+                this.HyperlinkText.Text = "here";
+                this.HiddenTitle.Text = "Hidden Folder";
+                this.HiddenFolder.Content = "Hidden";
                 this.ResetButton.Content = "Reset";
             }
         }
@@ -89,6 +98,12 @@ namespace VRC_Favourite_Manager.Views
             base.OnNavigatedFrom(e);
             // Unregister the message subscription
             WeakReferenceMessenger.Default.Unregister<LanguageChangedMessage>(this);
+        }
+
+        private void Hyperlink_OnClick(Hyperlink sender, HyperlinkClickEventArgs args)
+        {
+            // Launch the URI
+            Windows.System.Launcher.LaunchUriAsync(new Uri("https://forms.gle/vDGEFjz9PQJaHbxk8"));
         }
     }
 }
