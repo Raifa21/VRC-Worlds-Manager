@@ -53,7 +53,6 @@ namespace VRC_Favourite_Manager.Common
             {
                 Debug.WriteLine(folder.Name);
             }
-            _selectedFolder = _folders.FirstOrDefault();
         }
 
         public void LoadFolders()

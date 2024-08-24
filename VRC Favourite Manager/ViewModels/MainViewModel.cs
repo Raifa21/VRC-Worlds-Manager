@@ -21,7 +21,6 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly VRChatAPIService _vrChatAPIService;
         private readonly WorldManager _worldManager;
         private readonly FolderManager _folderManager;
-        private readonly Window _mainWindow;
         private MainWindow mainWindow;
 
         public ICommand LogoutCommand { get; }
@@ -33,7 +32,6 @@ namespace VRC_Favourite_Manager.ViewModels
             _vrChatAPIService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
             _folderManager = Application.Current.Resources["FolderManager"] as FolderManager;
             _worldManager = Application.Current.Resources["WorldManager"] as WorldManager;
-            _mainWindow = ((App)Application.Current).mainWindow;
 
 
             LogoutCommand = new RelayCommand(async () => await LogoutCommandAsync());
@@ -47,7 +45,7 @@ namespace VRC_Favourite_Manager.ViewModels
         {
             await _vrChatAPIService.LogoutAsync();
             var rootFrame = new Frame();
-            mainWindow = new MainWindow();
+            mainWindow = ((App)Application.Current).mainWindow;
             rootFrame.Navigate(typeof(AuthenticationPage));
             mainWindow.Content = rootFrame;
             mainWindow.Activate();

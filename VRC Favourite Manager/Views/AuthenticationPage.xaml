@@ -11,12 +11,16 @@
     </Page.DataContext>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="1200">
-            <TextBlock Text="VRChat Login" FontSize="24" FontWeight="Bold" Margin="0,0,0,20" HorizontalAlignment="Center" />
-            <TextBox Header="Username" Text="{Binding Username, Mode=TwoWay}" Margin="0,0,0,10" />
-            <PasswordBox Header="Password" Password="{Binding Password, Mode=TwoWay}" Margin="0,0,0,20" />
-            <Button Content="Login" Command="{Binding LoginCommand}" />
-            <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}" Margin="0,10,0,0" />
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="350">
+            <TextBlock Text="VRC Worlds Manager" FontSize="24" FontWeight="Bold" Margin="0,-80,0,0" HorizontalAlignment="Center" />
+            <TextBlock x:Name="Subtitle"  FontSize="18" FontWeight="Bold" Margin="0,0,0,20" HorizontalAlignment="Left" />
+            <TextBox x:Name="UsernameTextBox" Text="{Binding Username, Mode=TwoWay}" Margin="0,0,0,10" />
+            <PasswordBox x:Name="PasswordBox" Password="{Binding Password, Mode=TwoWay}" Margin="0,0,0,20" />
+            <TextBlock x:Name="Legal1" Margin="0,0,0,10" Foreground="DimGray"/>
+            <TextBlock x:Name="Legal2" TextWrapping="WrapWholeWords" Margin="0,0,0,10" Width="305" HorizontalAlignment="Left" Foreground="DimGray"/>
+            <TextBlock x:Name="Legal3" TextWrapping="WrapWholeWords" Margin="0,0,0,30" Width="320" HorizontalAlignment="Left" Foreground="DimGray"/>
+            <Button x:Name="LoginButton" Command="{Binding LoginCommand}" HorizontalAlignment="Right" />
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}" Margin="0,-55,0,0" />
         </StackPanel>
     </Grid>
 </Page>

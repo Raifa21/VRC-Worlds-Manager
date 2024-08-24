@@ -16,12 +16,12 @@ namespace VRC_Favourite_Manager.Views
 
         private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            OtpCode = OtpTextBox.Text;
+            OtpCode = null;
         }
 
         private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            OtpCode = null;
+            OtpCode = OtpTextBox.Text;
         }
     }
 }

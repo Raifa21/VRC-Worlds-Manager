@@ -18,7 +18,7 @@
         <StackPanel Padding="20">
             <TextBlock x:Name="SettingsTitle" FontSize="24" FontWeight="Bold" Margin="0,0,0,20"/>
             <TextBlock x:Name="LanguageTitle" FontSize="18" FontWeight="Bold" />
-            <StackPanel Orientation="Horizontal" BorderThickness="0,1,0,0" BorderBrush="Black" Padding="0,10,0,0" Margin="0,0,0,20">
+            <StackPanel Orientation="Horizontal" BorderThickness="0,1,0,0" BorderBrush="Black" Padding="0,10,0,0" Margin="0,0,0,20" Spacing="10">
                 <RadioButton Tag="Japanese" x:Name="JapaneseRadioButton" Checked="Language_Checked" Padding="10,5,10,5"/>
                 <RadioButton Tag="English" x:Name="EnglishRadioButton" Checked="Language_Checked" Padding="10,5,10,5"/>
             </StackPanel>
@@ -28,13 +28,11 @@
                     <Run x:Name="HyperlinkText" />
                 </Hyperlink>
             </TextBlock>
-            <TextBlock x:Name="HiddenTitle" FontSize="18" FontWeight="Bold" Margin="0,20,0,0" />
-            <StackPanel Orientation="Horizontal" BorderThickness="0,1,0,0" BorderBrush="Black" Padding="0,10,0,0" Margin="0,0,0,20">
+            <TextBlock x:Name="WorldManagementTitle" FontSize="18" FontWeight="Bold" Margin="0,20,0,0" />
+            <StackPanel Orientation="Horizontal" BorderThickness="0,1,0,0" BorderBrush="Black" Padding="0,10,0,0" Margin="0,0,0,20" Spacing="10">
                 <Button x:Name="HiddenFolder" Click="HiddenFolder_Clicked" Padding="10,5,10,5"/>
+                <Button x:Name="ResetButton" Command="{Binding ResetCommand}" Padding="10,5,10,5" Background="Red" Foreground="White"/>
             </StackPanel>
-
-
-            <Button x:Name="ResetButton" Command="{Binding ResetCommand}" Padding="10" Background="Red" Foreground="White"/>
 
         </StackPanel>
     </Grid>

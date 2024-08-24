@@ -4,8 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:VRC_Favourite_Manager.Views"
     Title="Enter OTP"
-    PrimaryButtonText="Submit"
-    SecondaryButtonText="Cancel"
+    PrimaryButtonText="Cancel"
+    SecondaryButtonText="Submit"
     PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
     SecondaryButtonClick="ContentDialog_SecondaryButtonClick">
 

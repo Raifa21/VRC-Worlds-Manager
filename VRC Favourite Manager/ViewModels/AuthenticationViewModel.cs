@@ -66,16 +66,16 @@ namespace VRC_Favourite_Manager.ViewModels
                 }
                 else
                 {
-                    ErrorMessage = "Failed to authenticate with 2FA. Please try again.";
+                    ErrorMessage = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "2段階認証に失敗しました。もう一度お試しください。" : "Failed to authenticate with 2FA. Please try again.";
                 }
             }
             catch (VRCIncorrectCredentialsException)
             {
-                ErrorMessage = "Incorrect credentials. Please try again.";
+                ErrorMessage = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "ユーザー名またはパスワードが間違っています。" : "Incorrect username or password.";
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
+                ErrorMessage = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "エラーが発生しました。もう一度お試しください。" : "An error occurred. Please try again.";
             }
         }
 

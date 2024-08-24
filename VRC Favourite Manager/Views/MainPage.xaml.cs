@@ -54,7 +54,7 @@ namespace VRC_Favourite_Manager.Views
         {
             if (languageCode == "ja")
             {
-                this.AllWorldsItem.Content = "すべてのワールド";
+                this.AllWorldsItem.Content = "ワールド一覧";
                 this.FoldersItem.Content = "フォルダ";
                 this.AboutItem.Content = "このアプリについて";
                 this.SettingsItem.Content = "設定";

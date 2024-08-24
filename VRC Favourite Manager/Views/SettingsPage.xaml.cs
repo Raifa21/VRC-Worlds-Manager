@@ -65,8 +65,8 @@ namespace VRC_Favourite_Manager.Views
                 this.EnglishRadioButton.IsChecked = false;
                 this.LookingForTranslators.Text = "他言語の対応は後日追加予定です。対応言語の要望は";
                 this.HyperlinkText.Text = "こちら";
-                this.HiddenTitle.Text = "非表示フォルダ";
-                this.HiddenFolder.Content = "非表示フォルダを表示";
+                this.WorldManagementTitle.Text = "ワールド管理";
+                this.HiddenFolder.Content = "非表示フォルダ";
                 this.ResetButton.Content = "リセット";
 
             }
@@ -79,9 +79,9 @@ namespace VRC_Favourite_Manager.Views
                 this.EnglishRadioButton.IsChecked = true;
                 this.JapaneseRadioButton.IsChecked = false;
                 this.LookingForTranslators.Text = "Support for other languages will be added later. Requests for supported languages can be made";
-                this.HyperlinkText.Text = "here";
-                this.HiddenTitle.Text = "Hidden Folder";
-                this.HiddenFolder.Content = "Open Hidden Folder";
+                this.HyperlinkText.Text = "here.";
+                this.WorldManagementTitle.Text = "Manage Worlds";
+                this.HiddenFolder.Content = "Hidden Folder";
                 this.ResetButton.Content = "Reset";
             }
         }

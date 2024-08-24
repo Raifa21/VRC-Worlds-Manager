@@ -44,7 +44,7 @@ namespace VRC_Favourite_Manager.Views
             {
                 this.MultiSelectButton.Content = "Select";
                 this.MultiSelectButton_Cancel.Content = "Cancel";
-                this.FolderNameTextBlock.Text = "Worlds";
+                this.FolderNameTextBlock.Text = "All Worlds";
             }
         }
 

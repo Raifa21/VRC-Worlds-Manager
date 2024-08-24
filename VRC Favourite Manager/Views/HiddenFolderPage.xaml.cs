@@ -37,13 +37,13 @@ namespace VRC_Favourite_Manager.Views
             {
                 this.MultiSelectButton.Content = "選択";
                 this.MultiSelectButton_Cancel.Content = "キャンセル";
-                this.FolderNameTextBlock.Text = "非表示";
+                this.FolderNameTextBlock.Text = "非表示ワールド";
             }
             else
             {
                 this.MultiSelectButton.Content = "Select";
                 this.MultiSelectButton_Cancel.Content = "Cancel";
-                this.FolderNameTextBlock.Text = "Hidden";
+                this.FolderNameTextBlock.Text = "Hidden Worlds";
             }
         }
 
