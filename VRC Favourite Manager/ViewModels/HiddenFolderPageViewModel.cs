@@ -61,10 +61,15 @@ namespace VRC_Favourite_Manager.ViewModels
         public void UpdateWorlds()
         {
             Worlds.Clear();
-            var hiddenWorlds = _folderManager.Folders.First(f => f.Name == "Hidden").Worlds;
-            foreach (var world in hiddenWorlds)
+            foreach(var folder in _folderManager.Folders)
             {
-                Worlds.Add(world);
+                if(folder.Name == "Hidden")
+                {
+                    foreach(var world in folder.Worlds)
+                    {
+                        Worlds.Add(world);
+                    }
+                }
             }
         }
 

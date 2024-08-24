@@ -250,14 +250,12 @@ namespace VRC_Favourite_Manager.Services
                 var response = await _Client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
-                var responseString = await response.Content.ReadAsStringAsync();
-                JsonDocument.Parse(responseString).RootElement.TryGetProperty("id", out JsonElement id);
-                _userId = id.GetString();
-
 
                 // Pass the header to store the auth token.
                 StoreAuthToken(response.Headers);
 
+
+                GetUserId();
 
                 return true;
             }

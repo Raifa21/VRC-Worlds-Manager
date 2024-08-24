@@ -66,7 +66,7 @@ namespace VRC_Favourite_Manager.Views
                 this.LookingForTranslators.Text = "他言語の対応は後日追加予定です。対応言語の要望は";
                 this.HyperlinkText.Text = "こちら";
                 this.HiddenTitle.Text = "非表示フォルダ";
-                this.HiddenFolder.Content = "非表示";
+                this.HiddenFolder.Content = "非表示フォルダを表示";
                 this.ResetButton.Content = "リセット";
 
             }
@@ -78,10 +78,10 @@ namespace VRC_Favourite_Manager.Views
                 this.EnglishRadioButton.Content = "English";
                 this.EnglishRadioButton.IsChecked = true;
                 this.JapaneseRadioButton.IsChecked = false;
-                this.LookingForTranslators.Text = "Support for other languages will be added later. Requests for supported languages can be made ";
+                this.LookingForTranslators.Text = "Support for other languages will be added later. Requests for supported languages can be made";
                 this.HyperlinkText.Text = "here";
                 this.HiddenTitle.Text = "Hidden Folder";
-                this.HiddenFolder.Content = "Hidden";
+                this.HiddenFolder.Content = "Open Hidden Folder";
                 this.ResetButton.Content = "Reset";
             }
         }
@@ -91,6 +91,11 @@ namespace VRC_Favourite_Manager.Views
             Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = languageCode;
             WeakReferenceMessenger.Default.Send(new LanguageChangedMessage(languageCode));
             RefreshPage(languageCode);
+        }
+
+        private void HiddenFolder_Clicked(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(HiddenFolderPage));
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)

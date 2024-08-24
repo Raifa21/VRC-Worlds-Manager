@@ -56,6 +56,7 @@ namespace VRC_Favourite_Manager.Views
             {
                 this.AllWorldsItem.Content = "すべてのワールド";
                 this.FoldersItem.Content = "フォルダ";
+                this.AboutItem.Content = "このアプリについて";
                 this.SettingsItem.Content = "設定";
                 this.LogoutItem.Content = "ログアウト";
             }
@@ -63,6 +64,7 @@ namespace VRC_Favourite_Manager.Views
             {
                 this.AllWorldsItem.Content = "All Worlds";
                 this.FoldersItem.Content = "Folders";
+                this.AboutItem.Content = "About";
                 this.SettingsItem.Content = "Settings";
                 this.LogoutItem.Content = "Logout";
             }

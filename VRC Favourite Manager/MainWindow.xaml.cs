@@ -10,11 +10,5 @@ namespace VRC_Favourite_Manager
         {
             this.InitializeComponent();
         }
-
-        public void NavigateToAuthenticationPage()
-        {
-            Frame rootFrame = Window.Current.Content as Frame;
-            rootFrame.Navigate(typeof(AuthenticationPage));
-        }
     }
 }

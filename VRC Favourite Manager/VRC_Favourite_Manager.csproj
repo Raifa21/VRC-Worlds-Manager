@@ -14,6 +14,9 @@
     <DefaultLanguage>ja</DefaultLanguage>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Icons\Gear.svg" />
+    <None Remove="Icons\Logout.svg" />
+    <None Remove="Icons\Saturn.svg" />
     <None Remove="MainWindow.xaml" />
     <None Remove="Views\AddToFolderPopup.xaml" />
     <None Remove="Views\AuthenticationPage.xaml" />
@@ -37,6 +40,9 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="Icons\Gear.svg" />
+    <Content Include="Icons\Logout.svg" />
+    <Content Include="Icons\Saturn.svg" />
   </ItemGroup>
 
   <ItemGroup>

@@ -28,9 +28,9 @@
                     <Run x:Name="HyperlinkText" />
                 </Hyperlink>
             </TextBlock>
-            <TextBlock x:Name="HiddenTitle" FontSize="18" FontWeight="Bold" />
+            <TextBlock x:Name="HiddenTitle" FontSize="18" FontWeight="Bold" Margin="0,20,0,0" />
             <StackPanel Orientation="Horizontal" BorderThickness="0,1,0,0" BorderBrush="Black" Padding="0,10,0,0" Margin="0,0,0,20">
-                <RadioButton Tag="Japanese" x:Name="HiddenFolder" Checked="Language_Checked" Padding="10,5,10,5"/>
+                <Button x:Name="HiddenFolder" Click="HiddenFolder_Clicked" Padding="10,5,10,5"/>
             </StackPanel>
 
 

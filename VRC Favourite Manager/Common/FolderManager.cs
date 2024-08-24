@@ -68,11 +68,20 @@ namespace VRC_Favourite_Manager.Common
                     {
                         _folders.Add(folder);
                     }
+                    if (_folders.All(f => f.Name != "Hidden"))
+                    {
+                        AddFolder("Hidden");
+                    }
+                    if(_folders.All(f => f.Name != "Unclassified"))
+                    {
+                        AddFolder("Unclassified");
+                    }
                 }
                 else
                 {
                     Debug.WriteLine("No folders found");
                     AddFolder("Unclassified");
+                    AddFolder("Hidden");
                     SaveFolders();
                 }
             }
@@ -98,8 +107,11 @@ namespace VRC_Favourite_Manager.Common
             else
             {
                 AddFolder("Unclassified");
-                AddFolder("Hidden");
                 InitializeFolders(worlds);
+            }
+            if(_folders.All(f => f.Name != "Hidden"))
+            {
+                AddFolder("Hidden");
             }
             SaveFolders();
             WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));

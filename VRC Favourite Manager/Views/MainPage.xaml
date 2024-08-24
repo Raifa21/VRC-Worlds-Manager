@@ -12,26 +12,35 @@
                         IsBackButtonVisible="Collapsed"
                         SelectionChanged="NavigationView_SelectionChanged">
             <NavigationView.MenuItems>
-                <NavigationViewItem x:Name="AllWorldsItem" Icon="Globe" Tag="AllWorldsPage"/>
+                <NavigationViewItem x:Name="AllWorldsItem" Tag="AllWorldsPage">
+                    <NavigationViewItem.Icon>
+                        <ImageIcon Source="../Icons/Saturn.svg"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
                 <NavigationViewItem x:Name="FoldersItem" >
                     <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xF12B;" />
+                        <FontIcon Glyph="&#xED44;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
+                <NavigationViewItem x:Name="AboutItem" Tag="AboutPage">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xF167;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
                 <NavigationViewItem x:Name="SettingsItem" Tag="SettingsPage">
                     <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE713;" />
+                        <ImageIcon Source="../Icons/Gear.svg"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem x:Name="LogoutItem" Tag="Logout">
                     <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xF3B1;" />
+                        <ImageIcon Source="../Icons/Logout.svg" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.FooterMenuItems>
-            <Frame x:Name="ContentFrame" IsNavigationStackEnabled="False" />
+            <Frame x:Name="ContentFrame" IsNavigationStackEnabled="False"/>
         </NavigationView>
     </Grid>
 </Page>
