@@ -2,8 +2,6 @@
     x:Class="VRC_Favourite_Manager.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:VRC_Favourite_Manager"
-    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     xmlns:common="using:VRC_Favourite_Manager.Common">
 
     <Application.Resources>

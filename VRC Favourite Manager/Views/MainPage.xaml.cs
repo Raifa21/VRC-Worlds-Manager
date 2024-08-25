@@ -114,7 +114,7 @@ namespace VRC_Favourite_Manager.Views
                         ContentFrame.Navigate(typeof(SettingsPage));
                         break;
                     case "AboutPage":
-                        //ContentFrame.Navigate(typeof(AboutPage));
+                        ContentFrame.Navigate(typeof(AboutPage));
                         break;
                     case "Logout":
                         viewModel.LogoutCommand.Execute(null);

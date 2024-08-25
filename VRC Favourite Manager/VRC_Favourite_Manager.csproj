@@ -18,6 +18,7 @@
     <None Remove="Icons\Logout.svg" />
     <None Remove="Icons\Saturn.svg" />
     <None Remove="MainWindow.xaml" />
+    <None Remove="Views\AboutPage.xaml" />
     <None Remove="Views\AddToFolderPopup.xaml" />
     <None Remove="Views\AuthenticationPage.xaml" />
     <None Remove="Views\CreateGroupInstancePopup.xaml" />
@@ -90,6 +91,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\MultiAddToFolderPopup.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\AboutPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>

@@ -149,16 +149,17 @@ namespace VRC_Favourite_Manager.Common
                 {
                     var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
                     unclassifiedFolder?.Worlds.Remove(world);
-                    if(SelectedFolder.Name == "Unclassified")
+                    if(SelectedFolder?.Name == "Unclassified")
                     {
                         _selectedFolder = unclassifiedFolder;
                     }
                 }
-
-                if (SelectedFolder.Name == folderName)
+                if (SelectedFolder?.Name == folderName)
                 {
                     _selectedFolder = _folders.FirstOrDefault(f => f.Name == folderName);
                 }
+                
+
                 SaveFolders();
             }
             else
@@ -167,7 +168,7 @@ namespace VRC_Favourite_Manager.Common
                 AddToFolder(world, folderName);
             }
 
-            if (folderName == SelectedFolder.Name)
+            if (folderName == SelectedFolder?.Name)
             {
                 _selectedFolder = folder;
             }

@@ -17,8 +17,7 @@
                 Style="{StaticResource CloseButtonStyle}">
             <FontIcon Glyph="&#xE711;" />
         </Button>
-        <Viewbox Width="240" Height="180" Margin="0,0,0,0">
-        </Viewbox>
+        <Viewbox Width="240" Height="180" Margin="0,0,0,0" />
         <TextBlock x:Name="SelectFolders" FontSize="14" FontWeight="Bold" Margin="0,0,0,10" HorizontalAlignment="Center"/>
 
         <TextBlock x:Name="SelectedText" TextWrapping="WrapWholeWords" TextTrimming="WordEllipsis" Width="250" Height="120" Margin="0,-300,0,0"/>
