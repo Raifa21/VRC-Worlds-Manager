@@ -65,5 +65,18 @@
                 <TextBlock Text="Launchpad Icons © 黒音キト licensed under CC-BY-NC-4.0." Foreground="DimGray" />
             </StackPanel>
         </Grid>
+        <Grid Margin="20,220,0,0">
+            <TextBlock Text="Supporters" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left" />
+            <TextBlock Text="59" Foreground="#004b69" Margin="0,35,0,0" />
+            <TextBlock Text="東雲りん" Foreground="#004b69" Margin="30,35,0,0" />
+            <TextBlock Text="おこめのおいしいお店" Foreground="#004b69" Margin="90,35,0,0" />
+            <TextBlock Text="朝霧魅玲" Foreground="#004b69" Margin="210,35,0,0" />
+            <TextBlock Margin="0,60,0,0">
+                <Run Text="Thank you for you support! You can support me"/>
+                <Hyperlink>
+                    here
+                </Hyperlink>
+            </TextBlock>
+        </Grid>
     </Grid>
 </Page>
