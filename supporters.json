@@ -1,0 +1,36 @@
+{
+  "supporters": [
+    {
+      "name": "朝霧魅玲",
+      "tier": 2,
+      "color": "#ADD8E6"
+    },
+    {
+      "name": "おこめのおいしいお店",
+      "tier": 2,
+      "color": "#ADD8E6"
+    },
+    {
+      "name": "東雲りん",
+      "tier": 3,
+      "color": "#90EE90"
+    },
+    {
+      "name": "59",
+      "tier": 4,
+      "color": "#FFFFE0"
+    }
+  ],
+  "tiers_without_supporters": {
+    "tier_1": {
+      "tier": 1,
+      "color": "#D3D3D3",
+      "note": "No supporters at this level"
+    },
+    "tier_5": {
+      "tier": 5,
+      "color": "#FFD700",
+      "note": "No supporters at this level"
+    }
+  }
+}
