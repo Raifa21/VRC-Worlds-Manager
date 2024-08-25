@@ -1,4 +1,4 @@
-<Page
+﻿<Page
     x:Class="VRC_Favourite_Manager.Views.AboutPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -10,9 +10,60 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <StackPanel Padding="20">
-            <TextBlock Text="VRC Worlds Manager" FontSize="24" FontWeight="Bold" Margin="0,0,0,20"/>
-            <TextBlock Text="" />
-        </StackPanel>
+        <Grid Padding="20">
+            <TextBlock Text="VRC Worlds Manager" FontSize="24" FontWeight="Bold"/>
+                <Ellipse Height="100" Width="100" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,60,0,0">
+                    <Ellipse.Fill>
+                        <ImageBrush ImageSource="../Common/SrkYocOB_400x400.jpg" Stretch="UniformToFill" />
+                    </Ellipse.Fill>
+                </Ellipse>
+            <Grid Margin="120,60,0,0">
+                <TextBlock Text="Created by: Raifa" FontSize="16" FontWeight="Bold" />
+                <StackPanel Margin="0,30,0,0">
+                    <TextBlock Text="Twitter " Margin="0,0,0,5" />
+                    <TextBlock Text="GitHub " Margin="0,0,0,5" />
+                    <TextBlock Text="Discord " />
+                </StackPanel>
+                <StackPanel Margin="58,30,0,0">
+                    <TextBlock Margin="0,0,0,5" >
+                        <Hyperlink>
+                            @raifa_trtr
+                        </Hyperlink>
+                    </TextBlock>
+                    <TextBlock Margin="0,0,0,5" >
+                        <Hyperlink>
+                            Raifa21
+                        </Hyperlink>
+                    </TextBlock>
+                    <TextBlock>
+                        <Hyperlink>
+                            raifa
+                        </Hyperlink>
+                    </TextBlock>
+                </StackPanel>
+            </Grid>
+            <StackPanel Margin="0,50,0,0" HorizontalAlignment="Right">
+                <TextBlock Text="Special Thanks" FontSize="18" FontWeight="Bold" HorizontalAlignment="Right"/>
+                <TextBlock HorizontalAlignment="Right" Margin="0,10,0,0">
+                    <Hyperlink>
+                        VRChat
+                    </Hyperlink>
+                    <Run Text=" | For VRChat API" />
+                </TextBlock>
+                <TextBlock HorizontalAlignment="Right" Margin="0,10,0,0">
+                    <Hyperlink>
+                        VRChat API Community
+                    </Hyperlink>
+                    <Run Text=" | For API Documentation" />
+                </TextBlock>
+                <TextBlock HorizontalAlignment="Right" Margin="0,10,0,0">
+                    <Hyperlink>
+                        黒音キト
+                    </Hyperlink>
+                    <Run Text=" | For Launchpad Icons" />
+                </TextBlock>
+                <TextBlock Text="Launchpad Icons © 黒音キト licensed under CC-BY-NC-4.0." Foreground="DimGray" />
+            </StackPanel>
+        </Grid>
     </Grid>
 </Page>
