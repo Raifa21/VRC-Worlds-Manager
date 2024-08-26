@@ -123,26 +123,25 @@ namespace VRC_Favourite_Manager.Common
             var folder = _folders.FirstOrDefault(f => f.Name == folderName);
             if (folder != null)
             {
-                if (folder.Worlds.All(w => w.WorldId != world.WorldId))
+                var existingWorld = folder.Worlds.FirstOrDefault(w => w.WorldId == world.WorldId);
+                if (existingWorld != null)
                 {
-                    Debug.WriteLine("Adding to folder");
-                    folder.Worlds.Add(world);
+                    Debug.WriteLine("World already exists in folder");
+                    // Update existing world details
+                    existingWorld.AuthorName = world.AuthorName;
+                    existingWorld.Capacity = world.Capacity;
+                    existingWorld.Description = world.Description;
+                    existingWorld.Favorites = world.Favorites;
+                    existingWorld.LastUpdate = world.LastUpdate;
+                    existingWorld.ThumbnailImageUrl = world.ThumbnailImageUrl;
+                    existingWorld.Visits = world.Visits;
+                    existingWorld.WorldName = world.WorldName;
                 }
                 else
                 {
-                    Debug.WriteLine("World already exists in folder");
-                    var oldWorld = folder.Worlds.FirstOrDefault(w => w.WorldId == world.WorldId);
-                    if (oldWorld != null)
-                    {
-                        oldWorld.AuthorName = world.AuthorName;
-                        oldWorld.Capacity = world.Capacity;
-                        oldWorld.Description = world.Description;
-                        oldWorld.Favorites = world.Favorites;
-                        oldWorld.LastUpdate = world.LastUpdate;
-                        oldWorld.ThumbnailImageUrl = world.ThumbnailImageUrl;
-                        oldWorld.Visits = world.Visits;
-                        oldWorld.WorldName = world.WorldName;
-                    }
+                    Debug.WriteLine("Adding to folder");
+                    // Insert new world at the top
+                    folder.Worlds.Insert(0, world);
                 }
 
                 if (folderName != "Unclassified")
@@ -203,13 +202,12 @@ namespace VRC_Favourite_Manager.Common
             {
                 var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
                 unclassifiedFolder?.Worlds.Add(world);
-                if (SelectedFolder.Name == "Unclassified")
+                if (SelectedFolder?.Name == "Unclassified")
                 {
                     _selectedFolder = unclassifiedFolder;
                 }
             }
-
-            if (folderName == SelectedFolder.Name)
+            if(folderName == SelectedFolder?.Name)
             {
                 _selectedFolder = folder;
             }
@@ -283,9 +281,9 @@ namespace VRC_Favourite_Manager.Common
             }
             _folders.Remove(folder);
             SaveFolders();
-            if(_selectedFolder == folder || _selectedFolder.Name == "Unclassified")
+            if(SelectedFolder?.Name == folder.Name || SelectedFolder?.Name == "Unclassified")
             {
-                _selectedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
+                SelectedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
             }
 
             WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
@@ -310,9 +308,9 @@ namespace VRC_Favourite_Manager.Common
                     folder.Name = newName;
                 }
 
-                if (_selectedFolder.Name == oldName)
+                if (SelectedFolder?.Name == oldName)
                 {
-                    _selectedFolder = folder;
+                    SelectedFolder = folder;
                 }
 
                 WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
@@ -330,13 +328,13 @@ namespace VRC_Favourite_Manager.Common
             _folders.Clear();
             SaveFolders();
             _folders.Add(new FolderModel("Unclassified"));
-            _selectedFolder = _folders.FirstOrDefault();
+            SelectedFolder = _folders.FirstOrDefault();
             WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
         }
 
         public void ChangeSelectedFolder(FolderModel folder)
         {
-            _selectedFolder = folder;
+            SelectedFolder = folder;
             OnPropertyChanged(nameof(SelectedFolder));
             Debug.WriteLine($"Selected folder: {SelectedFolder.Name}");
         }

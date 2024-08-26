@@ -12,13 +12,10 @@
     </Page.DataContext>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" x:Name="Grid">
-        <Button Command ="{Binding RefreshCommand}" Margin="10,12,25,0" Padding="5" BorderThickness="1" BorderBrush="Transparent" Background="Transparent" CornerRadius="8" HorizontalAlignment="Right" VerticalAlignment="Top">
-            <FontIcon Glyph="&#xE72C;" FontSize="16"/>
-        </Button>
-            <TextBlock x:Name="FolderNameTextBlock" 
-                       FontSize="24" 
-                       FontWeight="Bold" 
-                       Margin="20 10"/>
+        <TextBlock x:Name="FolderNameTextBlock" 
+                   FontSize="24" 
+                   FontWeight="Bold" 
+                   Margin="20 10"/>
 
         <Button x:Name="MultiSelectButton" Margin="10,10,75,0" Content="Select" HorizontalAlignment="Right" VerticalAlignment="Top">
             <Interactivity:Interaction.Behaviors>
@@ -93,5 +90,9 @@
                 </DataTemplate>
             </muxc:GridView.ItemTemplate>
         </muxc:GridView>
+
+        <Button x:Name="RefreshButton" Click ="Refresh_Clicked" Margin="10,12,25,0" Padding="5"  BorderBrush="Transparent" Background="Transparent" CornerRadius="8" HorizontalAlignment="Right" VerticalAlignment="Top">
+            <FontIcon Glyph="&#xE72C;" FontSize="16"/>
+        </Button>
     </Grid>
 </Page>

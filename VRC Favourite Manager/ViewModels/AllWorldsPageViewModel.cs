@@ -35,7 +35,6 @@ namespace VRC_Favourite_Manager.ViewModels
         }
         public ICommand MoveWorldCommand { get; }
         public ICommand AddFolderCommand { get; }
-        public ICommand RefreshCommand { get; }
 
         public string ViewDetailsText { get; set; }
         public string MoveToAnotherFolderText { get; set; }
@@ -51,7 +50,6 @@ namespace VRC_Favourite_Manager.ViewModels
 
             MoveWorldCommand = new RelayCommand<Tuple<WorldModel, string>>(MoveWorld);
             AddFolderCommand = new RelayCommand<string>(AddFolder);
-            RefreshCommand = new RelayCommand(async () => await RefreshWorldsAsync());
 
             UpdateWorlds();
 
@@ -86,15 +84,13 @@ namespace VRC_Favourite_Manager.ViewModels
         private void MoveWorld(Tuple<WorldModel,string> tuple)
         {
             _folderManager.AddToFolder(tuple.Item1, tuple.Item2);
-            UpdateWorlds();
         }
         private void AddFolder(string folderName)
         {
             _folderManager.AddFolder(folderName);
-            UpdateWorlds();
         }
 
-        private async Task RefreshWorldsAsync()
+        public async Task RefreshWorldsAsync()
         {
             await _worldManager.CheckForNewWorldsAsync();
             UpdateWorlds();

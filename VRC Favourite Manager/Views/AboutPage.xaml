@@ -17,8 +17,8 @@
                         <ImageBrush ImageSource="../Common/SrkYocOB_400x400.jpg" Stretch="UniformToFill" />
                     </Ellipse.Fill>
                 </Ellipse>
-            <Grid Margin="120,60,0,0">
-                <TextBlock Text="Created by: Raifa" FontSize="16" FontWeight="Bold" />
+            <Grid Margin="120,60,0,0" Width="150" Height="100" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <TextBlock x:Name="CreatorTextBlock" FontSize="16" FontWeight="Bold" />
                 <StackPanel Margin="0,30,0,0">
                     <TextBlock Text="Twitter " Margin="0,0,0,5" />
                     <TextBlock Text="GitHub " Margin="0,0,0,5" />
@@ -40,7 +40,7 @@
                     </TextBlock>
                 </StackPanel>
             </Grid>
-            <StackPanel Margin="0,50,0,0" HorizontalAlignment="Right">
+            <StackPanel Margin="0,50,0,0" HorizontalAlignment="Right" Width="310" Height="100" VerticalAlignment="Top">
                 <TextBlock Text="Special Thanks" FontSize="18" FontWeight="Bold" HorizontalAlignment="Right"/>
                 <TextBlock HorizontalAlignment="Right" Margin="0,10,0,0">
                     <Hyperlink>
@@ -63,20 +63,21 @@
                 <TextBlock Text="Launchpad Icons © 黒音キト licensed under CC-BY-NC-4.0." Foreground="DimGray" />
             </StackPanel>
         </Grid>
-        <Grid Margin="20,220,0,0">
+        <Grid Margin="20,240,0,0" Height="80" Width="330" HorizontalAlignment="Left" VerticalAlignment="Top">
             <TextBlock Text="Supporters" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left" />
             <TextBlock Text="59" Foreground="#e649d6" Margin="0,35,0,0" />
             <TextBlock Text="東雲りん" Foreground="#e649d6" Margin="30,35,0,0" />
             <TextBlock Text="おこめのおいしいお店" Foreground="#e649d6" Margin="90,35,0,0" />
             <TextBlock Text="朝霧魅玲" Foreground="#e649d6" Margin="210,35,0,0" />
             <TextBlock Margin="0,60,0,0">
-                <Run Text="Thank you for you support! You can support me"/>
-                <Hyperlink>
-                    here
+                <Run x:Name="SupportThankYouTextBlock"/>
+                <Hyperlink NavigateUri="https://raifa.fanbox.cc/">
+                    <Run x:Name="hyperlinktext" />
                 </Hyperlink>
+                <Run x:Name="SupportThankYouTextSuffix" />
             </TextBlock>
         </Grid>
-        <Grid Margin="0,220,20,0" HorizontalAlignment="Right">
+        <Grid Margin="0,240,20,0" Height="80" Width="140" HorizontalAlignment="Right" VerticalAlignment="Top">
             <TextBlock Text="Project Links" FontSize="18" FontWeight="Bold" HorizontalAlignment="Right" />
             <TextBlock HorizontalAlignment="Right" Margin="0,35,0,0">
                 <Hyperlink>
@@ -91,11 +92,12 @@
                 <Run Text=" | Download" />
             </TextBlock>
         </Grid>
-        <Grid Margin="0,500,0,20" HorizontalAlignment="Right">
+        <Grid Margin="20,590,20,0" HorizontalAlignment="Left">
             <TextBlock Text="License Notice" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left" />
-            <TextBlock>
-
-            </TextBlock>
+            <TextBlock x:Name="MITLicenseTextBlock" Margin="0,35,0,0" HorizontalAlignment="Left"/>
+            <TextBlock x:Name="ComplianceTextBlock"  Margin="0,60,0,0" HorizontalAlignment="Left"/>
+            <TextBlock x:Name="CCBYNCTextBlock"  Margin="0,85,0,0" HorizontalAlignment="Left"/>
         </Grid>
+        <TextBlock Text="VRC Worlds Manager v1.0.0" FontSize="14" Margin="0,10,20,20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Foreground="DimGray"/>
     </Grid>
 </Page>

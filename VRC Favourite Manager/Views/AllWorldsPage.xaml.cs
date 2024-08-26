@@ -14,6 +14,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml.Navigation;
 using VRC_Favourite_Manager.Common;
 using System.Linq;
+using System.Threading.Tasks;
 using VRChat.API.Model;
 using Microsoft.UI.Xaml.Controls.Primitives;
 
@@ -45,6 +46,23 @@ namespace VRC_Favourite_Manager.Views
                 this.MultiSelectButton.Content = "Select";
                 this.MultiSelectButton_Cancel.Content = "Cancel";
                 this.FolderNameTextBlock.Text = "All Worlds";
+            }
+        }
+
+        private async void Refresh_Clicked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                this.RefreshButton.IsEnabled = false;
+
+                List<Task> tasks = new List<Task>();
+                tasks.Add(_viewModel.RefreshWorldsAsync());
+                tasks.Add(Task.Delay(5000));
+                await Task.WhenAll(tasks);
+            }
+            finally
+            {
+                this.RefreshButton.IsEnabled = true;
             }
         }
 

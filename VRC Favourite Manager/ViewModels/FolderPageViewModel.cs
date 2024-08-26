@@ -56,7 +56,6 @@ namespace VRC_Favourite_Manager.ViewModels
         }
         public ICommand MoveWorldCommand { get; }
         public ICommand AddFolderCommand { get; }
-        public ICommand RefreshCommand { get; }
 
         public bool ChangeFolderNameLang{ get; set; }
 
@@ -78,7 +77,6 @@ namespace VRC_Favourite_Manager.ViewModels
 
             MoveWorldCommand = new RelayCommand<Tuple<WorldModel, string>>(MoveWorld);
             AddFolderCommand = new RelayCommand<string>(AddFolder);
-            RefreshCommand = new RelayCommand(async () => await RefreshWorldsAsync());
 
             UpdateWorlds();
 
@@ -131,7 +129,7 @@ namespace VRC_Favourite_Manager.ViewModels
             UpdateWorlds();
         }
 
-        private async Task RefreshWorldsAsync()
+        public async Task RefreshWorldsAsync()
         {
             await _worldManager.CheckForNewWorldsAsync();
             UpdateWorlds();
