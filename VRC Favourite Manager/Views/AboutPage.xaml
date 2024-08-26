@@ -26,19 +26,17 @@
                 </StackPanel>
                 <StackPanel Margin="58,30,0,0">
                     <TextBlock Margin="0,0,0,5" >
-                        <Hyperlink>
+                        <Hyperlink NavigateUri="https://x.com/raifa_trtr">
                             @raifa_trtr
                         </Hyperlink>
                     </TextBlock>
                     <TextBlock Margin="0,0,0,5" >
-                        <Hyperlink>
+                        <Hyperlink NavigateUri="https://github.com/Raifa21">
                             Raifa21
                         </Hyperlink>
                     </TextBlock>
                     <TextBlock>
-                        <Hyperlink>
-                            raifa
-                        </Hyperlink>
+                        raifa
                     </TextBlock>
                 </StackPanel>
             </Grid>
@@ -50,13 +48,13 @@
                     </Hyperlink>
                     <Run Text=" | For VRChat API" />
                 </TextBlock>
-                <TextBlock HorizontalAlignment="Right" Margin="0,10,0,0">
+                <TextBlock HorizontalAlignment="Right" Margin="0,5,0,0">
                     <Hyperlink>
                         VRChat API Community
                     </Hyperlink>
                     <Run Text=" | For API Documentation" />
                 </TextBlock>
-                <TextBlock HorizontalAlignment="Right" Margin="0,10,0,0">
+                <TextBlock HorizontalAlignment="Right" Margin="0,5,0,0">
                     <Hyperlink>
                         黒音キト
                     </Hyperlink>
@@ -67,15 +65,36 @@
         </Grid>
         <Grid Margin="20,220,0,0">
             <TextBlock Text="Supporters" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left" />
-            <TextBlock Text="59" Foreground="#004b69" Margin="0,35,0,0" />
-            <TextBlock Text="東雲りん" Foreground="#004b69" Margin="30,35,0,0" />
-            <TextBlock Text="おこめのおいしいお店" Foreground="#004b69" Margin="90,35,0,0" />
-            <TextBlock Text="朝霧魅玲" Foreground="#004b69" Margin="210,35,0,0" />
+            <TextBlock Text="59" Foreground="#e649d6" Margin="0,35,0,0" />
+            <TextBlock Text="東雲りん" Foreground="#e649d6" Margin="30,35,0,0" />
+            <TextBlock Text="おこめのおいしいお店" Foreground="#e649d6" Margin="90,35,0,0" />
+            <TextBlock Text="朝霧魅玲" Foreground="#e649d6" Margin="210,35,0,0" />
             <TextBlock Margin="0,60,0,0">
                 <Run Text="Thank you for you support! You can support me"/>
                 <Hyperlink>
                     here
                 </Hyperlink>
+            </TextBlock>
+        </Grid>
+        <Grid Margin="0,220,20,0" HorizontalAlignment="Right">
+            <TextBlock Text="Project Links" FontSize="18" FontWeight="Bold" HorizontalAlignment="Right" />
+            <TextBlock HorizontalAlignment="Right" Margin="0,35,0,0">
+                <Hyperlink>
+                    GitHub
+                </Hyperlink>
+                <Run Text=" | Source Code" />
+            </TextBlock>
+            <TextBlock HorizontalAlignment="Right" Margin="0,60,0,0">
+                <Hyperlink>
+                    Booth
+                </Hyperlink>
+                <Run Text=" | Download" />
+            </TextBlock>
+        </Grid>
+        <Grid Margin="0,500,0,20" HorizontalAlignment="Right">
+            <TextBlock Text="License Notice" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left" />
+            <TextBlock>
+
             </TextBlock>
         </Grid>
     </Grid>

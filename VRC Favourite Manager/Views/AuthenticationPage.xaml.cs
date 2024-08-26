@@ -23,7 +23,7 @@ namespace VRC_Favourite_Manager.Views
                 this.UsernameTextBox.Header = "ユーザー名";
                 this.PasswordBox.Header = "パスワード";
                 this.Legal1.Text = "ログイン情報は保存されず、認証目的のみに使用されます。";
-                this.Legal2.Text = "このアプリはVRChatとは一切関係ありません。VRChatはVRChat Inc.の商標です。";
+                this.Legal2.Text = "このアプリの使用により、VRChatのAPI利用規約に同意したものとみなされます。";
                 this.Legal3.Text = "このアプリケーションの使用によって生じる問題については、一切責任を負いません。ご了承ください。";
                 this.LoginButton.Content = "ログイン";
             }
@@ -34,7 +34,7 @@ namespace VRC_Favourite_Manager.Views
                 this.PasswordBox.Header = "Password";
                 this.Legal1.Text =
                     "Your login credentials are not stored and are only used for authentication purposes.";
-                this.Legal2.Text = "We are not affiliated with VRChat in any way. VRChat is a trademark of VRChat Inc.";
+                this.Legal2.Text = "By using this app, you agree to VRChat's API Terms of Service.";
                 this.Legal3.Text = "Please be aware that I am not responsible for any issues that may arise from using this application.";
                 this.LoginButton.Content = "Login";
             }

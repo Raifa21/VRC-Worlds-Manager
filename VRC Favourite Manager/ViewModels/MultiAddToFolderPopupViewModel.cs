@@ -48,8 +48,8 @@ namespace VRC_Favourite_Manager.ViewModels
             _selectedFolders.Clear();
             foreach (var folder in Folders)
             {
-                // Don't show the unclassified folder in the list
-                if (folder.Name != "Unclassified")
+                // Don't show the unclassified folder amd the Hidden folder in the list
+                if (folder.Name != "Unclassified" && folder.Name != "Hidden")
                 {
                     int count = 0;
                     bool flag_checked = true;
@@ -106,7 +106,7 @@ namespace VRC_Favourite_Manager.ViewModels
         {
             foreach (var folder in _folderManager.Folders)
             {   
-                if (folder.Name != "Unclassified")
+                if (folder.Name != "Unclassified" && folder.Name != "Hidden")
                 {
                     if (_selectedFolders.FirstOrDefault(x => x.FolderName == folder.Name).IsIndeterminate)
                     {
