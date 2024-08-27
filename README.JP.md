@@ -42,7 +42,7 @@ VRC Favorite Managerの最新リリースは、リリースタブからダウン
 
 このプロジェクトはMITライセンスの下でライセンスされています。詳細については、[LICENSE](LICENSE)ファイルを参照してください。
 
-一部のコンポーネントはCC-BY-NC-4.0の下でライセンスされており、非商用目的のみで使用可能です。詳細については、[ADDITONAL_LICENSE](ADDITIONAL_LICENSE)ファイルを参照してください。
+一部のコンポーネントはCC-BY-NC-4.0の下でライセンスされており、非商用目的のみで使用可能です。詳細については、[LICENSE_ADDITIONAL](LICENSE_ADDITIONAL) ファイルを参照してください。
 
 ## 謝辞
 
