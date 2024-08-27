@@ -8,14 +8,8 @@ using Microsoft.UI.Xaml.Controls;
 using VRC_Favourite_Manager.ViewModels;
 using VRC_Favourite_Manager.Models;
 using Microsoft.UI.Xaml.Input;
-using System.ComponentModel;
-using Windows.UI.Core;
-using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml.Navigation;
-using VRC_Favourite_Manager.Common;
 using System.Linq;
-using VRChat.API.Model;
-using Microsoft.UI.Xaml.Controls.Primitives;
 using System.Threading.Tasks;
 
 namespace VRC_Favourite_Manager.Views

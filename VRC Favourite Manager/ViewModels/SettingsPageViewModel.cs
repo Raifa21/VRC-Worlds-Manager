@@ -1,12 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.UI.Xaml;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using VRC_Favourite_Manager.Services;
 using VRC_Favourite_Manager.Common;
-using System.IO;
-using Tomlyn;
-using System;
 
 namespace VRC_Favourite_Manager.ViewModels
 {

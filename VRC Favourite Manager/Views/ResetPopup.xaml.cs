@@ -1,11 +1,6 @@
-using System.Collections.Generic;
 using Microsoft.UI.Xaml.Controls;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using Microsoft.UI.Xaml;
-using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.ViewModels;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace VRC_Favourite_Manager.Views
 {

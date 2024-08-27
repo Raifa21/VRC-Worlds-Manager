@@ -1,9 +1,4 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Data;
-using VRC_Favourite_Manager.Services;
-using VRC_Favourite_Manager.ViewModels;
-using Windows.Networking.Sockets;
+﻿using Microsoft.UI.Xaml.Controls;
 
 
 namespace VRC_Favourite_Manager.Views

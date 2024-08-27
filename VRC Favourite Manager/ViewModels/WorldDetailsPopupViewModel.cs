@@ -1,7 +1,4 @@
-﻿
-using System.Collections.ObjectModel;
-using Microsoft.UI.Xaml;
-using VRC_Favourite_Manager.Common;
+﻿using Microsoft.UI.Xaml;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
 

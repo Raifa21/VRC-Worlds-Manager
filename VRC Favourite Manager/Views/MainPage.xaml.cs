@@ -1,15 +1,9 @@
 using System.Diagnostics;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Animation;
 using VRC_Favourite_Manager.ViewModels;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using System.Collections.Specialized;
-using CommunityToolkit.Mvvm;
 using CommunityToolkit.Mvvm.Messaging;
 using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Models;
-using VRC_Favourite_Manager.Services;
 using Microsoft.UI.Xaml.Navigation;
 
 namespace VRC_Favourite_Manager.Views

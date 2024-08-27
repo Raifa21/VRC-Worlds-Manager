@@ -5,16 +5,23 @@ VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VRC_Favourite_Manager", "VRC Favourite Manager\VRC_Favourite_Manager.csproj", "{1BCF23ED-A442-4590-8822-01FA3651659A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VRC_Favourite_Manager_Test", "VRC_Favorite_Manager_Test\VRC_Favourite_Manager_Test.csproj", "{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|ARM64 = Debug|ARM64
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
 		Release|ARM64 = Release|ARM64
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1BCF23ED-A442-4590-8822-01FA3651659A}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{1BCF23ED-A442-4590-8822-01FA3651659A}.Debug|Any CPU.Build.0 = Debug|x64
+		{1BCF23ED-A442-4590-8822-01FA3651659A}.Debug|Any CPU.Deploy.0 = Debug|x64
 		{1BCF23ED-A442-4590-8822-01FA3651659A}.Debug|ARM64.ActiveCfg = Debug|ARM64
 		{1BCF23ED-A442-4590-8822-01FA3651659A}.Debug|ARM64.Build.0 = Debug|ARM64
 		{1BCF23ED-A442-4590-8822-01FA3651659A}.Debug|ARM64.Deploy.0 = Debug|ARM64
@@ -24,6 +31,9 @@ Global
 		{1BCF23ED-A442-4590-8822-01FA3651659A}.Debug|x86.ActiveCfg = Debug|x86
 		{1BCF23ED-A442-4590-8822-01FA3651659A}.Debug|x86.Build.0 = Debug|x86
 		{1BCF23ED-A442-4590-8822-01FA3651659A}.Debug|x86.Deploy.0 = Debug|x86
+		{1BCF23ED-A442-4590-8822-01FA3651659A}.Release|Any CPU.ActiveCfg = Release|x64
+		{1BCF23ED-A442-4590-8822-01FA3651659A}.Release|Any CPU.Build.0 = Release|x64
+		{1BCF23ED-A442-4590-8822-01FA3651659A}.Release|Any CPU.Deploy.0 = Release|x64
 		{1BCF23ED-A442-4590-8822-01FA3651659A}.Release|ARM64.ActiveCfg = Release|ARM64
 		{1BCF23ED-A442-4590-8822-01FA3651659A}.Release|ARM64.Build.0 = Release|ARM64
 		{1BCF23ED-A442-4590-8822-01FA3651659A}.Release|ARM64.Deploy.0 = Release|ARM64
@@ -33,6 +43,30 @@ Global
 		{1BCF23ED-A442-4590-8822-01FA3651659A}.Release|x86.ActiveCfg = Release|x86
 		{1BCF23ED-A442-4590-8822-01FA3651659A}.Release|x86.Build.0 = Release|x86
 		{1BCF23ED-A442-4590-8822-01FA3651659A}.Release|x86.Deploy.0 = Release|x86
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Debug|Any CPU.Build.0 = Debug|x64
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Debug|Any CPU.Deploy.0 = Debug|x64
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Debug|ARM64.Build.0 = Debug|ARM64
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Debug|ARM64.Deploy.0 = Debug|ARM64
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Debug|x64.ActiveCfg = Debug|x64
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Debug|x64.Build.0 = Debug|x64
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Debug|x64.Deploy.0 = Debug|x64
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Debug|x86.ActiveCfg = Debug|x86
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Debug|x86.Build.0 = Debug|x86
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Debug|x86.Deploy.0 = Debug|x86
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Release|Any CPU.ActiveCfg = Release|x64
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Release|Any CPU.Build.0 = Release|x64
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Release|Any CPU.Deploy.0 = Release|x64
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Release|ARM64.ActiveCfg = Release|ARM64
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Release|ARM64.Build.0 = Release|ARM64
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Release|ARM64.Deploy.0 = Release|ARM64
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Release|x64.ActiveCfg = Release|x64
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Release|x64.Build.0 = Release|x64
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Release|x64.Deploy.0 = Release|x64
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Release|x86.ActiveCfg = Release|x86
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Release|x86.Build.0 = Release|x86
+		{FC3BDB01-CF2A-498E-9131-6FDA45151EA2}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

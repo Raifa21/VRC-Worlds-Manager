@@ -1,12 +1,9 @@
 // WorldDetailsPopup.xaml.cs
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Documents;
 using System;
-using System.Diagnostics;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.ViewModels;
-using VRChat.API.Model;
 
 namespace VRC_Favourite_Manager.Views
 {

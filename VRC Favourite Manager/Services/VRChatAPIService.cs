@@ -6,15 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net;
-using System.Collections.Concurrent;
 using System.Globalization;
 using System.Net.Http.Headers;
-using System.Text.Encodings.Web;
-using System.Threading;
 using VRC_Favourite_Manager.Common;
 using System.Text.Json;
-using Tomlyn;
-using Windows.Media.Protection.PlayReady;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.ViewModels;
 
@@ -23,10 +18,22 @@ namespace VRC_Favourite_Manager.Services
     public interface IVRChatAPIService
     {
         Task<bool> VerifyAuthTokenAsync(string authToken, string twoFactorAuthToken);
+        Task<bool> VerifyLoginWithAuthTokenAsync(string authToken, string twoFactorAuthToken);
         Task<bool> VerifyLoginAsync(string username, string password);
         Task<bool> Authenticate2FAAsync(string twoFactorCode, string twoFactorAuthType);
         Task<bool> LogoutAsync();
         Task<List<Models.WorldModel>> GetFavoriteWorldsAsync(int n, int offset);
+        Task CreateInstanceAsync(string worldId, string instanceType, string region);
+
+        Task CreateGroupInstanceAsync(string worldId, string groupId, string region, string instanceType,
+            List<string> roleIds,
+            bool queueEnabled);
+
+        Task<List<GetUserGroupsResponse>> GetGroupsAsync();
+        Task<List<GroupRolesModel>> GetGroupRolesAsync(string groupId);
+        Task<List<string>> GetUserRoleAsync(string groupId);
+
+
     }
     public class VRChatAPIService : IVRChatAPIService
     {
@@ -227,7 +234,12 @@ namespace VRC_Favourite_Manager.Services
             return $"Basic {base64AuthString}";
         }
 
-
+        /// <summary>
+        /// Authenticates the user with the 2FA code provided.
+        /// </summary>
+        /// <param name="twoFactorCode"></param>
+        /// <param name="twoFactorAuthType"></param>
+        /// <returns>boolean which represents if the provided 2FA code is valid.</returns>
         public async Task<bool> Authenticate2FAAsync(string twoFactorCode, string twoFactorAuthType)
         {
             try
@@ -373,6 +385,7 @@ namespace VRC_Favourite_Manager.Services
         /// </summary>
         /// <param name="worldId">An ID which represents the world to be created.</param>
         /// <param name="instanceType">The instance type of the instance being created. Allowed parameters are: "public","friends+","friends","invite+","invite".</param>
+        /// <param name="region">The region of the instance being created. Allowed parameters are: "usw","use","jp","eu" </param>
         /// <returns>Returns the instanceId of the instance which was created.</returns>
         /// <exception cref="VRCNotLoggedInException">When the authentication tokens fails to authenticate the user.</exception>
         public async Task CreateInstanceAsync(string worldId, string instanceType, string region)
@@ -449,6 +462,18 @@ namespace VRC_Favourite_Manager.Services
             }
         }
 
+        /// <summary>
+        /// Creates an instance of a world, and creates an invite for the user.
+        /// Created instance is a group instance
+        /// </summary>
+        /// <param name="worldId">An ID which represents the world to be created.</param>
+        /// <param name="groupId">An ID which represents the group </param>
+        /// <param name="region">The region of the instance being created. Allowed parameters are: "usw","use","jp","eu" </param>
+        /// <param name="instanceType">The instance type of the instance being created. Allowed parameters are: "public","friends+","friends","invite+","invite".</param>
+        /// <param name="roleIds">The roles which have access to the instance. If no value is passed, all roles are allowed. </param>
+        /// <param name="queueEnabled">Boolean which represents if queues are allowed or not when instances are full.</param>
+        /// <returns>Task to call API to create instance, and invite the user.</returns>
+        /// <exception cref="VRCNotLoggedInException"></exception>
         public async Task CreateGroupInstanceAsync(string worldId, string groupId, string region, string instanceType, List<string> roleIds,
             bool queueEnabled)
         {
@@ -516,6 +541,11 @@ namespace VRC_Favourite_Manager.Services
             }
         }
         
+        /// <summary>
+        /// Gets the groups the user is in.
+        /// </summary>
+        /// <returns>A list of user's groups</returns>
+        /// <exception cref="VRCNotLoggedInException"></exception>
         public async Task<List<GetUserGroupsResponse>> GetGroupsAsync()
         {
             try
@@ -536,7 +566,12 @@ namespace VRC_Favourite_Manager.Services
             }
         }
         
-
+        /// <summary>
+        /// Gets the roles in the group
+        /// </summary>
+        /// <param name="groupId">The ID which represents the group</param>
+        /// <returns>A list of group's roles</returns>
+        /// <exception cref="VRCNotLoggedInException"></exception>
         public async Task<List<GroupRolesModel>> GetGroupRolesAsync(string groupId)
         {
             try
@@ -571,6 +606,12 @@ namespace VRC_Favourite_Manager.Services
             }
         }
 
+        /// <summary>
+        /// Gets the user's roles in the group
+        /// </summary>
+        /// <param name="groupId">The ID which represents the group</param>
+        /// <returns>A list of role id's which represent the user's group roles</returns>
+        /// <exception cref="VRCNotLoggedInException"></exception>
         public async Task<List<string>> GetUserRoleAsync(string groupId)
         {
             try

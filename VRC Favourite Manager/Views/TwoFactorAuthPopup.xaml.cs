@@ -1,6 +1,5 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System.Threading.Tasks;
 
 namespace VRC_Favourite_Manager.Views
 {

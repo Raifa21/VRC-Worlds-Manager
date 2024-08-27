@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using CommunityToolkit.Mvvm.Messaging;
-using Microsoft.UI.Xaml.Controls;
 using VRC_Favourite_Manager.Models;
-using VRC_Favourite_Manager.Views;
 
 namespace VRC_Favourite_Manager.Common
 {
