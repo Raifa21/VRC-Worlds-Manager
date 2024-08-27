@@ -44,6 +44,7 @@ Contributions are welcome! Please follow these steps to contribute:
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 Some components are licensed under CC-BY-NC-4.0 and are for non-commercial use only.
+Launchpad Icons © 黒音キト licensed under CC-BY-NC-4.0.
 
 ## Acknowledgements
 
