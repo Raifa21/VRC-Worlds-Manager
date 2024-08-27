@@ -14,9 +14,12 @@ Manage and organize your VRChat worlds with VRC Worlds Manager.
 
 ## Installation
 
-To use VRC Worlds Manager, simply download the application from:
+//CURRENTLY IN CLOSED BETA. DOWNLOAD LINKS ARE UNAVAILABLE AT THE MOMENT.
 
-[VRC Worlds Manager](https://vrcworldsmanager.vercel.app/)
+Download the latest release of VRC Favorite Manager in the releases tab.
+Alternatively, download the application from here:
+
+[WIP]
 
 ## Features
 
