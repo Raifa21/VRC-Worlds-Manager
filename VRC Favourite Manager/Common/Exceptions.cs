@@ -31,4 +31,8 @@ namespace VRC_Favourite_Manager.Common
     {
         
     }
+    public class VRCServiceUnavailableException : Exception
+    {
+
+    }
 }

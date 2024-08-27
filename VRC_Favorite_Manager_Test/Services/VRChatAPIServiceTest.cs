@@ -4,7 +4,7 @@ using VRC_Favourite_Manager.Services;
 namespace VRC_Favorite_Manager_Test.Services
 {
     [TestClass]
-    public class VRChatAPIServiceTest
+    public partial class VRChatAPIServiceTest
     {
         [TestMethod]
         public void ConstructorTest()

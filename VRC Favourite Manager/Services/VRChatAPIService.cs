@@ -37,13 +37,13 @@ namespace VRC_Favourite_Manager.Services
     }
     public class VRChatAPIService : IVRChatAPIService
     {
-        private HttpClient _Client;
+        public HttpClient _Client;
 
         private CookieContainer _cookieContainer;
 
-        private string _authToken;
+        public string _authToken;
 
-        private string _twoFactorAuthToken;
+        public string _twoFactorAuthToken;
 
         private string _userId;
 
@@ -66,28 +66,39 @@ namespace VRC_Favourite_Manager.Services
         /// <returns>Returns if the auth token is valid or not.</returns>
         public async Task<bool> VerifyAuthTokenAsync(string authToken, string twoFactorAuthToken)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "https://vrchat.com/api/1/auth");
-            request.Headers.Add("Accept", "application/json");
-            request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
-            request.Headers.Add("Cookie", $"auth={authToken};twoFactorAuth={twoFactorAuthToken}");
-            var response = await _Client.SendAsync(request);
-
-
-            response.EnsureSuccessStatusCode();
-            Debug.WriteLine("Status Code: " + response.StatusCode);
-            // Check if verification was successful.
-            var responseString = await response.Content.ReadAsStringAsync();
-
-            // Deserialize the response string to a JSON object.
-            var authResponse = JsonSerializer.Deserialize<Models.VerifyAuthTokenResponse>(responseString);
-            if (authResponse.ok)
+            try
             {
-                _authToken = authToken;
-                _twoFactorAuthToken = twoFactorAuthToken;
-                GetUserId();
-                return true;
+                var request = new HttpRequestMessage(HttpMethod.Get, "https://vrchat.com/api/1/auth/user?");
+
+                request.Headers.Add("Accept", "application/json");
+                request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
+                request.Headers.Add("Cookie", $"auth={authToken};twoFactorAuth={twoFactorAuthToken}");
+                var response = await _Client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var responseString = await response.Content.ReadAsStringAsync();
+
+                // Deserialize the response string to a JSON object.
+                var authResponse = JsonSerializer.Deserialize<Models.VerifyAuthTokenResponse>(responseString);
+                if (authResponse.ok)
+                {
+                    _authToken = authToken;
+                    _twoFactorAuthToken = twoFactorAuthToken;
+                    GetUserId();
+                    return true;
+                }
+
+                return false;
             }
-            return false;
+            catch (HttpRequestException e)
+            {
+                Debug.WriteLine("Error: " + e.Message);
+                return false;
+            }
+            catch (JsonException e)
+            {
+                Debug.WriteLine("Error: " + e.Message);
+                return false;
+            }
         }
 
         /// <summary>
@@ -120,7 +131,7 @@ namespace VRC_Favourite_Manager.Services
         /// <summary>
         /// Gets the user's ID from the API.
         /// </summary>
-        private async void GetUserId()
+        public async Task<string> GetUserId()
         {
             try
             {
@@ -131,12 +142,20 @@ namespace VRC_Favourite_Manager.Services
                 var response = await _Client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
                 var responseString = await response.Content.ReadAsStringAsync();
-                JsonDocument.Parse(responseString).RootElement.TryGetProperty("id", out JsonElement id);
-                _userId = id.GetString();
+                // Parse the response and check if the 'id' property exists
+                var jsonDocument = JsonDocument.Parse(responseString);
+                if (jsonDocument.RootElement.TryGetProperty("id", out JsonElement idElement))
+                {
+                    _userId = idElement.GetString();
+                    return _userId;
+                }
+
+                return null;
             }
             catch (HttpRequestException e)
             {
                 Debug.WriteLine("Error: " + e.Message);
+                return null;
             }
         }
 
@@ -188,8 +207,17 @@ namespace VRC_Favourite_Manager.Services
                 Console.WriteLine(responseContent);
 
 
-                // This throws a HttpRequestException if the status code is not a success code.
-                response.EnsureSuccessStatusCode();
+                if (!response.IsSuccessStatusCode)
+                {
+                    // Handle failed status code based on the status code
+                    switch (response.StatusCode)
+                    {
+                        case HttpStatusCode.Unauthorized:
+                            throw new VRCIncorrectCredentialsException();
+                        default:
+                            throw new VRCServiceUnavailableException();
+                    }
+                }
 
                 // Pass the header to store the auth token.
                 StoreAuthToken(response.Headers);
@@ -204,7 +232,8 @@ namespace VRC_Favourite_Manager.Services
                 {
                     throw new VRCRequiresTwoFactorAuthException("default");
                 }
-                else {
+                else
+                {
                     JsonDocument.Parse(responseString).RootElement.TryGetProperty("id", out JsonElement id);
                     _userId = id.GetString();
                     return true;
@@ -213,7 +242,7 @@ namespace VRC_Favourite_Manager.Services
             catch (HttpRequestException e)
             {
                 Debug.WriteLine("Error: " + e.Message);
-                throw new VRCIncorrectCredentialsException();
+                throw new VRCServiceUnavailableException();
             }
         }
 
