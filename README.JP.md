@@ -43,6 +43,7 @@ RC Favorite Managerの最新リリースは、リリースタブからダウン�
 このプロジェクトはMITライセンスの下でライセンスされています。詳細については、[LICENSE](LICENSE)ファイルを参照してください。
 
 一部のコンポーネントはCC-BY-NC-4.0の下でライセンスされており、非商用目的のみで使用可能です。
+Launchpad Icons © 黒音キト licensed under CC-BY-NC-4.0.
 
 ## 謝辞
 
