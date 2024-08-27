@@ -1,6 +1,6 @@
 # VRC Worlds Manager
 
-[日本語のバージョンはこちら](./README_JP.md)
+[日本語のバージョンはこちら](./README.JP.md)
 
 Manage and organize your VRChat worlds with VRC Worlds Manager.
 
