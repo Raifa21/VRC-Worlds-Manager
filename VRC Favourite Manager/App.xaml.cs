@@ -50,21 +50,11 @@ namespace VRC_Favourite_Manager
                 {
                     if (await _VRChatAPIService.VerifyAuthTokenAsync(authToken, twoFactorAuthToken))
                     {
-                        try
+                        if(await _VRChatAPIService.VerifyLoginWithAuthTokenAsync(authToken, twoFactorAuthToken))
                         {
-                            if(await _VRChatAPIService.VerifyLoginWithAuthTokenAsync(authToken, twoFactorAuthToken))
-                            {
-                                System.Diagnostics.Debug.WriteLine("Login successful.");
-                                rootFrame.Navigate(typeof(MainPage), args.Arguments);
-                            }
-                            
+                            System.Diagnostics.Debug.WriteLine("Login successful.");
+                            rootFrame.Navigate(typeof(MainPage), args.Arguments);
                         }
-                        catch (VRCNotLoggedInException)
-                        {
-                            System.Diagnostics.Debug.WriteLine("Error verifying API key.");
-                            rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
-                        }
-                        
                     }
                     else
                     {

@@ -6,15 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net;
-using System.Collections.Concurrent;
 using System.Globalization;
 using System.Net.Http.Headers;
-using System.Text.Encodings.Web;
-using System.Threading;
 using VRC_Favourite_Manager.Common;
 using System.Text.Json;
-using Tomlyn;
-using Windows.Media.Protection.PlayReady;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.ViewModels;
 
@@ -23,10 +18,22 @@ namespace VRC_Favourite_Manager.Services
     public interface IVRChatAPIService
     {
         Task<bool> VerifyAuthTokenAsync(string authToken, string twoFactorAuthToken);
+        Task<bool> VerifyLoginWithAuthTokenAsync(string authToken, string twoFactorAuthToken);
         Task<bool> VerifyLoginAsync(string username, string password);
         Task<bool> Authenticate2FAAsync(string twoFactorCode, string twoFactorAuthType);
         Task<bool> LogoutAsync();
         Task<List<Models.WorldModel>> GetFavoriteWorldsAsync(int n, int offset);
+        Task CreateInstanceAsync(string worldId, string instanceType, string region);
+
+        Task CreateGroupInstanceAsync(string worldId, string groupId, string region, string instanceType,
+            List<string> roleIds,
+            bool queueEnabled);
+
+        Task<List<GetUserGroupsResponse>> GetGroupsAsync();
+        Task<List<GroupRolesModel>> GetGroupRolesAsync(string groupId);
+        Task<List<string>> GetUserRoleAsync(string groupId);
+
+
     }
     public class VRChatAPIService : IVRChatAPIService
     {
@@ -59,28 +66,35 @@ namespace VRC_Favourite_Manager.Services
         /// <returns>Returns if the auth token is valid or not.</returns>
         public async Task<bool> VerifyAuthTokenAsync(string authToken, string twoFactorAuthToken)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "https://vrchat.com/api/1/auth");
-            request.Headers.Add("Accept", "application/json");
-            request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
-            request.Headers.Add("Cookie", $"auth={authToken};twoFactorAuth={twoFactorAuthToken}");
-            var response = await _Client.SendAsync(request);
-
-
-            response.EnsureSuccessStatusCode();
-            Debug.WriteLine("Status Code: " + response.StatusCode);
-            // Check if verification was successful.
-            var responseString = await response.Content.ReadAsStringAsync();
-
-            // Deserialize the response string to a JSON object.
-            var authResponse = JsonSerializer.Deserialize<Models.VerifyAuthTokenResponse>(responseString);
-            if (authResponse.ok)
+            try
             {
-                _authToken = authToken;
-                _twoFactorAuthToken = twoFactorAuthToken;
-                GetUserId();
-                return true;
+                var request = new HttpRequestMessage(HttpMethod.Get, "https://vrchat.com/api/1/auth");
+
+                request.Headers.Add("Accept", "application/json");
+                request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
+                request.Headers.Add("Cookie", $"auth={authToken};twoFactorAuth={twoFactorAuthToken}");
+                var response = await _Client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var responseString = await response.Content.ReadAsStringAsync();
+
+                // Deserialize the response string to a JSON object.
+                var authResponse = JsonSerializer.Deserialize<Models.VerifyAuthTokenResponse>(responseString);
+                Debug.WriteLine(authResponse.ok);
+                if (authResponse.ok)
+                {
+                    _authToken = authToken;
+                    _twoFactorAuthToken = twoFactorAuthToken;
+                    GetUserId();
+                    return true;
+                }
+
+                return false;
             }
-            return false;
+            catch (Exception e)
+            {
+                Debug.WriteLine("Error: " + e.Message);
+                return false;
+            }
         }
 
         /// <summary>
@@ -88,7 +102,7 @@ namespace VRC_Favourite_Manager.Services
         /// </summary>
         /// <param name="authToken"></param>
         /// <param name="twoFactorAuthToken"></param>
-        /// <returns>The user's display name</returns>
+        /// <returns>If the user has successfully logged in</returns>
         /// <exception cref="VRCIncorrectCredentialsException"></exception>
         public async Task<bool> VerifyLoginWithAuthTokenAsync(string authToken, string twoFactorAuthToken)
         {
@@ -103,17 +117,17 @@ namespace VRC_Favourite_Manager.Services
                 GetUserId();
                 return true;
             }
-            catch (HttpRequestException e)
+            catch (Exception e)
             {
                 Debug.WriteLine("Error: " + e.Message);
-                throw new VRCIncorrectCredentialsException();
+                return false;
             }
         }
 
         /// <summary>
         /// Gets the user's ID from the API.
         /// </summary>
-        private async void GetUserId()
+        private async Task<string> GetUserId()
         {
             try
             {
@@ -124,12 +138,20 @@ namespace VRC_Favourite_Manager.Services
                 var response = await _Client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
                 var responseString = await response.Content.ReadAsStringAsync();
-                JsonDocument.Parse(responseString).RootElement.TryGetProperty("id", out JsonElement id);
-                _userId = id.GetString();
+                // Parse the response and check if the 'id' property exists
+                var jsonDocument = JsonDocument.Parse(responseString);
+                if (jsonDocument.RootElement.TryGetProperty("id", out JsonElement idElement))
+                {
+                    _userId = idElement.GetString();
+                    return _userId;
+                }
+
+                return null;
             }
-            catch (HttpRequestException e)
+            catch (Exception e)
             {
                 Debug.WriteLine("Error: " + e.Message);
+                return null;
             }
         }
 
@@ -181,8 +203,17 @@ namespace VRC_Favourite_Manager.Services
                 Console.WriteLine(responseContent);
 
 
-                // This throws a HttpRequestException if the status code is not a success code.
-                response.EnsureSuccessStatusCode();
+                if (!response.IsSuccessStatusCode)
+                {
+                    // Handle failed status code based on the status code
+                    switch (response.StatusCode)
+                    {
+                        case HttpStatusCode.Unauthorized:
+                            throw new VRCIncorrectCredentialsException();
+                        default:
+                            throw new VRCServiceUnavailableException();
+                    }
+                }
 
                 // Pass the header to store the auth token.
                 StoreAuthToken(response.Headers);
@@ -197,7 +228,8 @@ namespace VRC_Favourite_Manager.Services
                 {
                     throw new VRCRequiresTwoFactorAuthException("default");
                 }
-                else {
+                else
+                {
                     JsonDocument.Parse(responseString).RootElement.TryGetProperty("id", out JsonElement id);
                     _userId = id.GetString();
                     return true;
@@ -206,7 +238,16 @@ namespace VRC_Favourite_Manager.Services
             catch (HttpRequestException e)
             {
                 Debug.WriteLine("Error: " + e.Message);
-                throw new VRCIncorrectCredentialsException();
+                throw new VRCServiceUnavailableException();
+            }
+            catch (VRCRequiresTwoFactorAuthException e)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("Error: " + e.Message);
+                throw new VRCServiceUnavailableException();
             }
         }
 
@@ -227,7 +268,12 @@ namespace VRC_Favourite_Manager.Services
             return $"Basic {base64AuthString}";
         }
 
-
+        /// <summary>
+        /// Authenticates the user with the 2FA code provided.
+        /// </summary>
+        /// <param name="twoFactorCode"></param>
+        /// <param name="twoFactorAuthType"></param>
+        /// <returns>boolean which represents if the provided 2FA code is valid.</returns>
         public async Task<bool> Authenticate2FAAsync(string twoFactorCode, string twoFactorAuthType)
         {
             try
@@ -263,6 +309,11 @@ namespace VRC_Favourite_Manager.Services
             {
                 Debug.WriteLine("Error: " + e.Message);
                 return false;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("Error: " + e.Message);
+                throw new VRCServiceUnavailableException();
             }
         }
 
@@ -302,21 +353,40 @@ namespace VRC_Favourite_Manager.Services
         /// <returns>If the user has successfully logged out or not.</returns>
         public async Task<bool> LogoutAsync()
         {
-            ConfigManager configManager = new ConfigManager();
-            var request = new HttpRequestMessage(HttpMethod.Put, "https://vrchat.com/api/1/logout");
-            request.Headers.Add("Accept", "application/json");
-            request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
-            request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
-            var response = await _Client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            var responseString = await response.Content.ReadAsStringAsync();
+            try
+            {
+                ConfigManager configManager = new ConfigManager();
+                var request = new HttpRequestMessage(HttpMethod.Put, "https://vrchat.com/api/1/logout");
+                request.Headers.Add("Accept", "application/json");
+                request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
+                request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
+                var response = await _Client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var responseString = await response.Content.ReadAsStringAsync();
 
-            // Deserialize the response string to a JSON object.
-            var authResponse = JsonSerializer.Deserialize<Models.LogoutResponse>(responseString);
-            configManager.Logout();
-            Debug.WriteLine(authResponse.message);
+                // Deserialize the response string to a JSON object.
+                var authResponse = JsonSerializer.Deserialize<Models.LogoutResponse>(responseString);
+                configManager.Logout();
+                Debug.WriteLine(authResponse.message);
 
-            return authResponse.message == "Ok!";
+                return authResponse.message == "Ok!";
+            }
+            catch (HttpRequestException e)
+            {
+                Debug.WriteLine("Error: " + e.Message);
+                return false;
+            }
+            catch (JsonException e)
+            {
+                Debug.WriteLine("Error: " + e.Message);
+                return false;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("Error: " + e.Message);
+                return false;
+            }
+           
         }
 
         /// <summary>
@@ -327,17 +397,18 @@ namespace VRC_Favourite_Manager.Services
         /// <returns>A list of worlds, sorted by date added to favorites. </returns>
         public async Task<List<Models.WorldModel>> GetFavoriteWorldsAsync(int n, int offset)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://vrchat.com/api/1/worlds/favorites?n={n}&offset={offset}");
-            request.Headers.Add("Accept", "application/json");
-            request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
-            request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
-            Debug.WriteLine(request.RequestUri);
-            var response = await _Client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            var responseString = await response.Content.ReadAsStringAsync();
-            Debug.WriteLine(responseString);
             try
             {
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://vrchat.com/api/1/worlds/favorites?n={n}&offset={offset}");
+                request.Headers.Add("Accept", "application/json");
+                request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
+                request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
+                Debug.WriteLine(request.RequestUri);
+                var response = await _Client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var responseString = await response.Content.ReadAsStringAsync();
+                Debug.WriteLine(responseString);
+
                 var responseWorlds =
                     JsonSerializer.Deserialize<List<Models.ListFavoriteWorldsResponse>>(responseString);
                 var worldModels = new List<Models.WorldModel>();
@@ -366,6 +437,16 @@ namespace VRC_Favourite_Manager.Services
                 Debug.WriteLine($"Deserialization error: {ex.Message}");
                 return null;
             }
+            catch (HttpRequestException ex)
+            {
+                Debug.WriteLine($"Error: {ex.Message}");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error: {ex.Message}");
+                return null;
+            }
         }
 
         /// <summary>
@@ -373,6 +454,7 @@ namespace VRC_Favourite_Manager.Services
         /// </summary>
         /// <param name="worldId">An ID which represents the world to be created.</param>
         /// <param name="instanceType">The instance type of the instance being created. Allowed parameters are: "public","friends+","friends","invite+","invite".</param>
+        /// <param name="region">The region of the instance being created. Allowed parameters are: "usw","use","jp","eu" </param>
         /// <returns>Returns the instanceId of the instance which was created.</returns>
         /// <exception cref="VRCNotLoggedInException">When the authentication tokens fails to authenticate the user.</exception>
         public async Task CreateInstanceAsync(string worldId, string instanceType, string region)
@@ -449,6 +531,18 @@ namespace VRC_Favourite_Manager.Services
             }
         }
 
+        /// <summary>
+        /// Creates an instance of a world, and creates an invite for the user.
+        /// Created instance is a group instance
+        /// </summary>
+        /// <param name="worldId">An ID which represents the world to be created.</param>
+        /// <param name="groupId">An ID which represents the group </param>
+        /// <param name="region">The region of the instance being created. Allowed parameters are: "usw","use","jp","eu" </param>
+        /// <param name="instanceType">The instance type of the instance being created. Allowed parameters are: "public","friends+","friends","invite+","invite".</param>
+        /// <param name="roleIds">The roles which have access to the instance. If no value is passed, all roles are allowed. </param>
+        /// <param name="queueEnabled">Boolean which represents if queues are allowed or not when instances are full.</param>
+        /// <returns>Task to call API to create instance, and invite the user.</returns>
+        /// <exception cref="VRCNotLoggedInException"></exception>
         public async Task CreateGroupInstanceAsync(string worldId, string groupId, string region, string instanceType, List<string> roleIds,
             bool queueEnabled)
         {
@@ -481,7 +575,7 @@ namespace VRC_Favourite_Manager.Services
                 }
 
                 var roleIds_formatted = "[\n    ";
-                foreach(var roleId in roleIds)
+                foreach (var roleId in roleIds)
                 {
                     if (roleIds.IndexOf(roleId) != roleIds.Count - 1)
                     {
@@ -510,12 +604,18 @@ namespace VRC_Favourite_Manager.Services
 
                 InviteSelfAsync(worldId, instanceId);
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
+                Console.WriteLine("Error: " + e.Message);
                 throw new VRCNotLoggedInException();
             }
         }
-        
+
+        /// <summary>
+        /// Gets the groups the user is in.
+        /// </summary>
+        /// <returns>A list of user's groups</returns>
+        /// <exception cref="VRCNotLoggedInException"></exception>
         public async Task<List<GetUserGroupsResponse>> GetGroupsAsync()
         {
             try
@@ -535,8 +635,13 @@ namespace VRC_Favourite_Manager.Services
                 throw new VRCNotLoggedInException();
             }
         }
-        
 
+        /// <summary>
+        /// Gets the roles in the group
+        /// </summary>
+        /// <param name="groupId">The ID which represents the group</param>
+        /// <returns>A list of group's roles</returns>
+        /// <exception cref="VRCNotLoggedInException"></exception>
         public async Task<List<GroupRolesModel>> GetGroupRolesAsync(string groupId)
         {
             try
@@ -571,6 +676,12 @@ namespace VRC_Favourite_Manager.Services
             }
         }
 
+        /// <summary>
+        /// Gets the user's roles in the group
+        /// </summary>
+        /// <param name="groupId">The ID which represents the group</param>
+        /// <returns>A list of role id's which represent the user's group roles</returns>
+        /// <exception cref="VRCNotLoggedInException"></exception>
         public async Task<List<string>> GetUserRoleAsync(string groupId)
         {
             try
@@ -585,14 +696,14 @@ namespace VRC_Favourite_Manager.Services
                 var responseJson = JsonSerializer.Deserialize<GetGroupMemberResponse>(responseString);
                 return responseJson.RoleIds;
             }
-            catch(HttpRequestException)
+            catch (HttpRequestException)
             {
                 throw new VRCNotLoggedInException();
             }
         }
 
 
-             
+
         /// <summary>
         /// Invites the user to the instance provided.
         /// </summary>

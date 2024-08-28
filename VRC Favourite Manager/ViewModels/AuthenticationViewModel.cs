@@ -60,13 +60,22 @@ namespace VRC_Favourite_Manager.ViewModels
             }
             catch (VRCRequiresTwoFactorAuthException e)
             {
-                if (await DoTwoFactorAuthenticationAsync(e.TwoFactorAuthType))
+                try
                 {
-                    DisplayMainView();
+                    if (await DoTwoFactorAuthenticationAsync(e.TwoFactorAuthType))
+                    {
+                        DisplayMainView();
+                    }
+                    else
+                    {
+                        ErrorMessage = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja"
+                            ? "2段階認証に失敗しました。もう一度お試しください。"
+                            : "Failed to authenticate with 2FA. Please try again.";
+                    }
                 }
-                else
+                catch (Exception)
                 {
-                    ErrorMessage = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "2段階認証に失敗しました。もう一度お試しください。" : "Failed to authenticate with 2FA. Please try again.";
+                    ErrorMessage = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "エラーが発生しました。もう一度お試しください。" : "An error occurred. Please try again.";
                 }
             }
             catch (VRCIncorrectCredentialsException)
