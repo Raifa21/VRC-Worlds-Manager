@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using System.Windows.Input;
 using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Services;
 using VRC_Favourite_Manager.Views;
+
 
 namespace VRC_Favourite_Manager.ViewModels
 {
@@ -90,13 +92,21 @@ namespace VRC_Favourite_Manager.ViewModels
 
         private void DisplayMainView()
         {
-            var rootFrame = new Frame();
-            mainWindow = new MainWindow();
-            rootFrame.Navigate(typeof(MainPage));
-            mainWindow.Content = rootFrame;
-            mainWindow.Activate();
-
-            ((App)Application.Current).mainWindow.Close();
+            try
+            {
+                var rootFrame = new Frame();
+                mainWindow = new MainWindow();
+                rootFrame.Navigate(typeof(MainPage));
+                mainWindow.Content = rootFrame;
+                mainWindow.Activate();
+                ((App)Application.Current).mainWindow.Close();
+            }
+            catch (Exception ex)
+            {
+                // Log or inspect the exception
+                Debug.WriteLine(ex.ToString());
+                throw;
+            }
         }
 
     }
