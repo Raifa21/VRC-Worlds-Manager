@@ -356,6 +356,9 @@ namespace VRC_Favourite_Manager.Services
             try
             {
                 ConfigManager configManager = new ConfigManager();
+                configManager.Logout();
+
+
                 var request = new HttpRequestMessage(HttpMethod.Put, "https://vrchat.com/api/1/logout");
                 request.Headers.Add("Accept", "application/json");
                 request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
@@ -366,7 +369,6 @@ namespace VRC_Favourite_Manager.Services
 
                 // Deserialize the response string to a JSON object.
                 var authResponse = JsonSerializer.Deserialize<Models.LogoutResponse>(responseString);
-                configManager.Logout();
                 Debug.WriteLine(authResponse.message);
 
                 return authResponse.message == "Ok!";
@@ -559,6 +561,7 @@ namespace VRC_Favourite_Manager.Services
                 {
                     region = "us";
                 }
+                var queueEnabled_String = queueEnabled ? "true" : "false";
 
                 string groupAccessType;
                 switch (instanceType)
@@ -574,39 +577,53 @@ namespace VRC_Favourite_Manager.Services
                         break;
                 }
 
-                var roleIds_formatted = "[\n    ";
-                foreach (var roleId in roleIds)
+                if (roleIds == null || roleIds.Count == 0)
                 {
-                    if (roleIds.IndexOf(roleId) != roleIds.Count - 1)
+                    Debug.WriteLine($"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"group\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"{groupId}\",\n  \"queueEnabled\": {queueEnabled_String},\n  \"groupAccessType\": \"{groupAccessType}\",\n  \"canRequestInvite\": false,\n  \"inviteOnly\": false\n}}");
+                    var content = new StringContent(
+                        $"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"group\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"{groupId}\",\n  \"queueEnabled\": {queueEnabled_String},\n  \"groupAccessType\": \"{groupAccessType}\",\n  \"canRequestInvite\": false,\n  \"inviteOnly\": false\n}}",
+                        null, "application/json");
+                    request.Content = content;
+                }
+                else
+                {
+                    var roleIds_formatted = "[\n    ";
+                    foreach (var roleId in roleIds)
                     {
-                        roleIds_formatted += $"\"{roleId}\",\n";
+                        if (roleIds.IndexOf(roleId) != roleIds.Count - 1)
+                        {
+                            roleIds_formatted += $"\"{roleId}\",\n";
+                        }
+                        else
+                        {
+                            roleIds_formatted += $"\"{roleId}\"";
+                        }
                     }
-                    else
-                    {
-                        roleIds_formatted += $"\"{roleId}\"\n  ]";
-                    }
+                    roleIds_formatted += "\n]";
+
+
+                    Debug.WriteLine(
+                        $"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"group\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"{groupId}\",\n  \"roleIds\": {roleIds_formatted},\n  \"queueEnabled\": {queueEnabled_String},\n  \"groupAccessType\": \"{groupAccessType}\",\n  \"canRequestInvite\": false,\n  \"inviteOnly\": false\n}}");
+                    var content = new StringContent(
+                        $"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"group\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"{groupId}\",\n  \"roleIds\": {roleIds_formatted},\n  \"queueEnabled\": {queueEnabled_String},\n  \"groupAccessType\": \"{groupAccessType}\",\n  \"canRequestInvite\": false,\n  \"inviteOnly\": false\n}}",
+                        null, "application/json");
+                    request.Content = content;
                 }
 
-                var content = new StringContent(
-                    $"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"group\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"{groupId}\",\n  \"roleIds\": {roleIds_formatted},\n  \"queueEnabled\": {queueEnabled},\n  \"groupAccessType\": \"{groupAccessType}\",\n  \"queueEnabled\": {queueEnabled},\n  \"canRequestInvite\": false,\n  \"inviteOnly\": false\n}}",
-                    null, "application/json");
-                request.Content = content;
+
+                
                 var response = await _Client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 var responseString = await response.Content.ReadAsStringAsync();
                 JsonDocument.Parse(responseString).RootElement.TryGetProperty("instanceId", out JsonElement id);
                 var instanceId = id.GetString();
-                if (instanceId.Length >= 5)
-                {
-                    instanceId = instanceId.Substring(0, 5);
-                }
 
                 InviteSelfAsync(worldId, instanceId);
             }
             catch (HttpRequestException e)
             {
-                Console.WriteLine("Error: " + e.Message);
+                Debug.WriteLine("Error: " + e.Message);
                 throw new VRCNotLoggedInException();
             }
         }

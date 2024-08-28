@@ -54,13 +54,13 @@
                                     Click="Remove_Click"/>
                             </MenuFlyout>
                         </StackPanel.ContextFlyout>
-                        <Viewbox Width="240" Height="180">
-                            <Grid Width="240" Height="180">
-                                <Image Source="{Binding ThumbnailImageUrl}" Stretch="Fill" Width="240" Height="180"/>
+                        <Viewbox Width="246" Height="184.5">
+                            <Grid Width="246" Height="184.5">
+                                <Image Source="{Binding ThumbnailImageUrl}" Stretch="Fill" Width="246" Height="184.5"/>
                             </Grid>
                         </Viewbox>
-                        <TextBlock Text="{Binding WorldName}" FontWeight="Bold" TextTrimming="CharacterEllipsis" Width="240"/>
-                        <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='By {0}'}" TextTrimming="CharacterEllipsis" Width="240"/>
+                        <TextBlock Text="{Binding WorldName}" FontWeight="Bold" TextTrimming="CharacterEllipsis" Width="246"/>
+                        <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='By {0}'}" TextTrimming="CharacterEllipsis" Width="246"/>
                     </StackPanel>
                 </DataTemplate>
             </muxc:GridView.ItemTemplate>
@@ -79,13 +79,13 @@
                                     Click="MultiRemove_Click"/>
                             </MenuFlyout>
                         </StackPanel.ContextFlyout>
-                        <Viewbox Width="240" Height="180">
-                            <Grid Width="240" Height="180">
-                                <Image Source="{Binding ThumbnailImageUrl}" Stretch="Fill" Width="240" Height="180"/>
+                        <Viewbox Width="246" Height="184.5">
+                            <Grid Width="246" Height="184.5">
+                                <Image Source="{Binding ThumbnailImageUrl}" Stretch="Fill" Width="246" Height="184.5"/>
                             </Grid>
                         </Viewbox>
-                        <TextBlock Text="{Binding WorldName}" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='By {0}'}"/>
+                        <TextBlock Text="{Binding WorldName}" FontWeight="Bold" TextTrimming="CharacterEllipsis" Width="246"/>
+                        <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='By {0}'}" TextTrimming="CharacterEllipsis" Width="246"/>
                     </StackPanel>
                 </DataTemplate>
             </muxc:GridView.ItemTemplate>

@@ -21,7 +21,6 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly VRChatAPIService _vrChatAPIService;
         private readonly WorldManager _worldManager;
         private readonly FolderManager _folderManager;
-        private MainWindow mainWindow;
 
         public ICommand LogoutCommand { get; }
         public IEnumerable<NavigationViewItemBase> FoldersNavigationViewItems { get; set; }
@@ -43,15 +42,13 @@ namespace VRC_Favourite_Manager.ViewModels
 
         private async Task LogoutCommandAsync()
         {
+            var app = (App)Application.Current;
+            var mainWindow = app.MainWindow;
             await _vrChatAPIService.LogoutAsync();
             var rootFrame = new Frame();
-            mainWindow = new MainWindow();
             rootFrame.Navigate(typeof(AuthenticationPage));
             mainWindow.Content = rootFrame;
             mainWindow.Activate();
-
-
-            ((App)Application.Current).mainWindow.Close();
         }
 
         private void OnFolderManagerPropertyChanged(object sender, PropertyChangedEventArgs e)

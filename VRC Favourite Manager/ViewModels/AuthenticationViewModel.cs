@@ -15,13 +15,12 @@ namespace VRC_Favourite_Manager.ViewModels
     {
         private readonly VRChatAPIService _vrChatAPIService;
         private readonly Window _mainWindow;
-        private MainWindow mainWindow;
         private string _errorMessage;
 
         public AuthenticationViewModel()
         {
             _vrChatAPIService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
-            _mainWindow = ((App)Application.Current).mainWindow;
+            _mainWindow = ((App)Application.Current).MainWindow;
             LoginCommand = new RelayCommand(Login);
 
         }
@@ -101,13 +100,12 @@ namespace VRC_Favourite_Manager.ViewModels
 
         private void DisplayMainView()
         {
+            var app = (App)Application.Current;
+            var mainWindow = app.MainWindow;
             var rootFrame = new Frame();
-            mainWindow = new MainWindow();
             rootFrame.Navigate(typeof(MainPage));
             mainWindow.Content = rootFrame;
             mainWindow.Activate();
-
-            ((App)Application.Current).mainWindow.Close();
         }
 
     }

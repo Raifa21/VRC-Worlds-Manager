@@ -75,8 +75,8 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public void RestoreWorld(WorldModel world)
         {
-            _folderManager.RemoveFromFolder(world, "Hidden");
             _folderManager.AddToFolder(world, "Unclassified");
+            _folderManager.RemoveFromFolder(world, "Hidden");
             UpdateWorlds();
         }
 

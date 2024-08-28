@@ -529,10 +529,6 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public async void CreateInstanceAsync()
         {
-            if (!_selectedRoles.Any())
-            {
-                _selectedRoles.Add(_selectedGroup.GroupRoles.Find(gr => gr.Name == "Everyone").Id);
-            }
             await _vrChatApiService.CreateGroupInstanceAsync(_selectedWorld.WorldId, _selectedGroup.Id, Region,
                 _groupAccessType.ToLower(), _selectedRoles, _isQueueEnabled);
         }

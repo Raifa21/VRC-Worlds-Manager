@@ -19,7 +19,7 @@ namespace VRC_Favourite_Manager
         private VRChatAPIService _VRChatAPIService;
         private string authToken;
         private string twoFactorAuthToken;
-        public MainWindow mainWindow;
+        public MainWindow MainWindow { get; private set; }
         private string languageCode;
 
         public App()
@@ -35,10 +35,10 @@ namespace VRC_Favourite_Manager
             InitialiseService();
 
             ReadConfig();
-            
 
 
-            mainWindow = new MainWindow();
+
+            MainWindow = new MainWindow();
             Frame rootFrame = new Frame();
             try
             {
@@ -68,10 +68,10 @@ namespace VRC_Favourite_Manager
                 System.Diagnostics.Debug.WriteLine("Error reading API key from config file.");
                 rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
             }
-            
-            
-            mainWindow.Content = rootFrame;
-            mainWindow.Activate();
+
+
+            MainWindow.Content = rootFrame;
+            MainWindow.Activate();
         }
 
         /// <summary>
