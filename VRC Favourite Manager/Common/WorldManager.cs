@@ -137,6 +137,7 @@ namespace VRC_Favourite_Manager.Common
                             oldWorld.Visits = world.Visits;
                             oldWorld.WorldName = world.WorldName;
                         }
+                        _folderManager.UpdateWorldInFolders(world);
                     }
                 }
             }

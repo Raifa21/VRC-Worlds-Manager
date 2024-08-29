@@ -2,7 +2,15 @@
 <ContentDialog
     x:Class="VRC_Favourite_Manager.Views.WorldDetailsPopup"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:common="using:VRC_Favourite_Manager.Common">
+
+
+    <ContentDialog.Resources>
+        <common:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <common:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
+        <common:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+    </ContentDialog.Resources>
 
     <Grid Width="750" Height="600" HorizontalAlignment="Center">
         <Button HorizontalAlignment="Right"
@@ -12,6 +20,9 @@
                 Style="{StaticResource CloseButtonStyle}">
             <FontIcon Glyph="&#xE711;" />
         </Button>
+
+        <ProgressRing IsActive="{Binding IsLoading}" Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
         <Grid Margin="10,25,10,0">
             <Grid Margin="0,0,0,0">
                 <Grid.ColumnDefinitions>
@@ -22,9 +33,10 @@
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-10,0,0">
                         <Viewbox Width="416" Height="312" >
                             <Grid Width="416" Height="312">
-                                <HyperlinkButton Click="WorldLink_Click" Margin="0" Padding="0">
+                                <HyperlinkButton Click="WorldLink_Click" Margin="0" Padding="0" Visibility="{Binding CanCreateInstance, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <Image Source="{Binding ThumbnailImageUrl}" Stretch="Fill" Width="416" Height="312"/>
                                 </HyperlinkButton>
+                                <Image Source="{Binding ThumbnailImageUrl}" Stretch="Fill" Width="416" Height="312" Visibility="{Binding CanCreateInstance, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
                             </Grid>
                         </Viewbox>
                             <Grid>
@@ -69,7 +81,8 @@
                                     VerticalAlignment="Bottom"
                                     Margin="0,30,0,0"
                                     Padding="80,5,80,5"
-                                    Click="CreateInstanceButton_Click"/>
+                                    Click="CreateInstanceButton_Click"
+                                    IsEnabled="{Binding CanCreateInstance}"/>
                         </StackPanel>
                     </StackPanel>
             </Grid>

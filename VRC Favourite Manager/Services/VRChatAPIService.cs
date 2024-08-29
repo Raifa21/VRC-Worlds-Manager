@@ -451,6 +451,37 @@ namespace VRC_Favourite_Manager.Services
             }
         }
 
+        public async Task<ListFavoriteWorldsResponse> GetWorldByIdAsync(string worldId)
+        {
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://vrchat.com/api/1/worlds/{worldId}");
+                request.Headers.Add("Accept", "application/json");
+                request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
+                request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
+                var response = await _Client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var responseString = await response.Content.ReadAsStringAsync();
+                var responseWorld = JsonSerializer.Deserialize<ListFavoriteWorldsResponse>(responseString);
+                return responseWorld;
+            }
+            catch (JsonException ex)
+            {
+                Debug.WriteLine($"Deserialization error: {ex.Message}");
+                return null;
+            }
+            catch (HttpRequestException ex)
+            {
+                Debug.WriteLine($"Error: {ex.Message}");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error: {ex.Message}");
+                return null;
+            }
+        }
+
         /// <summary>
         /// Creates an instance of a world, and creates an invite for the user.
         /// </summary>

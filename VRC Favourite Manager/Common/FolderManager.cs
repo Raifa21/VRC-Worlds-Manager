@@ -174,6 +174,31 @@ namespace VRC_Favourite_Manager.Common
 
             WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
         }
+        public void UpdateWorldInFolders(WorldModel world)
+        {
+            foreach (var folder in _folders)
+            {
+                var existingWorld = folder.Worlds.FirstOrDefault(w => w.WorldId == world.WorldId);
+                if (existingWorld != null)
+                {
+                    Debug.WriteLine($"Updating {world.WorldName} in {folder.Name}");
+                    existingWorld.AuthorName = world.AuthorName;
+                    existingWorld.Capacity = world.Capacity;
+                    existingWorld.Description = world.Description;
+                    existingWorld.Favorites = world.Favorites;
+                    existingWorld.LastUpdate = world.LastUpdate;
+                    existingWorld.ThumbnailImageUrl = world.ThumbnailImageUrl;
+                    existingWorld.Visits = world.Visits;
+                    existingWorld.WorldName = world.WorldName;
+                    if (folder.Name == SelectedFolder?.Name)
+                    {
+                        SelectedFolder = folder;
+                        WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
+                    }
+                }
+            }
+            
+        }
 
         public void RemoveFromFolder(WorldModel world, string folderName)
         {
@@ -342,6 +367,8 @@ namespace VRC_Favourite_Manager.Common
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+
     }
     public class FolderUpdatedMessage(ObservableCollection<FolderModel> folders)
     {

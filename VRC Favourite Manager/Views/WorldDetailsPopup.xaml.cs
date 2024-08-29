@@ -15,12 +15,13 @@ namespace VRC_Favourite_Manager.Views
         public WorldModel World { get; set; }
         private string _selectedInstanceType;
         private string _selectedRegion;
+        private WorldDetailsPopupViewModel _viewmodel;
 
         public WorldDetailsPopup(WorldModel world)
         {
             this.InitializeComponent();
-            this.World = world;
-            this.DataContext = world;
+            _viewmodel = new WorldDetailsPopupViewModel(world);
+            this.DataContext = _viewmodel;
             
             _selectedInstanceType = "Public";
             _selectedRegion = "JP";
@@ -35,8 +36,7 @@ namespace VRC_Favourite_Manager.Views
             var world = (WorldModel)this.DataContext;
             if (_selectedInstanceType != "Group")
             {
-                WorldDetailsPopupViewModel viewModel = new WorldDetailsPopupViewModel(world);
-                viewModel.CreateInstanceAsync(world.WorldId, _selectedInstanceType, _selectedRegion);
+                _viewmodel.CreateInstanceAsync(world.WorldId, _selectedInstanceType, _selectedRegion);
                 this.Hide();
             }
             else
