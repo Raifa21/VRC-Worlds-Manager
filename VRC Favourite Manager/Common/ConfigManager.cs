@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using Tomlyn;
+using VRC_Favourite_Manager.Services;
 
 namespace VRC_Favourite_Manager.Common
 {
@@ -15,11 +16,13 @@ namespace VRC_Favourite_Manager.Common
             var appFolder = Path.Combine(appDataFolder, "VRC_Favourite_Manager");
             Directory.CreateDirectory(appFolder);
             _configFilePath = Path.Combine(appFolder, "Config.toml");
+            File.Delete(_configFilePath);
         }
 
         public string ReadConfig()
         {
-            return File.ReadAllText(_configFilePath);
+            var _configService = new ConfigService();
+            return _configService.LoadToken(_configFilePath);
         }
 
         public bool ConfigExists()
@@ -29,10 +32,11 @@ namespace VRC_Favourite_Manager.Common
 
         public void WriteToConfig(string key, string token)
         {
-            Debug.WriteLine($"Writing to config: {key} = {token}");
+            var _configService = new ConfigService();
+
             if (!ConfigExists())
             {
-                File.WriteAllText(_configFilePath, $"{key} = \"{token}\"");
+                _configService.SaveToken($"{key} = \"{token}\"", _configFilePath);
             }
             else
             {
@@ -45,8 +49,7 @@ namespace VRC_Favourite_Manager.Common
                 {
                     toml.Add(key, token);
                 }
-
-                File.WriteAllText(_configFilePath, (Toml.FromModel(toml)));
+                _configService.SaveToken(Toml.FromModel(toml), _configFilePath);
             }
         }
 
@@ -61,7 +64,8 @@ namespace VRC_Favourite_Manager.Common
                 if (toml.ContainsKey("auth"))
                 {
                     toml.Remove("auth");
-                    File.WriteAllText(_configFilePath, (Toml.FromModel(toml)));
+                    var _configService = new ConfigService();
+                    _configService.SaveToken(Toml.FromModel(toml), _configFilePath);
                 }
             }
         }

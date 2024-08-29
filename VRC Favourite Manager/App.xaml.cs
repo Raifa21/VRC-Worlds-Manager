@@ -80,6 +80,7 @@ namespace VRC_Favourite_Manager
         private void ReadConfig()
         {
             var configManager = new ConfigManager();
+            var configService = new ConfigService();
 
             if (!configManager.ConfigExists())
             {
@@ -93,8 +94,8 @@ namespace VRC_Favourite_Manager
                 {
                     try
                     {
-                        this.authToken = toml["auth"].ToString();
-                        this.twoFactorAuthToken = toml["twoFactorAuth"].ToString();
+                        this.authToken = configService.Decrypt(toml["auth"].ToString());
+                        this.twoFactorAuthToken = configService.Decrypt(toml["twoFactorAuth"].ToString());
                     }
                     catch (System.Exception)
                     {
