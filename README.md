@@ -24,7 +24,6 @@ Alternatively, download the application from here:
 ## Features
 
 - World management with folders
-- Folder sharing with other users
 - Generate world instances
 - Automatic world adding via VRChat API
 
@@ -38,6 +37,9 @@ Contributions are welcome! Please follow these steps to contribute:
 4. Commit your changes (`git commit -m 'Add some feature'`)
 5. Push to the branch (`git push origin feature-branch`)
 6. Open a pull request
+
+Please note that the file responsibe for encrypting/decrypting (Services/ConfigService.cs) has been removed from version control for security reasons. 
+Please create your own AES encryption script to run locally.
 
 ## License
 
