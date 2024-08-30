@@ -23,7 +23,6 @@ VRC Favorite Managerの最新リリースは、リリースタブからダウン
 ## 機能
 
 - フォルダを使ったワールド管理
-- 他のユーザーとのフォルダ共有
 - ワールドインスタンスの生成
 - VRChat APIを利用した自動ワールド追加
 
@@ -37,6 +36,9 @@ VRC Favorite Managerの最新リリースは、リリースタブからダウン
 4. 変更をコミットする（`git commit -m 'Add some feature'`）
 5. ブランチにプッシュする（`git push origin feature-branch`）
 6. プルリクエストを作成する
+
+セキュリティ上の理由から、暗号化/復号化を担当するファイル（Services/ConfigService.cs）はバージョン管理から削除されました。
+ローカルで実行する場合はAES暗号化スクリプトをご自身で作成してください。
 
 ## ライセンス
 
