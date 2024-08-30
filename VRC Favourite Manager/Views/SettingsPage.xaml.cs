@@ -56,7 +56,6 @@ namespace VRC_Favourite_Manager.Views
                 this.WorldManagementTitle.Text = "ワールド管理";
                 this.HiddenFolder.Content = "非表示フォルダ";
                 this.ResetButton.Content = "リセット";
-
             }
             else
             {
@@ -69,8 +68,7 @@ namespace VRC_Favourite_Manager.Views
                 this.LookingForTranslators.Text = "Support for other languages will be added later. Requests for supported languages can be made";
                 this.HyperlinkText.Text = "here.";
                 this.WorldManagementTitle.Text = "Manage Worlds";
-                this.HiddenFolder.Content = "Hidden Folder";
-                this.ResetButton.Content = "Reset";
+                this.HiddenFolder.Content = "Hidden Folder"; this.ResetButton.Content = "Reset";
             }
         }
 

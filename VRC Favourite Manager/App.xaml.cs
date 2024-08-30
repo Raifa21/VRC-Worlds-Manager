@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using CommunityToolkit.Mvvm.Messaging;
@@ -63,7 +64,7 @@ namespace VRC_Favourite_Manager
                     }
                 }
             }
-            catch (System.Exception)
+            catch (System.Exception e)
             {
                 System.Diagnostics.Debug.WriteLine("Error reading API key from config file.");
                 rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
@@ -94,12 +95,13 @@ namespace VRC_Favourite_Manager
                 {
                     try
                     {
-                        this.authToken = configService.Decrypt(toml["auth"].ToString());
-                        this.twoFactorAuthToken = configService.Decrypt(toml["twoFactorAuth"].ToString());
+                        this.authToken = toml["auth"].ToString();
+                        this.twoFactorAuthToken = toml["twoFactorAuth"].ToString();
                     }
-                    catch (System.Exception)
+                    catch (System.Exception e)
                     {
                         System.Diagnostics.Debug.WriteLine("Error reading API key from config file.");
+                        Debug.WriteLine(e.Message);
                     }
                 }
                 else

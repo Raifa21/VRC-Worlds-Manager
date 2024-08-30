@@ -16,7 +16,6 @@ namespace VRC_Favourite_Manager.Common
             var appFolder = Path.Combine(appDataFolder, "VRC_Favourite_Manager");
             Directory.CreateDirectory(appFolder);
             _configFilePath = Path.Combine(appFolder, "Config.toml");
-            File.Delete(_configFilePath);
         }
 
         public string ReadConfig()

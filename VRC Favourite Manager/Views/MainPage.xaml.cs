@@ -11,6 +11,7 @@ using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
 using Microsoft.UI.Xaml.Navigation;
+using System;
 
 namespace VRC_Favourite_Manager.Views
 {
@@ -52,21 +53,28 @@ namespace VRC_Favourite_Manager.Views
 
         private void RefreshPage(string languageCode)
         {
-            if (languageCode == "ja")
+            try
             {
-                this.AllWorldsItem.Content = "ワールド一覧";
-                this.FoldersItem.Content = "フォルダ";
-                this.AboutItem.Content = "このアプリについて";
-                this.SettingsItem.Content = "設定";
-                this.LogoutItem.Content = "ログアウト";
+                if (languageCode == "ja")
+                {
+                    this.AllWorldsItem.Content = "ワールド一覧";
+                    this.FoldersItem.Content = "フォルダ";
+                    this.AboutItem.Content = "このアプリについて";
+                    this.SettingsItem.Content = "設定";
+                    this.LogoutItem.Content = "ログアウト";
+                }
+                else
+                {
+                    this.AllWorldsItem.Content = "All Worlds";
+                    this.FoldersItem.Content = "Folders";
+                    this.AboutItem.Content = "About";
+                    this.SettingsItem.Content = "Settings";
+                    this.LogoutItem.Content = "Logout";
+                }
             }
-            else
+            catch (System.Exception)
             {
-                this.AllWorldsItem.Content = "All Worlds";
-                this.FoldersItem.Content = "Folders";
-                this.AboutItem.Content = "About";
-                this.SettingsItem.Content = "Settings";
-                this.LogoutItem.Content = "Logout";
+                Debug.WriteLine("Error refreshing page.");
             }
         }
 
@@ -88,7 +96,25 @@ namespace VRC_Favourite_Manager.Views
                 {
                     folder.Content = "Unclassified";
                 }
+                else
+                {
+                    MenuFlyout flyout = new MenuFlyout();
+                    string folderName = folder.Content as string;
+
+                    MenuFlyoutItem delete = new MenuFlyoutItem
+                    {
+                        Text = "Delete folder",
+                        Tag = folderName
+                    };
+                    delete.Click += Delete_Click;
+
+                    flyout.Items.Add(delete);
+
+                    folder.ContextFlyout = flyout;
+                }
+
                 FoldersItem.MenuItems.Add(folder);
+
                 if (folder.IsSelected)
                 {
                     NavView.SelectedItem = folder;
@@ -96,6 +122,19 @@ namespace VRC_Favourite_Manager.Views
             }
         }
 
+        private async void Delete_Click(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as MenuFlyoutItem;
+            var folderName = menuItem?.Tag as string;
+
+            if (!string.IsNullOrEmpty(folderName))
+            {
+                var deletePopup = new DeletePopup(folderName);
+                deletePopup.XamlRoot = this.Content.XamlRoot;
+                await deletePopup.ShowAsync();
+                GenerateFolders();
+            }
+        }
 
         private void NavigationView_SelectionChanged(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)
         {

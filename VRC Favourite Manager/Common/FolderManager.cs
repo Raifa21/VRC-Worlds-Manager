@@ -285,8 +285,10 @@ namespace VRC_Favourite_Manager.Common
             return folderName;
         }
 
-        public void RemoveFolder(FolderModel folder)
+        public void RemoveFolder(string folderName)
         {
+            Debug.WriteLine($"Removing folder {folderName}");
+            var folder = _folders.FirstOrDefault(f => f.Name == folderName);
             foreach (var world in folder.Worlds)
             {
                 var PlaceWorldInUnclassified = true;
@@ -317,8 +319,14 @@ namespace VRC_Favourite_Manager.Common
         public void RenameFolder(string newName, string oldName)
         {
             if (newName == oldName) return;
-            if (oldName != "Unclassified")
+            if (oldName != "Unclassified" && oldName != "Hidden")
             {
+                var _userInputHandler = new UserInputHandler();
+                newName = _userInputHandler.SanitizeUserInput(newName);
+                if(string.IsNullOrWhiteSpace(newName))
+                {
+                    return;
+                }
                 var index = 0;
                 var name = newName;
                 while (_folders.Any(f => f.Name == newName))
@@ -340,6 +348,7 @@ namespace VRC_Favourite_Manager.Common
 
                 WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
             }
+            Debug.WriteLine($"Renaming {oldName} to {newName}");
             SaveFolders();
         }
 

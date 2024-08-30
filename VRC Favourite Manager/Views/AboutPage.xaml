@@ -63,13 +63,13 @@
                 <TextBlock Text="Launchpad Icons © 黒音キト licensed under CC-BY-NC-4.0." Foreground="DimGray" />
             </StackPanel>
         </Grid>
-        <Grid Margin="20,240,0,0" Height="80" Width="330" HorizontalAlignment="Left" VerticalAlignment="Top">
-            <TextBlock Text="Supporters" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left" />
-            <TextBlock Text="59" Foreground="#e649d6" Margin="0,35,0,0" />
-            <TextBlock Text="東雲りん" Foreground="#e649d6" Margin="30,35,0,0" />
-            <TextBlock Text="おこめのおいしいお店" Foreground="#e649d6" Margin="90,35,0,0" />
-            <TextBlock Text="朝霧魅玲" Foreground="#e649d6" Margin="210,35,0,0" />
-            <TextBlock Margin="0,60,0,0">
+        <Grid Margin="20,420,0,0" Height="80" Width="330" HorizontalAlignment="Right" VerticalAlignment="Top">
+            <TextBlock Text="Supporters" FontSize="18" FontWeight="Bold" HorizontalAlignment="Right" Margin="0,0,20,0" />
+            <TextBlock Text="59" Foreground="#e649d6" Margin="0,35,290,0" HorizontalAlignment="Right"/>
+            <TextBlock Text="東雲りん" Foreground="#e649d6" Margin="0,35,220,0" HorizontalAlignment="Right"/>
+            <TextBlock Text="おこめのおいしいお店" Foreground="#e649d6" Margin="0,35,90,0" HorizontalAlignment="Right" />
+            <TextBlock Text="朝霧魅玲" Foreground="#e649d6" Margin="0,35,20,0" HorizontalAlignment="Right" />
+            <TextBlock Margin="0,60,20,0" HorizontalAlignment="Right">
                 <Run x:Name="SupportThankYouTextBlock"/>
                 <Hyperlink NavigateUri="https://raifa.fanbox.cc/">
                     <Run x:Name="hyperlinktext" />
@@ -77,19 +77,25 @@
                 <Run x:Name="SupportThankYouTextSuffix" />
             </TextBlock>
         </Grid>
-        <Grid Margin="0,240,20,0" Height="80" Width="140" HorizontalAlignment="Right" VerticalAlignment="Top">
+        <Grid Margin="0,240,20,0" Height="120" Width="340" HorizontalAlignment="Right" VerticalAlignment="Top">
             <TextBlock Text="Project Links" FontSize="18" FontWeight="Bold" HorizontalAlignment="Right" />
             <TextBlock HorizontalAlignment="Right" Margin="0,35,0,0">
-                <Hyperlink>
+                <Hyperlink NavigateUri="https://github.com/Raifa21/VRC-Worlds-Manager">
                     GitHub
                 </Hyperlink>
                 <Run Text=" | Source Code" />
             </TextBlock>
             <TextBlock HorizontalAlignment="Right" Margin="0,60,0,0">
-                <Hyperlink>
+                <Hyperlink NavigateUri="https://raifaworks.booth.pm/items/6053937">
                     Booth
                 </Hyperlink>
                 <Run Text=" | Download" />
+            </TextBlock>
+            <TextBlock HorizontalAlignment="Right" Margin="0,85,0,0">
+                <Hyperlink NavigateUri="https://discord.gg/T5mmA3PA">
+                    Discord Server
+                </Hyperlink>
+                <Run Text=" | For Updates and Support" />
             </TextBlock>
         </Grid>
         <Grid Margin="20,590,20,0" HorizontalAlignment="Left">

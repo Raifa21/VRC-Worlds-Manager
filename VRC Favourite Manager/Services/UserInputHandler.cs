@@ -3,13 +3,7 @@ using System.Text.RegularExpressions;
 
 public class UserInputHandler
 {
-    public string ProcessUserInput(string userInput)
-    {
-        userInput = SanitizeUserInput(userInput);
-        return userInput;
-    }
-
-    private string SanitizeUserInput(string input)
+    public string SanitizeUserInput(string input)
     {
         if (string.IsNullOrEmpty(input) || input.Length > 200)
         {
