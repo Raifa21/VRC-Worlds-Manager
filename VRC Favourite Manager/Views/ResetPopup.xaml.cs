@@ -1,11 +1,6 @@
-using System.Collections.Generic;
 using Microsoft.UI.Xaml.Controls;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using Microsoft.UI.Xaml;
-using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.ViewModels;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace VRC_Favourite_Manager.Views
 {
@@ -28,7 +23,7 @@ namespace VRC_Favourite_Manager.Views
             {
                 this.ConfirmButton.Content = "Confirm";
                 this.DeleteWorlds.Text = "Reset Folders";
-                this.ConfirmMessage.Text = "Are you sure you want to reset?";
+                this.ConfirmMessage.Text = "Are you sure you want to reset all data?";
                 this.ConfirmMessage2.Text = "This action cannot be undone.";
             }
         }

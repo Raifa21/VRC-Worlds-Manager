@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using CommunityToolkit.Mvvm.Messaging;
-using Microsoft.UI.Xaml.Controls;
 using VRC_Favourite_Manager.Models;
-using VRC_Favourite_Manager.Views;
 
 namespace VRC_Favourite_Manager.Common
 {
@@ -226,7 +223,7 @@ namespace VRC_Favourite_Manager.Common
             if (PlaceWorldInUnclassified)
             {
                 var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
-                unclassifiedFolder?.Worlds.Add(world);
+                unclassifiedFolder?.Worlds.Insert(0, world);
                 if (SelectedFolder?.Name == "Unclassified")
                 {
                     _selectedFolder = unclassifiedFolder;
@@ -246,7 +243,7 @@ namespace VRC_Favourite_Manager.Common
         public void MoveToHiddenFolder(WorldModel world)
         {
             //add to hidden folder
-            _folders.First(f => f.Name == "Hidden").Worlds.Add(world);
+            _folders.First(f => f.Name == "Hidden").Worlds.Insert(0, world);
 
 
             foreach (var folder in _folders)
@@ -303,7 +300,7 @@ namespace VRC_Favourite_Manager.Common
                 if(PlaceWorldInUnclassified)
                 {
                     var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
-                    unclassifiedFolder?.Worlds.Add(world);
+                    unclassifiedFolder?.Worlds.Insert(0, world);
                 }
             }
             _folders.Remove(folder);
@@ -316,22 +313,22 @@ namespace VRC_Favourite_Manager.Common
             WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
         }
 
-        public void RenameFolder(string newName, string oldName)
+        public string RenameFolder(string newName, string oldName)
         {
-            if (newName == oldName) return;
+            if (newName == oldName) return oldName;
             if (oldName != "Unclassified" && oldName != "Hidden")
             {
                 var _userInputHandler = new UserInputHandler();
                 newName = _userInputHandler.SanitizeUserInput(newName);
                 if(string.IsNullOrWhiteSpace(newName))
                 {
-                    return;
+                    return oldName;
                 }
                 var index = 0;
                 var name = newName;
                 while (_folders.Any(f => f.Name == newName))
                 {
-                    if (newName == oldName) return;
+                    if (newName == oldName) return oldName;
                     index++;
                     newName = $"{name} ({index})";
                 }
@@ -350,6 +347,7 @@ namespace VRC_Favourite_Manager.Common
             }
             Debug.WriteLine($"Renaming {oldName} to {newName}");
             SaveFolders();
+            return newName;
         }
 
         private void SaveFolders()

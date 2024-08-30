@@ -1,12 +1,10 @@
-﻿
-using System.Collections.ObjectModel;
-using System.Globalization;
+﻿using System.Globalization;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
 using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
-using VRChat.API.Model;
 
 namespace VRC_Favourite_Manager.ViewModels
 {
@@ -21,6 +19,7 @@ namespace VRC_Favourite_Manager.ViewModels
             get => _isLoading;
             set => SetProperty(ref _isLoading, value);
         }
+
 
         private bool _canCreateInstance;
         public bool CanCreateInstance
@@ -100,6 +99,24 @@ namespace VRC_Favourite_Manager.ViewModels
             {
                 IsLoading = false;
                 CanCreateInstance = false;
+                //get world from the folder manager
+                foreach(var folder in _folderManager.Folders)
+                {
+                    var worldModel_temp = folder.Worlds.FirstOrDefault(w => w.WorldId == worldId);
+                    if (worldModel_temp != null)
+                    {
+                        ThumbnailImageUrl = worldModel_temp.ThumbnailImageUrl;
+                        WorldName = worldModel_temp.WorldName;
+                        AuthorName = worldModel_temp.AuthorName;
+                        Description = worldModel_temp.Description;
+                        Visits = worldModel_temp.Visits ?? 0;
+                        Favorites = worldModel_temp.Favorites;
+                        Capacity = worldModel_temp.Capacity;
+                        LastUpdate = worldModel_temp.LastUpdate;
+                        break;
+                    }
+                }
+
                 return;
             }
             CanCreateInstance = world.ReleaseStatus == "public";

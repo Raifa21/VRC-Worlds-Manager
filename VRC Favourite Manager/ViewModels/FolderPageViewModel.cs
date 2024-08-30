@@ -1,17 +1,11 @@
 ﻿using System;
 using Microsoft.UI.Xaml;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using VRC_Favourite_Manager.Models;
-using VRC_Favourite_Manager.Services;
-using System.Linq;
 using VRC_Favourite_Manager.Common;
-using VRC_Favourite_Manager.Views;
 using CommunityToolkit.Mvvm.Messaging;
 
 namespace VRC_Favourite_Manager.ViewModels
@@ -70,10 +64,10 @@ namespace VRC_Favourite_Manager.ViewModels
             _worldManager = Application.Current.Resources["WorldManager"] as WorldManager;
 
             Worlds = new ObservableCollection<WorldModel>();
-            _folderName = _folderManager?.SelectedFolder?.Name;
+            FolderName = _folderManager?.SelectedFolder?.Name;
             _isRenaming = false;
 
-            ChangeFolderNameLang = (_folderName == "Unclassified" && Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja");
+            ChangeFolderNameLang = (FolderName == "Unclassified" && Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja");
 
             MoveWorldCommand = new RelayCommand<Tuple<WorldModel, string>>(MoveWorld);
             AddFolderCommand = new RelayCommand<string>(AddFolder);
@@ -83,7 +77,7 @@ namespace VRC_Favourite_Manager.ViewModels
             ViewDetailsText = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "詳細" : "View Details";
             MoveToAnotherFolderText = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "別のフォルダに移動" : "Move to another folder";
             RemoveFromFolderText = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "フォルダから削除" : "Remove from folder";
-            IsUnclassified = _folderName == "Unclassified";
+            IsUnclassified = FolderName == "Unclassified";
 
 
             WeakReferenceMessenger.Default.Register<FolderUpdatedMessage>(this, (r, m) =>
@@ -92,16 +86,23 @@ namespace VRC_Favourite_Manager.ViewModels
                 OnFolderUpdated();
             });
         }
+
+        public void RenameCancel()
+        {
+            IsRenaming = false;
+            FolderName = _folderManager.SelectedFolder.Name;
+        }
         public void RenameFolder(string newFolderName)
         {
-            _folderManager.RenameFolder(newFolderName, _folderName);
-            Debug.WriteLine("Renamed folder: " + newFolderName);
+            var newName = _folderManager.RenameFolder(newFolderName, _folderName);
+            Debug.WriteLine("Renamed folder: " + newName);
+            FolderName = newName;
+            IsRenaming = false;
         }
 
         private void OnFolderUpdated()
         {
             Debug.WriteLine("Selected folder changed");
-            _folderName = _folderManager.SelectedFolder?.Name;
             UpdateWorlds();
         }
 

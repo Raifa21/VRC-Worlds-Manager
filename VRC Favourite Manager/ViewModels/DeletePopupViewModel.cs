@@ -1,18 +1,6 @@
-﻿using System;
-using Microsoft.UI.Xaml;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using Microsoft.UI.Xaml;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using VRC_Favourite_Manager.Models;
-using VRC_Favourite_Manager.Services;
-using System.Linq;
-using Microsoft.UI.Xaml.Controls;
 using VRC_Favourite_Manager.Common;
-using VRC_Favourite_Manager.Views;
 
 namespace VRC_Favourite_Manager.ViewModels
 {

@@ -1,18 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using VRC_Favourite_Manager.ViewModels;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using VRC_Favourite_Manager.Models;
 
 
@@ -24,6 +12,43 @@ namespace VRC_Favourite_Manager.Views
         {
             this.InitializeComponent();
             this.DataContext = new CreateGroupInstancePopupViewModel(world, region);
+
+            if(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
+            {
+                this.SelectGroupTitle.Text = "グループを選択";
+                this.SelectGroupInstanceType.Text = "グループインスタンスタイプを選択";
+                this.GroupTextSub_1.Text = "選択されたロールを持つユーザーと合流できます";
+                this.GroupTextSub_2.Text = "選択されたロールを持つユーザーと合流できます";
+                this.GroupPlusTextSub.Text = "インスタンス内のユーザーのフレンドは誰でも入ることができます";
+                this.GroupPublicTextSub.Text = "誰でも入ることができます";
+                this.SelectRoles.Text = "ロールを選択";
+                this.Everyone.Text = "すべて（誰でもアクセス可能）";
+                this.GroupInstanceOverview.Text = "グループインスタンスを作る";
+                this.GroupConfirm.Text = "グループ";
+                this.InstanceTypeConfirm.Text = "インスタンスタイプ";
+                this.RolesConfirm.Text = "このインスタンスに合流できるロール：";
+                this.InstanceQueueConfirm.Text = "満員の場合のインスタンス待機列";
+                this.EnableInstanceQueue.Text = "インスタンス待機列";
+                this.CreateInstanceButton.Content = "インスタンスを作る";
+            }
+            else
+            {
+                this.SelectGroupTitle.Text = "Select Group";
+                this.SelectGroupInstanceType.Text = "Select Group Instance Type";
+                this.GroupTextSub_1.Text = "Only the selected group roles may join";
+                this.GroupTextSub_2.Text = "Only the selected group roles may join";
+                this.GroupPlusTextSub.Text = "Any Friend of a user in the instance may join";
+                this.GroupPublicTextSub.Text = "Anyone can join";
+                this.SelectRoles.Text = "Select Roles";
+                this.Everyone.Text = "Everyone";
+                this.GroupInstanceOverview.Text = "Create Group Instance";
+                this.GroupConfirm.Text = "Group";
+                this.InstanceTypeConfirm.Text = "Instance Type";
+                this.RolesConfirm.Text = "Roles that can join this instance:";
+                this.InstanceQueueConfirm.Text = "Instance Queue when full";
+                this.EnableInstanceQueue.Text = "Enable Instance Queue";
+                this.CreateInstanceButton.Content = "Create Instance";
+            }
         }
         private void CloseButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {

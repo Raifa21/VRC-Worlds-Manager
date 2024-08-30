@@ -43,19 +43,19 @@
             <StackPanel Margin="0,50,0,0" HorizontalAlignment="Right" Width="310" Height="100" VerticalAlignment="Top">
                 <TextBlock Text="Special Thanks" FontSize="18" FontWeight="Bold" HorizontalAlignment="Right"/>
                 <TextBlock HorizontalAlignment="Right" Margin="0,10,0,0">
-                    <Hyperlink>
+                    <Hyperlink NavigateUri="https://hello.vrchat.com/">
                         VRChat
                     </Hyperlink>
                     <Run Text=" | For VRChat API" />
                 </TextBlock>
                 <TextBlock HorizontalAlignment="Right" Margin="0,5,0,0">
-                    <Hyperlink>
+                    <Hyperlink NavigateUri="https://vrchatapi.github.io/docs/api/">
                         VRChat API Community
                     </Hyperlink>
                     <Run Text=" | For API Documentation" />
                 </TextBlock>
                 <TextBlock HorizontalAlignment="Right" Margin="0,5,0,0">
-                    <Hyperlink>
+                    <Hyperlink NavigateUri="https://x.com/kurone_kito">
                         黒音キト
                     </Hyperlink>
                     <Run Text=" | For Launchpad Icons" />
@@ -63,7 +63,7 @@
                 <TextBlock Text="Launchpad Icons © 黒音キト licensed under CC-BY-NC-4.0." Foreground="DimGray" />
             </StackPanel>
         </Grid>
-        <Grid Margin="20,420,0,0" Height="80" Width="330" HorizontalAlignment="Right" VerticalAlignment="Top">
+        <Grid Margin="20,420,0,0" Height="80" Width="530" HorizontalAlignment="Right" VerticalAlignment="Top">
             <TextBlock Text="Supporters" FontSize="18" FontWeight="Bold" HorizontalAlignment="Right" Margin="0,0,20,0" />
             <TextBlock Text="59" Foreground="#e649d6" Margin="0,35,290,0" HorizontalAlignment="Right"/>
             <TextBlock Text="東雲りん" Foreground="#e649d6" Margin="0,35,220,0" HorizontalAlignment="Right"/>

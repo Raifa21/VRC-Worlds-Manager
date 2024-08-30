@@ -1,5 +1,4 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Data;
+﻿using Microsoft.UI.Xaml.Data;
 using System;
 
 namespace VRC_Favourite_Manager.Common

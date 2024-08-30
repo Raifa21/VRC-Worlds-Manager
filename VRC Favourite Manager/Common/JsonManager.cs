@@ -29,7 +29,9 @@ namespace VRC_Favourite_Manager.Common
 
         public List<WorldModel> LoadWorlds()
         {
-            return new List<WorldModel>();
+            var _configService = new ConfigService();
+            var json = _configService.LoadToken(_worldPath);
+            return JsonSerializer.Deserialize<List<WorldModel>>(json);
         }
 
         public void SaveWorlds(IEnumerable<WorldModel> worlds)

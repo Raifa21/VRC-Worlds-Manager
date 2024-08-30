@@ -1,8 +1,5 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
-using System.Net;
-using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Tomlyn;
@@ -10,8 +7,6 @@ using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Services;
 using VRC_Favourite_Manager.ViewModels;
 using VRC_Favourite_Manager.Views;
-using VRChat.API.Client;
-using VRChat.API.Model;
 
 namespace VRC_Favourite_Manager
 {

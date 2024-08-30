@@ -1,20 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
-using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
-using VRChat.API.Model;
 
 namespace VRC_Favourite_Manager.ViewModels
 {

@@ -1,9 +1,5 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Data;
-using VRC_Favourite_Manager.Services;
-using VRC_Favourite_Manager.ViewModels;
-using Windows.Networking.Sockets;
 
 
 namespace VRC_Favourite_Manager.Views
@@ -17,7 +13,12 @@ namespace VRC_Favourite_Manager.Views
         {
             this.InitializeComponent();
 
-            if(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
+            ReloadPage();
+        }
+
+        public void ReloadPage()
+        {
+            if (Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
             {
                 this.Subtitle.Text = "VRChatにログイン";
                 this.UsernameTextBox.Header = "ユーザー名";
@@ -38,6 +39,12 @@ namespace VRC_Favourite_Manager.Views
                 this.Legal3.Text = "Please be aware that I am not responsible for any issues that may arise from using this application.";
                 this.LoginButton.Content = "Login";
             }
+        }
+
+        public void ChangeLang_Click(object sender, RoutedEventArgs e)
+        {
+            Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "en" : "ja";
+            ReloadPage();
         }
     }
 }

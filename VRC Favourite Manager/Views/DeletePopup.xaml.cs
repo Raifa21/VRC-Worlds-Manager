@@ -1,12 +1,6 @@
-﻿using System.Diagnostics;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Data;
-using VRC_Favourite_Manager.Services;
 using VRC_Favourite_Manager.ViewModels;
-using Windows.Networking.Sockets;
-using VRC_Favourite_Manager.Models;
-using static System.Net.Mime.MediaTypeNames;
 
 
 namespace VRC_Favourite_Manager.Views

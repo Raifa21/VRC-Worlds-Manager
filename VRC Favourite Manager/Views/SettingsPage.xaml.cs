@@ -39,6 +39,7 @@ namespace VRC_Favourite_Manager.Views
                     ChangeApplicationLanguage(languageCode);
                 }
             }
+
         }
 
         private void RefreshPage(string languageCode)
@@ -68,7 +69,8 @@ namespace VRC_Favourite_Manager.Views
                 this.LookingForTranslators.Text = "Support for other languages will be added later. Requests for supported languages can be made";
                 this.HyperlinkText.Text = "here.";
                 this.WorldManagementTitle.Text = "Manage Worlds";
-                this.HiddenFolder.Content = "Hidden Folder"; this.ResetButton.Content = "Reset";
+                this.HiddenFolder.Content = "Hidden Folder"; 
+                this.ResetButton.Content = "Reset";
             }
         }
 

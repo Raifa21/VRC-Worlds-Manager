@@ -1,15 +1,10 @@
 using System.Diagnostics;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Animation;
 using VRC_Favourite_Manager.ViewModels;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using System.Collections.Specialized;
-using CommunityToolkit.Mvvm;
 using CommunityToolkit.Mvvm.Messaging;
 using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Models;
-using VRC_Favourite_Manager.Services;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 
@@ -37,6 +32,14 @@ namespace VRC_Favourite_Manager.Views
             }
 
             GenerateFolders();
+            foreach(var folder in folders)
+            {
+                if(folder.IsSelected)
+                {
+                    NavView.SelectedItem = folder;
+                }
+            }
+            
 
             WeakReferenceMessenger.Default.Register<LanguageChangedMessage>(this, (r, m) =>
             {
@@ -114,11 +117,6 @@ namespace VRC_Favourite_Manager.Views
                 }
 
                 FoldersItem.MenuItems.Add(folder);
-
-                if (folder.IsSelected)
-                {
-                    NavView.SelectedItem = folder;
-                }
             }
         }
 
@@ -150,6 +148,7 @@ namespace VRC_Favourite_Manager.Views
                         ContentFrame.Navigate(typeof(AllWorldsPage));
                         break;
                     case "SettingsPage":
+                        Debug.WriteLine("SettingsPage");
                         ContentFrame.Navigate(typeof(SettingsPage));
                         break;
                     case "AboutPage":

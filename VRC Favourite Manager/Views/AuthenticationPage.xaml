@@ -20,5 +20,8 @@
             <Button x:Name="LoginButton" Command="{Binding LoginCommand}" HorizontalAlignment="Right" />
             <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}" Margin="0,-55,0,0" />
         </StackPanel>
+        <Button BorderThickness="0" Background="Transparent" Margin="0,0,20,20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="ChangeLang_Click">
+            <FontIcon Glyph="&#xE774;" />
+        </Button>
     </Grid>
 </Page>

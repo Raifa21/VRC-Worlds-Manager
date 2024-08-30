@@ -53,10 +53,10 @@
                     </StackPanel>
                 </StackPanel>
                 <StackPanel Grid.Column="1" VerticalAlignment="Top" Margin="-30,-4,0,10">
-                    <TextBlock Text="Create Instance" FontSize="18" FontWeight="Bold" Margin="0,0,0,0"/>
+                    <TextBlock x:Name="CreateInstance" FontSize="18" FontWeight="Bold" Margin="0,0,0,0"/>
                         <StackPanel Padding="0" >
                             <StackPanel Spacing="10">
-                                <TextBlock Text="Instance Type" FontWeight="Bold" Margin="0,14,0,0"/>
+                                <TextBlock x:Name="InstanceType" FontWeight="Bold" Margin="0,14,0,0"/>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,0" Spacing="5">
                                     <RadioButton GroupName="InstanceType" Content="Public" Checked="InstanceType_Checked" Padding="44,5,44,5" IsChecked="True"/>
                                     <RadioButton GroupName="InstanceType" Content="Group" Checked="InstanceType_Checked" Padding="42,5,42,5"/>
@@ -70,17 +70,18 @@
                                     <RadioButton GroupName="InstanceType" Content="Invite" Checked="InstanceType_Checked" Padding="44,5,45,5" />
                                 </StackPanel>
                             </StackPanel>
-                            <TextBlock Text="Region" FontWeight="Bold" VerticalAlignment="Center" Margin="0,15,10,10"/>
+                            <TextBlock x:Name="Region" FontWeight="Bold" VerticalAlignment="Center" Margin="0,15,10,10"/>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,0" Spacing="5">
                                 <RadioButton GroupName="Region" Content="USW" Checked="Region_Checked" Padding="15,5,15,5"/>
                                     <RadioButton GroupName="Region" Content="USE" Checked="Region_Checked" Padding="17,5,17,5"/>
                                 <RadioButton GroupName="Region" Content="EU" Checked="Region_Checked" Padding="21,5,21,5"/>
                                 <RadioButton GroupName="Region" Content="JP" Checked="Region_Checked" Padding="22,5,22,5" IsChecked="True"/>
                             </StackPanel>
-                            <Button Content="Create Instance"
+                            <Button x:Name="CreateInstanceButton"
                                     VerticalAlignment="Bottom"
-                                    Margin="0,30,0,0"
-                                    Padding="80,5,80,5"
+                                    Margin="0,28,0,0"
+                                    
+                                    Width="258"
                                     Click="CreateInstanceButton_Click"
                                     IsEnabled="{Binding CanCreateInstance}"/>
                         </StackPanel>
@@ -89,7 +90,7 @@
         </Grid>
         <StackPanel Orientation="Horizontal" Margin="0,450,0,0">
             <Grid Margin="15,0,0,0" Width="420">
-                <TextBlock Text="Description" FontSize="18" FontWeight="Bold" Margin="1,0,0,0"/>
+                <TextBlock x:Name="Description" FontSize="18" FontWeight="Bold" Margin="1,0,0,0"/>
                 <Grid Height="95" Margin="2,0,0,0">
                     <ScrollViewer>
                         <TextBlock Text="{Binding Description}" TextWrapping="WrapWholeWords" Width="Auto"/>
@@ -97,13 +98,13 @@
                 </Grid>
             </Grid>
             <Grid Margin="40,0,0,0">
-                <TextBlock Text="Details" FontSize="18" FontWeight="Bold" Margin="0,0,0,0"/>
+                <TextBlock x:Name="Details" FontSize="18" FontWeight="Bold" Margin="0,0,0,0"/>
                 <StackPanel Orientation="Horizontal" Margin="0,30">
                     <StackPanel Orientation="Vertical" Margin="0,0,20,0">
-                        <TextBlock Text="Visits" FontWeight="Bold" VerticalAlignment="Center"/>
-                        <TextBlock Text="Favorites" FontWeight="Bold" VerticalAlignment="Center"/>
-                        <TextBlock Text="Capacity" FontWeight="Bold" VerticalAlignment="Center"/>
-                        <TextBlock Text="Last Updated" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="Visits" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="Favorites" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="Capacity" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="LastUpdated" FontWeight="Bold" VerticalAlignment="Center"/>
                     </StackPanel>
                     <StackPanel Orientation="Vertical">
                         <TextBlock Text="{Binding Visits}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
