@@ -14,11 +14,9 @@ VRC Worlds Managerを使用して、お気に入りのVRChatワールドを管�
 
 ## インストール
 
-現在はClosed Betaのためダウンロードリンクは提供しておりません。リリースまで少々お待ちください。
 
 
-VRC Favorite Managerの最新リリースは、リリースタブからダウンロードできます。または、こちらからアプリケーションをダウンロードしてください：
-[WIP]
+VRC Favorite Managerの最新リリースは、リリースタブからダウンロードできます。または、こちらからアプリケーションをダウンロードしてください：https://raifaworks.booth.pm/items/6053937
 
 ## 機能
 
