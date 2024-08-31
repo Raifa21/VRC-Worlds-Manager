@@ -14,7 +14,7 @@
             <TextBlock Text="VRC Worlds Manager" FontSize="24" FontWeight="Bold"/>
                 <Ellipse Height="100" Width="100" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,60,0,0">
                     <Ellipse.Fill>
-                        <ImageBrush ImageSource="../Common/SrkYocOB_400x400.jpg" Stretch="UniformToFill" />
+                    <ImageBrush ImageSource="/Assets/SrkYocOB_400x400.jpg" Stretch="UniformToFill" />
                     </Ellipse.Fill>
                 </Ellipse>
             <Grid Margin="120,60,0,0" Width="150" Height="100" HorizontalAlignment="Left" VerticalAlignment="Top">

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Threading.Tasks;
@@ -14,15 +15,6 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly VRChatAPIService _vrChatAPIService;
         private readonly Window _mainWindow;
         private string _errorMessage;
-
-        public AuthenticationViewModel()
-        {
-            _vrChatAPIService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
-            _mainWindow = ((App)Application.Current).MainWindow;
-            LoginCommand = new RelayCommand(Login);
-
-        }
-
         private string _username;
 
         public string Username
@@ -47,6 +39,15 @@ namespace VRC_Favourite_Manager.ViewModels
         public ICommand LoginCommand { get; }
         // Adjusted constructor to accept NavigationService directly
 
+        public AuthenticationViewModel()
+        {
+            _vrChatAPIService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
+            _mainWindow = ((App)Application.Current).MainWindow;
+            LoginCommand = new RelayCommand(Login);
+
+        }
+
+
         private async void Login()
         {
             var languageCode = Application.Current.Resources["languageCode"] as string;
@@ -66,15 +67,28 @@ namespace VRC_Favourite_Manager.ViewModels
                     }
                     else
                     {
-                        
+
                         ErrorMessage = languageCode == "ja"
                             ? "2段階認証に失敗しました。もう一度お試しください。"
                             : "Failed to authenticate with 2FA. Please try again.";
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    ErrorMessage = languageCode == "ja" ? "エラーが発生しました。もう一度お試しください。" : "An error occurred. Please try again.";
+                    if (ex is VRCServiceUnavailableException unavailableException)
+                    {
+                        ErrorMessage = languageCode == "ja"
+                            ? "VRChat APIにアクセスできません。ファイアウォール設定を見直してください。"
+                            + " (" + unavailableException.Message + ")"
+                            : "Cannot access VRChat API. Please check your firewall settings."
+                        + " (" + unavailableException.Message + ")";
+                    }
+                    else
+                    {
+                        ErrorMessage = languageCode == "ja"
+                            ? "エラーが発生しました。もう一度お試しください： " + ex.Message
+                            : "An error occurred. Please try again. (" + ex.Message + ")";
+                    }
                 }
             }
             catch (VRCIncorrectCredentialsException)
@@ -83,7 +97,19 @@ namespace VRC_Favourite_Manager.ViewModels
             }
             catch (Exception ex)
             {
-                ErrorMessage = languageCode == "ja" ? "エラーが発生しました。もう一度お試しください。" : "An error occurred. Please try again.";
+                Debug.WriteLine(ex.Message);
+                if (ex is VRCServiceUnavailableException unavailableException)
+                {
+                    ErrorMessage = languageCode == "ja"
+                        ? "VRChat APIにアクセスできません。ファイアウォール設定を見直してください。"
+                        : "Cannot access VRChat API. Please check your firewall settings.";
+                }
+                else
+                {
+                    ErrorMessage = languageCode == "ja"
+                        ? "エラーが発生しました。もう一度お試しください： "
+                        : "An error occurred. Please try again.";
+                }
             }
         }
 

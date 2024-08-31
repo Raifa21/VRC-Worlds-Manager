@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Net.Http.Headers;
 using VRC_Favourite_Manager.Common;
 using System.Text.Json;
+using Serilog;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.ViewModels;
 
@@ -79,7 +80,7 @@ namespace VRC_Favourite_Manager.Services
 
                 // Deserialize the response string to a JSON object.
                 var authResponse = JsonSerializer.Deserialize<Models.VerifyAuthTokenResponse>(responseString);
-                Debug.WriteLine(authResponse.ok);
+                Log.Information(authResponse.ok.ToString());
                 if (authResponse.ok)
                 {
                     _authToken = authToken;
@@ -92,7 +93,7 @@ namespace VRC_Favourite_Manager.Services
             }
             catch (Exception e)
             {
-                Debug.WriteLine("Error: " + e.Message);
+                Log.Information("Error: " + e.Message);
                 return false;
             }
         }
@@ -119,7 +120,7 @@ namespace VRC_Favourite_Manager.Services
             }
             catch (Exception e)
             {
-                Debug.WriteLine("Error: " + e.Message);
+                Log.Information("Error: " + e.Message);
                 return false;
             }
         }
@@ -150,7 +151,7 @@ namespace VRC_Favourite_Manager.Services
             }
             catch (Exception e)
             {
-                Debug.WriteLine("Error: " + e.Message);
+                Log.Information("Error: " + e.Message);
                 return null;
             }
         }
@@ -172,7 +173,7 @@ namespace VRC_Favourite_Manager.Services
                 request.Headers.Add("Accept", "application/json");
                 request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
                 request.Headers.Add("Authorization", CreateAuthString(username, password));
-                Debug.WriteLine(request.RequestUri);
+                Log.Information(request.RequestUri.ToString());
                 if (!string.IsNullOrEmpty(_twoFactorAuthToken))
                 {
                     if (!string.IsNullOrEmpty(_authToken))
@@ -188,19 +189,12 @@ namespace VRC_Favourite_Manager.Services
                 var response = await _Client.SendAsync(request);
 
 
-                Console.WriteLine($"Status Code: {response.StatusCode}");
-
-                // Output the response headers
-                Console.WriteLine("Headers:");
-                foreach (var header in response.Headers)
-                {
-                    Console.WriteLine($"{header.Key}: {string.Join(", ", header.Value)}");
-                }
+                Log.Information($"Status Code: {response.StatusCode}");
 
                 // Output the response content
                 var responseContent = await response.Content.ReadAsStringAsync();
-                Console.WriteLine("Response Content:");
-                Console.WriteLine(responseContent);
+                Log.Information("Response Content:");
+                Log.Information(responseContent);
 
 
                 if (!response.IsSuccessStatusCode)
@@ -209,9 +203,17 @@ namespace VRC_Favourite_Manager.Services
                     switch (response.StatusCode)
                     {
                         case HttpStatusCode.Unauthorized:
+                            Log.Information("Incorrect credentials.");
+                            Log.Information("Error: " + responseContent);
+                            Log.Information("Status Code: " + response.StatusCode);
+                            Log.Information("Reason: " + response.ReasonPhrase);
                             throw new VRCIncorrectCredentialsException();
                         default:
-                            throw new VRCServiceUnavailableException();
+                            Log.Information("Service Unavailable.");
+                            Log.Information("Error: " + responseContent);
+                            Log.Information("Status Code: " + response.StatusCode);
+                            Log.Information("Reason: " + response.ReasonPhrase);
+                            throw new VRCServiceUnavailableException(responseContent);
                     }
                 }
 
@@ -237,17 +239,25 @@ namespace VRC_Favourite_Manager.Services
             }
             catch (HttpRequestException e)
             {
-                Debug.WriteLine("Error: " + e.Message);
-                throw new VRCServiceUnavailableException();
+                Log.Information("Error: " + e.Message);
+                throw new VRCServiceUnavailableException(e.Message);
             }
             catch (VRCRequiresTwoFactorAuthException e)
             {
                 throw;
             }
+            catch (VRCIncorrectCredentialsException e)
+            {
+                throw;
+            }
+            catch (VRCServiceUnavailableException e)
+            {
+                throw;
+            }
             catch (Exception e)
             {
-                Debug.WriteLine("Error: " + e.Message);
-                throw new VRCServiceUnavailableException();
+                Log.Information("Error: " + e.Message);
+                throw new VRCServiceUnavailableException(e.Message);
             }
         }
 
@@ -264,7 +274,6 @@ namespace VRC_Favourite_Manager.Services
             var encodedPassword = WebUtility.UrlEncode(password);
             var authString = $"{encodedUsername}:{encodedPassword}";
             var base64AuthString = Convert.ToBase64String(Encoding.UTF8.GetBytes(authString));
-            Debug.WriteLine($"Basic {base64AuthString}");
             return $"Basic {base64AuthString}";
         }
 
@@ -307,13 +316,13 @@ namespace VRC_Favourite_Manager.Services
             }
             catch (HttpRequestException e)
             {
-                Debug.WriteLine("Error: " + e.Message);
+                Log.Information("Error: " + e.Message);
                 return false;
             }
             catch (Exception e)
             {
-                Debug.WriteLine("Error: " + e.Message);
-                throw new VRCServiceUnavailableException();
+                Log.Information("Error: " + e.Message);
+                throw new VRCServiceUnavailableException(e.Message);
             }
         }
 
@@ -369,23 +378,23 @@ namespace VRC_Favourite_Manager.Services
 
                 // Deserialize the response string to a JSON object.
                 var authResponse = JsonSerializer.Deserialize<Models.LogoutResponse>(responseString);
-                Debug.WriteLine(authResponse.message);
+                Log.Information(authResponse.message);
 
                 return authResponse.message == "Ok!";
             }
             catch (HttpRequestException e)
             {
-                Debug.WriteLine("Error: " + e.Message);
+                Log.Information("Error: " + e.Message);
                 return false;
             }
             catch (JsonException e)
             {
-                Debug.WriteLine("Error: " + e.Message);
+                Log.Information("Error: " + e.Message);
                 return false;
             }
             catch (Exception e)
             {
-                Debug.WriteLine("Error: " + e.Message);
+                Log.Information("Error: " + e.Message);
                 return false;
             }
            
@@ -405,11 +414,11 @@ namespace VRC_Favourite_Manager.Services
                 request.Headers.Add("Accept", "application/json");
                 request.Headers.Add("User-Agent", "VRC Favourite Manager/dev 0.0.1 Raifa");
                 request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
-                Debug.WriteLine(request.RequestUri);
+                Log.Information(request.RequestUri.ToString());
                 var response = await _Client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
                 var responseString = await response.Content.ReadAsStringAsync();
-                Debug.WriteLine(responseString);
+                Log.Information(responseString);
 
                 var responseWorlds =
                     JsonSerializer.Deserialize<List<Models.ListFavoriteWorldsResponse>>(responseString);
@@ -436,17 +445,17 @@ namespace VRC_Favourite_Manager.Services
             }
             catch (JsonException ex)
             {
-                Debug.WriteLine($"Deserialization error: {ex.Message}");
+                Log.Information($"Deserialization error: {ex.Message}");
                 return null;
             }
             catch (HttpRequestException ex)
             {
-                Debug.WriteLine($"Error: {ex.Message}");
+                Log.Information($"Error: {ex.Message}");
                 return null;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error: {ex.Message}");
+                Log.Information($"Error: {ex.Message}");
                 return null;
             }
         }
@@ -467,17 +476,17 @@ namespace VRC_Favourite_Manager.Services
             }
             catch (JsonException ex)
             {
-                Debug.WriteLine($"Deserialization error: {ex.Message}");
+                Log.Information($"Deserialization error: {ex.Message}");
                 return null;
             }
             catch (HttpRequestException ex)
             {
-                Debug.WriteLine($"Error: {ex.Message}");
+                Log.Information($"Error: {ex.Message}");
                 return null;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error: {ex.Message}");
+                Log.Information($"Error: {ex.Message}");
                 return null;
             }
         }
@@ -538,7 +547,7 @@ namespace VRC_Favourite_Manager.Services
                     region = "us";
                 }
 
-                Debug.WriteLine($"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"{type}\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"{ownerIdNullable}\",\n  \"queueEnabled\": false,\n  \"canRequestInvite\": {canRequestInvite}\n }}");
+                Log.Information($"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"{type}\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"{ownerIdNullable}\",\n  \"queueEnabled\": false,\n  \"canRequestInvite\": {canRequestInvite}\n }}");
 
                 var content = new StringContent(
                     $"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"{type}\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"{ownerIdNullable}\",\n  \"queueEnabled\": false,\n  \"canRequestInvite\": {canRequestInvite}\n }}",
@@ -559,7 +568,7 @@ namespace VRC_Favourite_Manager.Services
             }
             catch (HttpRequestException e)
             {
-                Debug.WriteLine("Error: " + e.Message);
+                Log.Information("Error: " + e.Message);
                 throw new VRCNotLoggedInException();
             }
         }
@@ -610,7 +619,7 @@ namespace VRC_Favourite_Manager.Services
 
                 if (roleIds == null || roleIds.Count == 0)
                 {
-                    Debug.WriteLine($"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"group\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"{groupId}\",\n  \"queueEnabled\": {queueEnabled_String},\n  \"groupAccessType\": \"{groupAccessType}\",\n  \"canRequestInvite\": false,\n  \"inviteOnly\": false\n}}");
+                    Log.Information($"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"group\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"{groupId}\",\n  \"queueEnabled\": {queueEnabled_String},\n  \"groupAccessType\": \"{groupAccessType}\",\n  \"canRequestInvite\": false,\n  \"inviteOnly\": false\n}}");
                     var content = new StringContent(
                         $"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"group\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"{groupId}\",\n  \"queueEnabled\": {queueEnabled_String},\n  \"groupAccessType\": \"{groupAccessType}\",\n  \"canRequestInvite\": false,\n  \"inviteOnly\": false\n}}",
                         null, "application/json");
@@ -633,7 +642,7 @@ namespace VRC_Favourite_Manager.Services
                     roleIds_formatted += "\n]";
 
 
-                    Debug.WriteLine(
+                    Log.Information(
                         $"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"group\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"{groupId}\",\n  \"roleIds\": {roleIds_formatted},\n  \"queueEnabled\": {queueEnabled_String},\n  \"groupAccessType\": \"{groupAccessType}\",\n  \"canRequestInvite\": false,\n  \"inviteOnly\": false\n}}");
                     var content = new StringContent(
                         $"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"group\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"{groupId}\",\n  \"roleIds\": {roleIds_formatted},\n  \"queueEnabled\": {queueEnabled_String},\n  \"groupAccessType\": \"{groupAccessType}\",\n  \"canRequestInvite\": false,\n  \"inviteOnly\": false\n}}",
@@ -654,7 +663,7 @@ namespace VRC_Favourite_Manager.Services
             }
             catch (HttpRequestException e)
             {
-                Debug.WriteLine("Error: " + e.Message);
+                Log.Information("Error: " + e.Message);
                 throw new VRCNotLoggedInException();
             }
         }
@@ -719,7 +728,7 @@ namespace VRC_Favourite_Manager.Services
             }
             catch (HttpRequestException e)
             {
-                Debug.WriteLine("Error: " + e.Message);
+                Log.Information("Error: " + e.Message);
                 throw new VRCNotLoggedInException();
             }
         }

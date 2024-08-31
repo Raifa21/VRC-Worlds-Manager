@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
 using System.IO;
+using Windows.UI.WebUI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Serilog;
 using Tomlyn;
 using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Services;
@@ -21,9 +23,13 @@ namespace VRC_Favourite_Manager
 
         public App()
         {
-            this.InitializeComponent();
 
-            
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .WriteTo.File("app.log", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+
+            this.InitializeComponent();
         }
 
         protected override async void OnLaunched(LaunchActivatedEventArgs args)

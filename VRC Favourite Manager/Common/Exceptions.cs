@@ -31,8 +31,14 @@ namespace VRC_Favourite_Manager.Common
     {
         
     }
+
     public class VRCServiceUnavailableException : Exception
     {
+        public string Message { get; private set; }
 
-    }
+        public VRCServiceUnavailableException(string message)
+        {
+            Message = message;
+        }
+}
 }

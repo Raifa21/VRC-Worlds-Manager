@@ -5,6 +5,7 @@ using System;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml.Documents;
 using VRC_Favourite_Manager.Common;
+using System.Threading.Tasks;
 
 namespace VRC_Favourite_Manager.Views
 {
@@ -43,8 +44,12 @@ namespace VRC_Favourite_Manager.Views
 
         }
 
-        private void RefreshPage(string languageCode)
+        private async void RefreshPage(string languageCode)
         {
+            if (this.SettingsTitle == null)
+            {
+                await Task.Delay(100);
+            }
             if (languageCode == "ja")
             {
                 this.SettingsTitle.Text = "ê›íË";

@@ -23,7 +23,7 @@ namespace VRC_Favourite_Manager.Views
             if (languageCode == "ja")
             {
                 this.Subtitle.Text = "VRChatにログイン";
-                this.UsernameTextBox.Header = "ユーザー名";
+                this.UsernameTextBox.Header = "メール/ユーザー名";
                 this.PasswordBox.Header = "パスワード";
                 this.Legal1.Text = "ログイン情報は保存されず、認証目的のみに使用されます。";
                 this.Legal2.Text = "このアプリの使用により、VRChatのAPI利用規約に同意したものとみなされます。";
@@ -33,7 +33,7 @@ namespace VRC_Favourite_Manager.Views
             else
             {
                 this.Subtitle.Text = "Log into VRChat";
-                this.UsernameTextBox.Header = "Username";
+                this.UsernameTextBox.Header = "Email/Username";
                 this.PasswordBox.Header = "Password";
                 this.Legal1.Text =
                     "Your login credentials are not stored and are only used for authentication purposes.";
