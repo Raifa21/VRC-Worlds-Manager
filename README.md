@@ -14,10 +14,8 @@ Manage and organize your VRChat worlds with VRC Worlds Manager.
 
 ## Installation
 
-//CURRENTLY IN CLOSED BETA. DOWNLOAD LINKS ARE UNAVAILABLE AT THE MOMENT.
-
 Download the latest release of VRC Favorite Manager in the releases tab.
-Alternatively, download the application from here:
+Alternatively, download the application from here:https://raifaworks.booth.pm/items/6053937
 
 [WIP]
 
