@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
+using Serilog;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
 
@@ -39,7 +40,7 @@ namespace VRC_Favourite_Manager.Common
             var json = JsonSerializer.Serialize(worlds);
             var _configService = new ConfigService();
             _configService.SaveToken(json, _worldPath);
-            Debug.WriteLine("File written to: " + _worldPath);
+            Log.Information("File written to: " + _worldPath);
         }
         public bool FolderConfigExists()
         {
@@ -58,7 +59,7 @@ namespace VRC_Favourite_Manager.Common
             var json = JsonSerializer.Serialize(folders);
             var _configService = new ConfigService();
             _configService.SaveToken(json, _folderPath);
-            Debug.WriteLine("File written to: " + _folderPath);
+            Log.Information("File written to: " + _folderPath);
         }
 
     }

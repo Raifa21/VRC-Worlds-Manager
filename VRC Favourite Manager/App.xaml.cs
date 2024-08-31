@@ -34,7 +34,7 @@ namespace VRC_Favourite_Manager
 
         protected override async void OnLaunched(LaunchActivatedEventArgs args)
         {
-            System.Diagnostics.Debug.WriteLine("Application Started.");
+            Log.Information("Application Started.");
             InitialiseService();
 
             ReadConfig();
@@ -55,30 +55,30 @@ namespace VRC_Favourite_Manager
                     {
                         if(await _VRChatAPIService.VerifyLoginWithAuthTokenAsync(authToken, twoFactorAuthToken))
                         {
-                            System.Diagnostics.Debug.WriteLine("Login successful.");
+                            Log.Information("Login successful.");
                             rootFrame.Navigate(typeof(MainPage), args.Arguments);
                         }
                     }
                     else
                     {
-                        System.Diagnostics.Debug.WriteLine("Error verifying API key.");
+                        Log.Information("Error verifying API key.");
                         rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
                     }
                 }
             }
             catch (System.Exception ex)
             {
-                Debug.WriteLine("TypeInitializationException: " + ex.Message);
-                Debug.WriteLine("Stack Trace: " + ex.StackTrace);
+                Log.Information("TypeInitializationException: " + ex.Message);
+                Log.Information("Stack Trace: " + ex.StackTrace);
 
                 // Check if there is an inner exception
                 if (ex.InnerException != null)
                 {
                     // Log the inner exception details
-                    Debug.WriteLine("Inner Exception: " + ex.InnerException.Message);
-                    Debug.WriteLine("Inner Exception Stack Trace: " + ex.InnerException.StackTrace);
+                    Log.Information("Inner Exception: " + ex.InnerException.Message);
+                    Log.Information("Inner Exception Stack Trace: " + ex.InnerException.StackTrace);
                 }
-                System.Diagnostics.Debug.WriteLine("Error reading API key from config file.");
+                Log.Information("Error reading API key from config file.");
                 rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
             }
 
@@ -97,7 +97,7 @@ namespace VRC_Favourite_Manager
 
             if (!configManager.ConfigExists())
             {
-                System.Diagnostics.Debug.WriteLine("Config file not found.");
+                Log.Information("Config file not found.");
                 return;
             }
             try
@@ -112,19 +112,19 @@ namespace VRC_Favourite_Manager
                     }
                     catch (System.Exception e)
                     {
-                        System.Diagnostics.Debug.WriteLine("Error reading API key from config file.");
-                        Debug.WriteLine(e.Message);
+                        Log.Information("Error reading API key from config file.");
+                        Log.Information(e.Message);
                     }
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine("API key not found in config file.");
+                    Log.Information("API key not found in config file.");
                 }
 
             }
             catch (FileNotFoundException)
             {
-                System.Diagnostics.Debug.WriteLine("Config file not found.");
+                Log.Information("Config file not found.");
             }
 
         }

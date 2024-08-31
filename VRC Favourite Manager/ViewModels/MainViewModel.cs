@@ -8,6 +8,7 @@ using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
 using System.Linq;
 using Microsoft.UI.Xaml.Controls;
+using Serilog;
 using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Views;
 
@@ -24,7 +25,7 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public MainViewModel()
         {
-            Debug.WriteLine("MainViewModel created");
+            Log.Information("MainViewModel created");
             _vrChatAPIService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
             _folderManager = Application.Current.Resources["FolderManager"] as FolderManager;
             _worldManager = Application.Current.Resources["WorldManager"] as WorldManager;

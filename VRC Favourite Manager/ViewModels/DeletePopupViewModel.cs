@@ -9,7 +9,7 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly FolderManager _folderManager;
         public DeletePopupViewModel()
         {
-            Debug.WriteLine("MainViewModel created");
+            Log.Information("MainViewModel created");
             _folderManager = Application.Current.Resources["FolderManager"] as FolderManager;
 
         }

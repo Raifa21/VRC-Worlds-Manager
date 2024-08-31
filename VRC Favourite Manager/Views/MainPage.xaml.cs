@@ -7,6 +7,7 @@ using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Models;
 using Microsoft.UI.Xaml.Navigation;
 using System;
+using Serilog;
 
 namespace VRC_Favourite_Manager.Views
 {
@@ -45,13 +46,13 @@ namespace VRC_Favourite_Manager.Views
 
             WeakReferenceMessenger.Default.Register<LanguageChangedMessage>(this, (r, m) =>
             {
-                Debug.WriteLine("Language changed to " + m.LanguageCode);
+                Log.Information("Language changed to " + m.LanguageCode);
                 RefreshPage(m.LanguageCode);
                 GenerateFolders();
             });
             WeakReferenceMessenger.Default.Register<FolderUpdatedMessage>(this, (r, m) =>
             {
-                Debug.WriteLine("Folder updated");
+                Log.Information("Folder updated");
                 GenerateFolders();
             });
         }
@@ -79,7 +80,7 @@ namespace VRC_Favourite_Manager.Views
             }
             catch (System.Exception)
             {
-                Debug.WriteLine("Error refreshing page.");
+                Log.Information("Error refreshing page.");
             }
         }
 
@@ -152,7 +153,7 @@ namespace VRC_Favourite_Manager.Views
                         ContentFrame.Navigate(typeof(AllWorldsPage));
                         break;
                     case "SettingsPage":
-                        Debug.WriteLine("SettingsPage");
+                        Log.Information("SettingsPage");
                         ContentFrame.Navigate(typeof(SettingsPage));
                         break;
                     case "AboutPage":

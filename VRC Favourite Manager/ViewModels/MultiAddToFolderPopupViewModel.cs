@@ -37,7 +37,7 @@ namespace VRC_Favourite_Manager.ViewModels
 
             UpdateFolderSelection(_folderManager.Folders);
 
-            Debug.WriteLine(selectedWorlds.Count);
+            Log.Information(selectedWorlds.Count);
 
         }
 
@@ -114,7 +114,7 @@ namespace VRC_Favourite_Manager.ViewModels
                     {
                         foreach (var SelectedWorld in SelectedWorlds)
                         {
-                            Debug.WriteLine("Adding " + SelectedWorld.WorldName + " to " + folder.Name);
+                            Log.Information("Adding " + SelectedWorld.WorldName + " to " + folder.Name);
                             _folderManager.AddToFolder(SelectedWorld, folder.Name);
                         }
                     }

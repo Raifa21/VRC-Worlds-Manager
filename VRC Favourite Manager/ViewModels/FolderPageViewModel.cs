@@ -7,6 +7,7 @@ using System.Windows.Input;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Common;
 using CommunityToolkit.Mvvm.Messaging;
+using Serilog;
 
 namespace VRC_Favourite_Manager.ViewModels
 {
@@ -83,7 +84,7 @@ namespace VRC_Favourite_Manager.ViewModels
 
             WeakReferenceMessenger.Default.Register<FolderUpdatedMessage>(this, (r, m) =>
             {
-                Debug.WriteLine("Folder updated");
+                Log.Information("Folder updated");
                 OnFolderUpdated();
             });
         }
@@ -96,14 +97,14 @@ namespace VRC_Favourite_Manager.ViewModels
         public void RenameFolder(string newFolderName)
         {
             var newName = _folderManager.RenameFolder(newFolderName, _folderName);
-            Debug.WriteLine("Renamed folder: " + newName);
+            Log.Information("Renamed folder: " + newName);
             FolderName = newName;
             IsRenaming = false;
         }
 
         private void OnFolderUpdated()
         {
-            Debug.WriteLine("Selected folder changed");
+            Log.Information("Selected folder changed");
             UpdateWorlds();
         }
 

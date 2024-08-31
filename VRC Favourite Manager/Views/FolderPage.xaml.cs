@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
 using System.Linq;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace VRC_Favourite_Manager.Views
 {
@@ -120,7 +121,7 @@ namespace VRC_Favourite_Manager.Views
 
         private void ViewDetails_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
-            Debug.WriteLine("ViewDetails_Click");
+            Log.Information("ViewDetails_Click");
 
             if (sender is FrameworkElement { DataContext: WorldModel selectedWorld })
             {

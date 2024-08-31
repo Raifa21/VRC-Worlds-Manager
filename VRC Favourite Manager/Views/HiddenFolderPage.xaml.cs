@@ -9,6 +9,7 @@ using VRC_Favourite_Manager.ViewModels;
 using VRC_Favourite_Manager.Models;
 using Microsoft.UI.Xaml.Navigation;
 using System.Linq;
+using Serilog;
 
 namespace VRC_Favourite_Manager.Views
 {
@@ -68,7 +69,7 @@ namespace VRC_Favourite_Manager.Views
 
         private void ViewDetails_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
-            Debug.WriteLine("ViewDetails_Click");
+            Log.Information("ViewDetails_Click");
 
             if (sender is FrameworkElement { DataContext: WorldModel selectedWorld })
             {
@@ -82,7 +83,7 @@ namespace VRC_Favourite_Manager.Views
 
         private void RestoreWorld_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("RestoreWorld_Click");
+            Log.Information("RestoreWorld_Click");
             if (sender is FrameworkElement { DataContext: WorldModel selectedWorld })
             {
                 _viewModel.RestoreWorld(selectedWorld);
@@ -91,7 +92,7 @@ namespace VRC_Favourite_Manager.Views
 
         private void MultiRestoreWorld_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("MultiRestoreWorld_Click");
+            Log.Information("MultiRestoreWorld_Click");
             foreach (var item in selectedItems)
             {
                 _viewModel.RestoreWorld(item);

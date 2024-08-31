@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.UI.Xaml;
+using Serilog;
 using VRC_Favourite_Manager.Common;
 
 namespace VRC_Favourite_Manager.ViewModels
@@ -14,7 +15,7 @@ namespace VRC_Favourite_Manager.ViewModels
             _worldManager = Application.Current.Resources["WorldManager"] as WorldManager;
 
 
-            Debug.WriteLine("SettingsPageViewModel created");
+            Log.Information("SettingsPageViewModel created");
         }
 
 

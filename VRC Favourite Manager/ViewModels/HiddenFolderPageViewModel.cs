@@ -4,6 +4,7 @@ using System.Diagnostics;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Common;
 using CommunityToolkit.Mvvm.Messaging;
+using Serilog;
 
 namespace VRC_Favourite_Manager.ViewModels
 {
@@ -45,7 +46,7 @@ namespace VRC_Favourite_Manager.ViewModels
 
             WeakReferenceMessenger.Default.Register<FolderUpdatedMessage>(this, (r, m) =>
             {
-                Debug.WriteLine("Folder updated");
+                Log.Information("Folder updated");
                 UpdateWorlds();
             });
         }

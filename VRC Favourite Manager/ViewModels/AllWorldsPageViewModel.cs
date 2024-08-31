@@ -56,7 +56,7 @@ namespace VRC_Favourite_Manager.ViewModels
 
             WeakReferenceMessenger.Default.Register<FolderUpdatedMessage>(this, (r, m) =>
             {
-                Debug.WriteLine("Folder updated");
+                Log.Information("Folder updated");
                 UpdateWorlds();
             });
         }

@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Serilog;
 using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Services;
 using VRC_Favourite_Manager.Views;
@@ -54,7 +55,7 @@ namespace VRC_Favourite_Manager.ViewModels
             try
             {
                 await _vrChatAPIService.VerifyLoginAsync(Username, Password);
-                System.Diagnostics.Debug.WriteLine("Login successful.");
+                Log.Information("Login successful.");
                 DisplayMainView();
             }
             catch (VRCRequiresTwoFactorAuthException e)
@@ -97,7 +98,7 @@ namespace VRC_Favourite_Manager.ViewModels
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                Log.Information(ex.Message);
                 if (ex is VRCServiceUnavailableException unavailableException)
                 {
                     ErrorMessage = languageCode == "ja"
@@ -119,7 +120,7 @@ namespace VRC_Favourite_Manager.ViewModels
             var result = await otpDialog.ShowAsync();
             if (string.IsNullOrEmpty(otpDialog.OtpCode))
             {
-                System.Diagnostics.Debug.WriteLine("OTP Dialog was cancelled or empty");
+                Log.Information("OTP Dialog was cancelled or empty");
             }
             return await _vrChatAPIService.Authenticate2FAAsync(otpDialog.OtpCode, twoFactorAuthType);
         }

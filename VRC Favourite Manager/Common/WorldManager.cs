@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Serilog;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
 
@@ -56,13 +57,13 @@ namespace VRC_Favourite_Manager.Common
                 }
                 else
                 {
-                    Debug.WriteLine("No worlds found in the config file. Performing initial scan.");
+                    Log.Information("No worlds found in the config file. Performing initial scan.");
                     await InitialScanAsync();
                 }
             }
             else
             {
-                Debug.WriteLine("No config file found. Performing initial scan.");
+                Log.Information("No config file found. Performing initial scan.");
                 await InitialScanAsync();
             }
         }
