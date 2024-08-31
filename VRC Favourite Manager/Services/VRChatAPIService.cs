@@ -38,13 +38,13 @@ namespace VRC_Favourite_Manager.Services
     }
     public class VRChatAPIService : IVRChatAPIService
     {
-        private HttpClient _Client;
+        public HttpClient _Client;
 
         private CookieContainer _cookieContainer;
 
-        private string _authToken;
+        public string _authToken;
 
-        private string _twoFactorAuthToken;
+        public string _twoFactorAuthToken;
 
         private string _userId;
 

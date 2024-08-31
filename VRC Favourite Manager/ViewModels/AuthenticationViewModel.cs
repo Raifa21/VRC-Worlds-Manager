@@ -9,6 +9,7 @@ using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Services;
 using VRC_Favourite_Manager.Views;
 
+
 namespace VRC_Favourite_Manager.ViewModels
 {
     public class AuthenticationViewModel : ViewModelBase

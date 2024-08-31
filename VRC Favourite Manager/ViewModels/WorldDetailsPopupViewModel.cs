@@ -2,7 +2,6 @@
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
-using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
 
