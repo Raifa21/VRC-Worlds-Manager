@@ -14,7 +14,7 @@
             <TextBlock x:Name="Subtitle"  FontSize="18" FontWeight="Bold" Margin="0,0,0,20" HorizontalAlignment="Left" />
             <TextBox x:Name="UsernameTextBox" Text="{Binding Username, Mode=TwoWay}" Margin="0,0,0,10" />
             <PasswordBox x:Name="PasswordBox" Password="{Binding Password, Mode=TwoWay}" Margin="0,0,0,10" />
-            <TextBlock x:Name="Legal1" Margin="0,0,0,10" Foreground="DimGray"/>
+            <TextBlock x:Name="Legal1" Margin="0,0,0,10" Foreground="DimGray" TextWrapping="WrapWholeWords"/>
             <TextBlock x:Name="Legal2" TextWrapping="WrapWholeWords" Margin="0,0,0,10" Width="305" HorizontalAlignment="Left" Foreground="DimGray"/>
             <TextBlock x:Name="Legal3" TextWrapping="WrapWholeWords" Margin="0,0,0,30" Width="320" HorizontalAlignment="Left" Foreground="DimGray"/>
             <Button x:Name="LoginButton" Command="{Binding LoginCommand}" HorizontalAlignment="Right" />

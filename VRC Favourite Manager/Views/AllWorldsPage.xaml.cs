@@ -28,7 +28,9 @@ namespace VRC_Favourite_Manager.Views
             selectedItems = new List<WorldModel>();
             MultiClickGrid.Visibility = Visibility.Collapsed;
 
-            if (Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
+            string languageCode = Application.Current.Resources["languageCode"] as string;
+
+            if (languageCode == "ja")
             {
                 this.MultiSelectButton.Content = "‘I‘ð";
                 this.MultiSelectButton_Cancel.Content = "ƒLƒƒƒ“ƒZƒ‹";

@@ -11,8 +11,9 @@ namespace VRC_Favourite_Manager.Views
         {
             this.InitializeComponent();
             this.DataContext = new SettingsPageViewModel();
+            string languageCode = Application.Current.Resources["languageCode"] as string;
 
-            if (Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
+            if (languageCode == "ja")
             {
                 this.ConfirmButton.Content = "リセット";
                 this.DeleteWorlds.Text = "フォルダをリセット";

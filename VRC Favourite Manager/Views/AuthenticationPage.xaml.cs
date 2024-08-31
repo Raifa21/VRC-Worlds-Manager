@@ -18,7 +18,9 @@ namespace VRC_Favourite_Manager.Views
 
         public void ReloadPage()
         {
-            if (Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
+            string languageCode = Application.Current.Resources["languageCode"] as string;
+
+            if (languageCode == "ja")
             {
                 this.Subtitle.Text = "VRChatにログイン";
                 this.UsernameTextBox.Header = "ユーザー名";
@@ -43,7 +45,7 @@ namespace VRC_Favourite_Manager.Views
 
         public void ChangeLang_Click(object sender, RoutedEventArgs e)
         {
-            Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "en" : "ja";
+            Application.Current.Resources["languageCode"] = Application.Current.Resources["languageCode"] == "ja" ? "en" : "ja";
             ReloadPage();
         }
     }

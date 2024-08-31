@@ -49,6 +49,7 @@ namespace VRC_Favourite_Manager.ViewModels
 
         private async void Login()
         {
+            var languageCode = Application.Current.Resources["languageCode"] as string;
             try
             {
                 await _vrChatAPIService.VerifyLoginAsync(Username, Password);
@@ -65,23 +66,24 @@ namespace VRC_Favourite_Manager.ViewModels
                     }
                     else
                     {
-                        ErrorMessage = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja"
+                        
+                        ErrorMessage = languageCode == "ja"
                             ? "2段階認証に失敗しました。もう一度お試しください。"
                             : "Failed to authenticate with 2FA. Please try again.";
                     }
                 }
                 catch (Exception)
                 {
-                    ErrorMessage = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "エラーが発生しました。もう一度お試しください。" : "An error occurred. Please try again.";
+                    ErrorMessage = languageCode == "ja" ? "エラーが発生しました。もう一度お試しください。" : "An error occurred. Please try again.";
                 }
             }
             catch (VRCIncorrectCredentialsException)
             {
-                ErrorMessage = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "ユーザー名またはパスワードが間違っています。" : "Incorrect username or password.";
+                ErrorMessage = languageCode == "ja" ? "ユーザー名またはパスワードが間違っています。" : "Incorrect username or password.";
             }
             catch (Exception ex)
             {
-                ErrorMessage = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "エラーが発生しました。もう一度お試しください。" : "An error occurred. Please try again.";
+                ErrorMessage = languageCode == "ja" ? "エラーが発生しました。もう一度お試しください。" : "An error occurred. Please try again.";
             }
         }
 
@@ -89,7 +91,7 @@ namespace VRC_Favourite_Manager.ViewModels
         {
             var otpDialog = new TwoFactorAuthPopup(_mainWindow.Content.XamlRoot);
             var result = await otpDialog.ShowAsync();
-            if (result != ContentDialogResult.Primary || string.IsNullOrEmpty(otpDialog.OtpCode))
+            if (string.IsNullOrEmpty(otpDialog.OtpCode))
             {
                 System.Diagnostics.Debug.WriteLine("OTP Dialog was cancelled or empty");
             }

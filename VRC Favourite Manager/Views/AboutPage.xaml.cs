@@ -1,3 +1,4 @@
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace VRC_Favourite_Manager.Views
@@ -8,7 +9,9 @@ namespace VRC_Favourite_Manager.Views
         {
             this.InitializeComponent();
 
-            if (Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
+            string languageCode = Application.Current.Resources["languageCode"] as string;
+
+            if (languageCode == "ja")
             {
                 CreatorTextBlock.Text = "çÏê¨é“: Raifa";
                 SupportThankYouTextBlock.Text = "Ç≤éxâáÇ†ÇËÇ™Ç∆Ç§Ç≤Ç¥Ç¢Ç‹Ç∑ÅIéxâáÇÕ";

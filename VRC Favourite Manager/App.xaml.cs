@@ -15,8 +15,9 @@ namespace VRC_Favourite_Manager
         private VRChatAPIService _VRChatAPIService;
         private string authToken;
         private string twoFactorAuthToken;
+        public string languageCode { get; set; }
+
         public MainWindow MainWindow { get; private set; }
-        private string languageCode;
 
         public App()
         {
@@ -59,8 +60,18 @@ namespace VRC_Favourite_Manager
                     }
                 }
             }
-            catch (System.Exception e)
+            catch (System.Exception ex)
             {
+                Debug.WriteLine("TypeInitializationException: " + ex.Message);
+                Debug.WriteLine("Stack Trace: " + ex.StackTrace);
+
+                // Check if there is an inner exception
+                if (ex.InnerException != null)
+                {
+                    // Log the inner exception details
+                    Debug.WriteLine("Inner Exception: " + ex.InnerException.Message);
+                    Debug.WriteLine("Inner Exception Stack Trace: " + ex.InnerException.StackTrace);
+                }
                 System.Diagnostics.Debug.WriteLine("Error reading API key from config file.");
                 rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
             }
@@ -120,6 +131,7 @@ namespace VRC_Favourite_Manager
             Application.Current.Resources["VRChatAPIService"] = new VRChatAPIService();
             Application.Current.Resources["FolderManager"] = new FolderManager();
             Application.Current.Resources["WorldManager"] = new WorldManager();
+            Application.Current.Resources["languageCode"] = "ja";
             _VRChatAPIService = (VRChatAPIService)Application.Current.Resources["VRChatAPIService"];
         }
 

@@ -24,7 +24,10 @@ namespace VRC_Favourite_Manager.Views
             _selectedInstanceType = "Public";
             _selectedRegion = "JP";
 
-            if (Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
+            
+
+            string languageCode = Application.Current.Resources["languageCode"] as string;
+            if (languageCode == "ja")
             {
                 this.CreateInstance.Text = "インスタンスを作る";
                 this.InstanceType.Text = "インスタンスタイプ";
@@ -49,8 +52,8 @@ namespace VRC_Favourite_Manager.Views
                 this.Favorites.Text = "Favorites";
                 this.Capacity.Text = "Capacity";
                 this.LastUpdated.Text = "Last Updated";
-            
             }
+
         }
         private void CloseButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {

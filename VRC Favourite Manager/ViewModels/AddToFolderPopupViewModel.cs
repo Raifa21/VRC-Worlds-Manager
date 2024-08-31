@@ -36,7 +36,8 @@ namespace VRC_Favourite_Manager.ViewModels
 
             UpdateFolderSelection(_folderManager.Folders);
 
-            Debug.WriteLine(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
+            string languageCode = Application.Current.Resources["languageCode"] as string;
+            Debug.WriteLine(languageCode);
         }
 
         public void UpdateFolderSelection(ObservableCollection<FolderModel> Folders)

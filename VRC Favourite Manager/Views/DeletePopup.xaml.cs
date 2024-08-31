@@ -13,7 +13,9 @@ namespace VRC_Favourite_Manager.Views
             this.InitializeComponent();
             _folderName = folderName;
 
-            if (Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
+            string languageCode = Application.Current.Resources["languageCode"] as string;
+
+            if (languageCode == "ja")
             {
                 this.DeleteWorlds.Text = "フォルダを削除";
                 this.ConfirmButton.Content = "削除";

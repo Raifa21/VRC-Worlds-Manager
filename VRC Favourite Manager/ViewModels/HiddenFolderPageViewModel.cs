@@ -37,9 +37,10 @@ namespace VRC_Favourite_Manager.ViewModels
 
 
             UpdateWorlds();
+            string languageCode = Application.Current.Resources["languageCode"] as string;
 
-            ViewDetailsText = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "詳細" : "View Details";
-            RestoreText = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "復元" : "Restore";
+            ViewDetailsText = languageCode == "ja" ? "詳細" : "View Details";
+            RestoreText = languageCode == "ja" ? "復元" : "Restore";
 
 
             WeakReferenceMessenger.Default.Register<FolderUpdatedMessage>(this, (r, m) =>

@@ -13,8 +13,9 @@ namespace VRC_Favourite_Manager.Views
         public SettingsPage()
         {
             this.InitializeComponent();
+            string languageCode = Application.Current.Resources["languageCode"] as string;
 
-            RefreshPage(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
+            RefreshPage(languageCode);
         }
 
         private void Language_Checked(object sender, RoutedEventArgs e)
@@ -75,8 +76,8 @@ namespace VRC_Favourite_Manager.Views
         }
 
         private void ChangeApplicationLanguage(string languageCode)
-        {
-            Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = languageCode;
+        { 
+            Application.Current.Resources["languageCode"] = languageCode;
             WeakReferenceMessenger.Default.Send(new LanguageChangedMessage(languageCode));
             RefreshPage(languageCode);
         }

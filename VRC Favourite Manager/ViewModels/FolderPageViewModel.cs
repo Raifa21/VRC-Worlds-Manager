@@ -67,16 +67,17 @@ namespace VRC_Favourite_Manager.ViewModels
             FolderName = _folderManager?.SelectedFolder?.Name;
             _isRenaming = false;
 
-            ChangeFolderNameLang = (FolderName == "Unclassified" && Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja");
+            string languageCode = Application.Current.Resources["languageCode"] as string;
+            ChangeFolderNameLang = (FolderName == "Unclassified" && languageCode == "ja");
 
             MoveWorldCommand = new RelayCommand<Tuple<WorldModel, string>>(MoveWorld);
             AddFolderCommand = new RelayCommand<string>(AddFolder);
 
             UpdateWorlds();
 
-            ViewDetailsText = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "詳細" : "View Details";
-            MoveToAnotherFolderText = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "別のフォルダに移動" : "Move to another folder";
-            RemoveFromFolderText = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "フォルダから削除" : "Remove from folder";
+            ViewDetailsText = languageCode == "ja" ? "詳細" : "View Details";
+            MoveToAnotherFolderText = languageCode == "ja" ? "別のフォルダに移動" : "Move to another folder";
+            RemoveFromFolderText = languageCode == "ja" ? "フォルダから削除" : "Remove from folder";
             IsUnclassified = FolderName == "Unclassified";
 
 

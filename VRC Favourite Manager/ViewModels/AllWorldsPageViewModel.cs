@@ -47,9 +47,11 @@ namespace VRC_Favourite_Manager.ViewModels
 
             UpdateWorlds();
 
-            ViewDetailsText = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "詳細" : "View Details";
-            MoveToAnotherFolderText = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "別のフォルダに移動" : "Move to another folder";
-            RemoveFromFolderText = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "フォルダから削除" : "Remove from folder";
+            string languageCode = Application.Current.Resources["languageCode"] as string;
+
+            ViewDetailsText = languageCode == "ja" ? "詳細" : "View Details";
+            MoveToAnotherFolderText = languageCode == "ja" ? "別のフォルダに移動" : "Move to another folder";
+            RemoveFromFolderText = languageCode == "ja" ? "フォルダから削除" : "Remove from folder";
 
 
             WeakReferenceMessenger.Default.Register<FolderUpdatedMessage>(this, (r, m) =>

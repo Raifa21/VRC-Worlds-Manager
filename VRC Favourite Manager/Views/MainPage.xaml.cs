@@ -23,7 +23,9 @@ namespace VRC_Favourite_Manager.Views
             this.DataContext = viewModel;
 
             NavigateToAllWorldsPage();
-            RefreshPage(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
+            string languageCode = Application.Current.Resources["languageCode"] as string;
+
+            RefreshPage(languageCode);
 
             var folders = viewModel.FoldersNavigationViewItems;
             foreach (var folder in folders)
@@ -87,15 +89,17 @@ namespace VRC_Favourite_Manager.Views
             FoldersItem.MenuItems.Clear();
             foreach (var folder in folders)
             {
-                if((string)folder.Content == "Hidden")
+                string languageCode = Application.Current.Resources["languageCode"] as string;
+
+                if ((string)folder.Content == "Hidden")
                 {
                     continue;
                 }
-                if((string)folder.Content == "Unclassified" && Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
+                if((string)folder.Content == "Unclassified" && languageCode == "ja")
                 {
                     folder.Content = "–¢•ª—Þ";
                 }
-                else if((string)folder.Content == "Unclassified" && Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "en")
+                else if((string)folder.Content == "Unclassified" && languageCode == "en")
                 {
                     folder.Content = "Unclassified";
                 }

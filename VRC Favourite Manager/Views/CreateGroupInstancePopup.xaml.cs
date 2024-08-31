@@ -13,7 +13,9 @@ namespace VRC_Favourite_Manager.Views
             this.InitializeComponent();
             this.DataContext = new CreateGroupInstancePopupViewModel(world, region);
 
-            if(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
+            string languageCode = Application.Current.Resources["languageCode"] as string;
+
+            if (languageCode == "ja")
             {
                 this.SelectGroupTitle.Text = "グループを選択";
                 this.SelectGroupInstanceType.Text = "グループインスタンスタイプを選択";

@@ -12,21 +12,23 @@ namespace VRC_Favourite_Manager.Views
             this.InitializeComponent();
             this.XamlRoot = xamlRoot;
 
-            if(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
+
+            string languageCode = Application.Current.Resources["languageCode"] as string;
+
+            if (languageCode == "ja")
             {
                 this.Subtitle.Text = "2段階認証が有効になっています。";
                 this.Description.Text = "認証コードを入力してください：";
                 this.PrimaryButtonText = "キャンセル";
                 this.SecondaryButtonText = "送信";
             }
-            else {
+            else
+            {
                 this.Subtitle.Text = "2FA is enabled.";
                 this.Description.Text = "Please enter a 2FA code:";
                 this.PrimaryButtonText = "Cancel";
                 this.SecondaryButtonText = "Submit";
             }
-
-
         }
 
         private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
