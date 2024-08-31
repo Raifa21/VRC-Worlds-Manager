@@ -17,18 +17,6 @@
 	  <WindowsPackageType>None</WindowsPackageType>
   </PropertyGroup>
   <ItemGroup>
-    <Content Remove="Assets\24.png" />
-    <Content Remove="Assets\88.png" />
-    <Content Remove="Assets\LockScreenLogo.scale-200.png" />
-    <Content Remove="Assets\SplashScreen.scale-200.png" />
-    <Content Remove="Assets\Square150x150Logo.scale-200.png" />
-    <Content Remove="Assets\Square44x44Logo.scale-200.png" />
-    <Content Remove="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Remove="Assets\StoreLogo.png" />
-    <Content Remove="Assets\vrchat_2023_11_04_08_55_35_417_7680x4320_icon %283%29.png" />
-    <Content Remove="Assets\vrchat_2023_11_04_08_55_35_417_7680x4320_RmH_icon.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <None Remove="Common\SrkYocOB_400x400.jpg" />
     <None Remove="Icons\Gear.svg" />
     <None Remove="Icons\Logout.svg" />
@@ -50,27 +38,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\SplashScreen.scale-200.png" />
-    <Resource Include="Assets\LockScreenLogo.scale-200.png" />
-    <Resource Include="Assets\Square150x150Logo.scale-200.png" />
-    <Resource Include="Assets\Square44x44Logo.scale-200.png" />
-    <Resource Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Resource Include="Assets\StoreLogo.png" />
-    <Resource Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="Assets\SplashScreen.scale-200.png" />
+    <Content Include="Assets\LockScreenLogo.scale-200.png" />
+    <Content Include="Assets\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\StoreLogo.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="Common\SrkYocOB_400x400.jpg" />
     <Content Include="Icons\Gear.svg" />
     <Content Include="Icons\Logout.svg" />
     <Content Include="Icons\Saturn.svg" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.0" />
     <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Controls" Version="7.1.3" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240802000" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
-    <PackageReference Include="Serilog" Version="4.0.1" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
     <PackageReference Include="Tomlyn" Version="0.17.0" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
@@ -154,20 +140,6 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Assets\24.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\88.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\vrchat_2023_11_04_08_55_35_417_7680x4320_icon (3).png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\vrchat_2023_11_04_08_55_35_417_7680x4320_RmH_icon.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Common\ConfigManager.cs">

@@ -14,11 +14,14 @@
             <TextBlock x:Name="Subtitle"  FontSize="18" FontWeight="Bold" Margin="0,0,0,20" HorizontalAlignment="Left" />
             <TextBox x:Name="UsernameTextBox" Text="{Binding Username, Mode=TwoWay}" Margin="0,0,0,10" />
             <PasswordBox x:Name="PasswordBox" Password="{Binding Password, Mode=TwoWay}" Margin="0,0,0,10" />
-            <TextBlock x:Name="Legal1" Margin="0,0,0,10" Foreground="DimGray"/>
+            <TextBlock x:Name="Legal1" Margin="0,0,0,10" Foreground="DimGray" TextWrapping="WrapWholeWords"/>
             <TextBlock x:Name="Legal2" TextWrapping="WrapWholeWords" Margin="0,0,0,10" Width="305" HorizontalAlignment="Left" Foreground="DimGray"/>
             <TextBlock x:Name="Legal3" TextWrapping="WrapWholeWords" Margin="0,0,0,30" Width="320" HorizontalAlignment="Left" Foreground="DimGray"/>
             <Button x:Name="LoginButton" Command="{Binding LoginCommand}" HorizontalAlignment="Right" />
-            <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}" Margin="0,-55,0,0" />
         </StackPanel>
+        <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}" Margin="-70,350,0,0" Width="280" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <Button BorderThickness="0" Background="Transparent" Margin="0,0,20,20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="ChangeLang_Click">
+            <FontIcon Glyph="&#xE774;" />
+        </Button>
     </Grid>
 </Page>

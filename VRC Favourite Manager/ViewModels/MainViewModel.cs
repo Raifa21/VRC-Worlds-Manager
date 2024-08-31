@@ -8,6 +8,7 @@ using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
 using System.Linq;
 using Microsoft.UI.Xaml.Controls;
+using Serilog;
 using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Views;
 
@@ -18,14 +19,13 @@ namespace VRC_Favourite_Manager.ViewModels
         private readonly VRChatAPIService _vrChatAPIService;
         private readonly WorldManager _worldManager;
         private readonly FolderManager _folderManager;
-        private MainWindow mainWindow;
 
         public ICommand LogoutCommand { get; }
         public IEnumerable<NavigationViewItemBase> FoldersNavigationViewItems { get; set; }
 
         public MainViewModel()
         {
-            Debug.WriteLine("MainViewModel created");
+            Log.Information("MainViewModel created");
             _vrChatAPIService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
             _folderManager = Application.Current.Resources["FolderManager"] as FolderManager;
             _worldManager = Application.Current.Resources["WorldManager"] as WorldManager;
@@ -40,15 +40,13 @@ namespace VRC_Favourite_Manager.ViewModels
 
         private async Task LogoutCommandAsync()
         {
+            var app = (App)Application.Current;
+            var mainWindow = app.MainWindow;
             await _vrChatAPIService.LogoutAsync();
             var rootFrame = new Frame();
-            mainWindow = new MainWindow();
             rootFrame.Navigate(typeof(AuthenticationPage));
             mainWindow.Content = rootFrame;
             mainWindow.Activate();
-
-
-            ((App)Application.Current).mainWindow.Close();
         }
 
         private void OnFolderManagerPropertyChanged(object sender, PropertyChangedEventArgs e)

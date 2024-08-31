@@ -14,6 +14,6 @@
         <TextBlock x:Name="ConfirmExplanation" Margin="2,50,0,0" FontSize="11" TextWrapping="WrapWholeWords"/>
         <TextBlock x:Name="SelectedWorld" Margin="2,80,0,0" TextTrimming="CharacterEllipsis" TextWrapping="WrapWholeWords" Height="50" Width="300" FontSize="11" />
 
-        <Button x:Name="ConfirmButton" Click="ConfirmButton_Click" Margin="0,25,0,0" Width="300"  VerticalAlignment="Bottom" Background="Red" />
+        <Button x:Name="ConfirmButton" Click="ConfirmButton_Click" Margin="0,25,0,0" Width="300"  VerticalAlignment="Bottom" Background="Red" Foreground="White" />
     </Grid>
 </ContentDialog>

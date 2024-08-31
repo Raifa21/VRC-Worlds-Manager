@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Serilog;
 using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Models;
 
@@ -36,7 +37,8 @@ namespace VRC_Favourite_Manager.ViewModels
 
             UpdateFolderSelection(_folderManager.Folders);
 
-            Debug.WriteLine(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
+            string languageCode = Application.Current.Resources["languageCode"] as string;
+            Log.Information(languageCode);
         }
 
         public void UpdateFolderSelection(ObservableCollection<FolderModel> Folders)

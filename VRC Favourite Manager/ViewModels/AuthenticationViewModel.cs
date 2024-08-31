@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Serilog;
 using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Services;
 using VRC_Favourite_Manager.Views;
@@ -15,17 +16,7 @@ namespace VRC_Favourite_Manager.ViewModels
     {
         private readonly VRChatAPIService _vrChatAPIService;
         private readonly Window _mainWindow;
-        private MainWindow mainWindow;
         private string _errorMessage;
-
-        public AuthenticationViewModel()
-        {
-            _vrChatAPIService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
-            _mainWindow = ((App)Application.Current).mainWindow;
-            LoginCommand = new RelayCommand(Login);
-
-        }
-
         private string _username;
 
         public string Username
@@ -50,32 +41,77 @@ namespace VRC_Favourite_Manager.ViewModels
         public ICommand LoginCommand { get; }
         // Adjusted constructor to accept NavigationService directly
 
+        public AuthenticationViewModel()
+        {
+            _vrChatAPIService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
+            _mainWindow = ((App)Application.Current).MainWindow;
+            LoginCommand = new RelayCommand(Login);
+
+        }
+
+
         private async void Login()
         {
+            var languageCode = Application.Current.Resources["languageCode"] as string;
             try
             {
                 await _vrChatAPIService.VerifyLoginAsync(Username, Password);
-                System.Diagnostics.Debug.WriteLine("Login successful.");
+                Log.Information("Login successful.");
                 DisplayMainView();
             }
             catch (VRCRequiresTwoFactorAuthException e)
             {
-                if (await DoTwoFactorAuthenticationAsync(e.TwoFactorAuthType))
+                try
                 {
-                    DisplayMainView();
+                    if (await DoTwoFactorAuthenticationAsync(e.TwoFactorAuthType))
+                    {
+                        DisplayMainView();
+                    }
+                    else
+                    {
+
+                        ErrorMessage = languageCode == "ja"
+                            ? "2段階認証に失敗しました。もう一度お試しください。"
+                            : "Failed to authenticate with 2FA. Please try again.";
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    ErrorMessage = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "2段階認証に失敗しました。もう一度お試しください。" : "Failed to authenticate with 2FA. Please try again.";
+                    if (ex is VRCServiceUnavailableException unavailableException)
+                    {
+                        ErrorMessage = languageCode == "ja"
+                            ? "VRChat APIにアクセスできません。ファイアウォール設定を見直してください。"
+                            + " (" + unavailableException.Message + ")"
+                            : "Cannot access VRChat API. Please check your firewall settings."
+                        + " (" + unavailableException.Message + ")";
+                    }
+                    else
+                    {
+                        ErrorMessage = languageCode == "ja"
+                            ? "エラーが発生しました。もう一度お試しください： " + ex.Message
+                            : "An error occurred. Please try again. (" + ex.Message + ")";
+                    }
                 }
             }
             catch (VRCIncorrectCredentialsException)
             {
-                ErrorMessage = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "ユーザー名またはパスワードが間違っています。" : "Incorrect username or password.";
+                ErrorMessage = languageCode == "ja" ? "ユーザー名またはパスワードが間違っています。" : "Incorrect username or password.";
             }
             catch (Exception ex)
             {
-                ErrorMessage = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "エラーが発生しました。もう一度お試しください。" : "An error occurred. Please try again.";
+                Log.Information(ex.Message);
+                if (ex is VRCServiceUnavailableException unavailableException)
+                {
+                    ErrorMessage = languageCode == "ja"
+                        ? "VRChat APIにアクセスできません。ファイアウォール設定を見直してください。"
+                        : "Cannot access VRChat API. Please check your firewall settings.";
+                }
+                else
+                {
+                    ErrorMessage = languageCode == "ja"
+                        ? "エラーが発生しました。もう一度お試しください： "
+                        : "An error occurred. Please try again.";
+                }
             }
         }
 
@@ -83,30 +119,21 @@ namespace VRC_Favourite_Manager.ViewModels
         {
             var otpDialog = new TwoFactorAuthPopup(_mainWindow.Content.XamlRoot);
             var result = await otpDialog.ShowAsync();
-            if (result != ContentDialogResult.Primary || string.IsNullOrEmpty(otpDialog.OtpCode))
+            if (string.IsNullOrEmpty(otpDialog.OtpCode))
             {
-                System.Diagnostics.Debug.WriteLine("OTP Dialog was cancelled or empty");
+                Log.Information("OTP Dialog was cancelled or empty");
             }
             return await _vrChatAPIService.Authenticate2FAAsync(otpDialog.OtpCode, twoFactorAuthType);
         }
 
         private void DisplayMainView()
         {
-            try
-            {
-                var rootFrame = new Frame();
-                mainWindow = new MainWindow();
-                rootFrame.Navigate(typeof(MainPage));
-                mainWindow.Content = rootFrame;
-                mainWindow.Activate();
-                ((App)Application.Current).mainWindow.Close();
-            }
-            catch (Exception ex)
-            {
-                // Log or inspect the exception
-                Debug.WriteLine(ex.ToString());
-                throw;
-            }
+            var app = (App)Application.Current;
+            var mainWindow = app.MainWindow;
+            var rootFrame = new Frame();
+            rootFrame.Navigate(typeof(MainPage));
+            mainWindow.Content = rootFrame;
+            mainWindow.Activate();
         }
 
     }

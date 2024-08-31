@@ -7,6 +7,7 @@ using System.Windows.Input;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Common;
 using CommunityToolkit.Mvvm.Messaging;
+using Serilog;
 
 namespace VRC_Favourite_Manager.ViewModels
 {
@@ -64,38 +65,46 @@ namespace VRC_Favourite_Manager.ViewModels
             _worldManager = Application.Current.Resources["WorldManager"] as WorldManager;
 
             Worlds = new ObservableCollection<WorldModel>();
-            _folderName = _folderManager?.SelectedFolder?.Name;
+            FolderName = _folderManager?.SelectedFolder?.Name;
             _isRenaming = false;
 
-            ChangeFolderNameLang = (_folderName == "Unclassified" && Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja");
+            string languageCode = Application.Current.Resources["languageCode"] as string;
+            ChangeFolderNameLang = (FolderName == "Unclassified" && languageCode == "ja");
 
             MoveWorldCommand = new RelayCommand<Tuple<WorldModel, string>>(MoveWorld);
             AddFolderCommand = new RelayCommand<string>(AddFolder);
 
             UpdateWorlds();
 
-            ViewDetailsText = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "詳細" : "View Details";
-            MoveToAnotherFolderText = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "別のフォルダに移動" : "Move to another folder";
-            RemoveFromFolderText = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "フォルダから削除" : "Remove from folder";
-            IsUnclassified = _folderName == "Unclassified";
+            ViewDetailsText = languageCode == "ja" ? "詳細" : "View Details";
+            MoveToAnotherFolderText = languageCode == "ja" ? "別のフォルダに移動" : "Move to another folder";
+            RemoveFromFolderText = languageCode == "ja" ? "フォルダから削除" : "Remove from folder";
+            IsUnclassified = FolderName == "Unclassified";
 
 
             WeakReferenceMessenger.Default.Register<FolderUpdatedMessage>(this, (r, m) =>
             {
-                Debug.WriteLine("Folder updated");
+                Log.Information("Folder updated");
                 OnFolderUpdated();
             });
         }
+
+        public void RenameCancel()
+        {
+            IsRenaming = false;
+            FolderName = _folderManager.SelectedFolder.Name;
+        }
         public void RenameFolder(string newFolderName)
         {
-            _folderManager.RenameFolder(newFolderName, _folderName);
-            Debug.WriteLine("Renamed folder: " + newFolderName);
+            var newName = _folderManager.RenameFolder(newFolderName, _folderName);
+            Log.Information("Renamed folder: " + newName);
+            FolderName = newName;
+            IsRenaming = false;
         }
 
         private void OnFolderUpdated()
         {
-            Debug.WriteLine("Selected folder changed");
-            _folderName = _folderManager.SelectedFolder?.Name;
+            Log.Information("Selected folder changed");
             UpdateWorlds();
         }
 

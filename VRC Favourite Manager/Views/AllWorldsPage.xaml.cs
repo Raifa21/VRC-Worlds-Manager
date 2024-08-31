@@ -10,6 +10,7 @@ using VRC_Favourite_Manager.Models;
 using Microsoft.UI.Xaml.Navigation;
 using System.Linq;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace VRC_Favourite_Manager.Views
 {
@@ -28,7 +29,9 @@ namespace VRC_Favourite_Manager.Views
             selectedItems = new List<WorldModel>();
             MultiClickGrid.Visibility = Visibility.Collapsed;
 
-            if (Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
+            string languageCode = Application.Current.Resources["languageCode"] as string;
+
+            if (languageCode == "ja")
             {
                 this.MultiSelectButton.Content = "‘I‘ð";
                 this.MultiSelectButton_Cancel.Content = "ƒLƒƒƒ“ƒZƒ‹";
@@ -84,7 +87,7 @@ namespace VRC_Favourite_Manager.Views
 
         private void ViewDetails_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
-            Debug.WriteLine("ViewDetails_Click");
+            Log.Information("ViewDetails_Click");
 
             if (sender is FrameworkElement { DataContext: WorldModel selectedWorld })
             {

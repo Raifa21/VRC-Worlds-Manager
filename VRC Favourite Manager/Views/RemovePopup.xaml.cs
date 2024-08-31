@@ -13,14 +13,18 @@ namespace VRC_Favourite_Manager.Views
         {
             this.InitializeComponent();
             this.DataContext = new RemovePopupViewModel(selectedWorlds);
-            var text = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "選択されたワールド： " : "Selected Worlds: ";
+            
+            string languageCode = Application.Current.Resources["languageCode"] as string;
+            var text = languageCode == "ja" ? "選択されたワールド： " : "Selected Worlds: ";
             foreach (var selectedWorld in selectedWorlds)
             {
                 text += selectedWorld.WorldName + ", ";
             }
             text = text.Substring(0, text.Length - 2);
 
-            if (Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
+            
+
+            if (languageCode == "ja")
             {
                 this.ConfirmButton.Content = "削除";
                 this.DeleteWorlds.Text = "ワールドを削除";

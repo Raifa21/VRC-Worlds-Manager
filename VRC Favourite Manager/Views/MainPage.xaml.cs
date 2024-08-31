@@ -1,10 +1,13 @@
 using System.Diagnostics;
 using Microsoft.UI.Xaml.Controls;
 using VRC_Favourite_Manager.ViewModels;
+using Microsoft.UI.Xaml;
 using CommunityToolkit.Mvvm.Messaging;
 using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Models;
 using Microsoft.UI.Xaml.Navigation;
+using System;
+using Serilog;
 
 namespace VRC_Favourite_Manager.Views
 {
@@ -21,7 +24,9 @@ namespace VRC_Favourite_Manager.Views
             this.DataContext = viewModel;
 
             NavigateToAllWorldsPage();
-            RefreshPage(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
+            string languageCode = Application.Current.Resources["languageCode"] as string;
+
+            RefreshPage(languageCode);
 
             var folders = viewModel.FoldersNavigationViewItems;
             foreach (var folder in folders)
@@ -30,37 +35,52 @@ namespace VRC_Favourite_Manager.Views
             }
 
             GenerateFolders();
+            foreach(var folder in folders)
+            {
+                if(folder.IsSelected)
+                {
+                    NavView.SelectedItem = folder;
+                }
+            }
+            
 
             WeakReferenceMessenger.Default.Register<LanguageChangedMessage>(this, (r, m) =>
             {
-                Debug.WriteLine("Language changed to " + m.LanguageCode);
+                Log.Information("Language changed to " + m.LanguageCode);
                 RefreshPage(m.LanguageCode);
                 GenerateFolders();
             });
             WeakReferenceMessenger.Default.Register<FolderUpdatedMessage>(this, (r, m) =>
             {
-                Debug.WriteLine("Folder updated");
+                Log.Information("Folder updated");
                 GenerateFolders();
             });
         }
 
         private void RefreshPage(string languageCode)
         {
-            if (languageCode == "ja")
+            try
             {
-                this.AllWorldsItem.Content = "ワールド一覧";
-                this.FoldersItem.Content = "フォルダ";
-                this.AboutItem.Content = "このアプリについて";
-                this.SettingsItem.Content = "設定";
-                this.LogoutItem.Content = "ログアウト";
+                if (languageCode == "ja")
+                {
+                    this.AllWorldsItem.Content = "ワールド一覧";
+                    this.FoldersItem.Content = "フォルダ";
+                    this.AboutItem.Content = "このアプリについて";
+                    this.SettingsItem.Content = "設定";
+                    this.LogoutItem.Content = "ログアウト";
+                }
+                else
+                {
+                    this.AllWorldsItem.Content = "All Worlds";
+                    this.FoldersItem.Content = "Folders";
+                    this.AboutItem.Content = "About";
+                    this.SettingsItem.Content = "Settings";
+                    this.LogoutItem.Content = "Logout";
+                }
             }
-            else
+            catch (System.Exception)
             {
-                this.AllWorldsItem.Content = "All Worlds";
-                this.FoldersItem.Content = "Folders";
-                this.AboutItem.Content = "About";
-                this.SettingsItem.Content = "Settings";
-                this.LogoutItem.Content = "Logout";
+                Log.Information("Error refreshing page.");
             }
         }
 
@@ -70,26 +90,54 @@ namespace VRC_Favourite_Manager.Views
             FoldersItem.MenuItems.Clear();
             foreach (var folder in folders)
             {
-                if((string)folder.Content == "Hidden")
+                string languageCode = Application.Current.Resources["languageCode"] as string;
+
+                if ((string)folder.Content == "Hidden")
                 {
                     continue;
                 }
-                if((string)folder.Content == "Unclassified" && Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
+                if((string)folder.Content == "Unclassified" && languageCode == "ja")
                 {
                     folder.Content = "未分類";
                 }
-                else if((string)folder.Content == "Unclassified" && Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "en")
+                else if((string)folder.Content == "Unclassified" && languageCode == "en")
                 {
                     folder.Content = "Unclassified";
                 }
-                FoldersItem.MenuItems.Add(folder);
-                if (folder.IsSelected)
+                else
                 {
-                    NavView.SelectedItem = folder;
+                    MenuFlyout flyout = new MenuFlyout();
+                    string folderName = folder.Content as string;
+
+                    MenuFlyoutItem delete = new MenuFlyoutItem
+                    {
+                        Text = "Delete folder",
+                        Tag = folderName
+                    };
+                    delete.Click += Delete_Click;
+
+                    flyout.Items.Add(delete);
+
+                    folder.ContextFlyout = flyout;
                 }
+
+                FoldersItem.MenuItems.Add(folder);
             }
         }
 
+        private async void Delete_Click(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as MenuFlyoutItem;
+            var folderName = menuItem?.Tag as string;
+
+            if (!string.IsNullOrEmpty(folderName))
+            {
+                var deletePopup = new DeletePopup(folderName);
+                deletePopup.XamlRoot = this.Content.XamlRoot;
+                await deletePopup.ShowAsync();
+                GenerateFolders();
+            }
+        }
 
         private void NavigationView_SelectionChanged(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)
         {
@@ -105,6 +153,7 @@ namespace VRC_Favourite_Manager.Views
                         ContentFrame.Navigate(typeof(AllWorldsPage));
                         break;
                     case "SettingsPage":
+                        Log.Information("SettingsPage");
                         ContentFrame.Navigate(typeof(SettingsPage));
                         break;
                     case "AboutPage":

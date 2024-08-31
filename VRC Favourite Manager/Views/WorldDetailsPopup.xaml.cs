@@ -12,15 +12,47 @@ namespace VRC_Favourite_Manager.Views
         public WorldModel World { get; set; }
         private string _selectedInstanceType;
         private string _selectedRegion;
+        private WorldDetailsPopupViewModel _viewmodel;
 
         public WorldDetailsPopup(WorldModel world)
         {
             this.InitializeComponent();
+            _viewmodel = new WorldDetailsPopupViewModel(world);
             this.World = world;
-            this.DataContext = world;
+            this.DataContext = _viewmodel;
             
             _selectedInstanceType = "Public";
             _selectedRegion = "JP";
+
+            
+
+            string languageCode = Application.Current.Resources["languageCode"] as string;
+            if (languageCode == "ja")
+            {
+                this.CreateInstance.Text = "インスタンスを作る";
+                this.InstanceType.Text = "インスタンスタイプ";
+                this.Region.Text = "地域";
+                this.CreateInstanceButton.Content = "作成";
+                this.Description.Text = "このワールドについて";
+                this.Details.Text = "詳細";
+                this.Visits.Text = "訪問数";
+                this.Favorites.Text = "お気に入り数";
+                this.Capacity.Text = "人数上限";
+                this.LastUpdated.Text = "更新日";
+            }
+            else
+            {
+                this.CreateInstance.Text = "Create Instance";
+                this.InstanceType.Text = "Instance Type";
+                this.Region.Text = "Region";
+                this.CreateInstanceButton.Content = "Create";
+                this.Description.Text = "About this world";
+                this.Details.Text = "Details";
+                this.Visits.Text = "Visits";
+                this.Favorites.Text = "Favorites";
+                this.Capacity.Text = "Capacity";
+                this.LastUpdated.Text = "Last Updated";
+            }
 
         }
         private void CloseButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
@@ -29,18 +61,17 @@ namespace VRC_Favourite_Manager.Views
         }
         private void CreateInstanceButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
-            var world = (WorldModel)this.DataContext;
+            
             if (_selectedInstanceType != "Group")
             {
-                WorldDetailsPopupViewModel viewModel = new WorldDetailsPopupViewModel(world);
-                viewModel.CreateInstanceAsync(world.WorldId, _selectedInstanceType, _selectedRegion);
+                _viewmodel.CreateInstanceAsync(World.WorldId, _selectedInstanceType, _selectedRegion);
                 this.Hide();
             }
             else
             { 
                 this.Hide();
 
-                var createGroupInstance = new CreateGroupInstancePopup(world, _selectedRegion);
+                var createGroupInstance = new CreateGroupInstancePopup(World, _selectedRegion);
                 createGroupInstance.XamlRoot = this.XamlRoot;
                 createGroupInstance.ShowAsync();
             }

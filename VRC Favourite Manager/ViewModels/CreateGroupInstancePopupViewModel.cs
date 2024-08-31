@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
+using Serilog;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
+
 namespace VRC_Favourite_Manager.ViewModels
 {
     public class CreateGroupInstancePopupViewModel : ObservableObject
@@ -260,7 +262,7 @@ namespace VRC_Favourite_Manager.ViewModels
             {
                 _selectedGroup = Groups.First(group => group.Name == groupName);
                 GroupIcon = _selectedGroup.Icon;
-                Debug.WriteLine($"Selected group: {GroupIcon}");
+                Log.Information($"Selected group: {GroupIcon}");
                 GroupName = _selectedGroup.Name;
                 GroupRoles = new ObservableCollection<GroupRolesModel>();
                 foreach(var groupRole in _selectedGroup.GroupRoles)
@@ -281,8 +283,8 @@ namespace VRC_Favourite_Manager.ViewModels
                     return;
                 }
 
-                Debug.WriteLine($"Selected group: {_selectedGroup.Name}");
-                Debug.WriteLine($"Selected group ID: {_selectedGroup.Id}");
+                Log.Information($"Selected group: {_selectedGroup.Name}");
+                Log.Information($"Selected group ID: {_selectedGroup.Id}");
 
                 var delayTask = Task.Delay(TimeSpan.FromSeconds(15), cancellationToken);
                 var groupRolesTask = _vrChatApiService.GetGroupRolesAsync(_selectedGroup.Id);
@@ -300,8 +302,8 @@ namespace VRC_Favourite_Manager.ViewModels
                 _selectedGroup.GroupRoles = await groupRolesTask;
                 _userRoles = await userRolesTask;
 
-                Debug.WriteLine($"Group roles: {_selectedGroup.GroupRoles.Count}");
-                Debug.WriteLine($"User roles: {_userRoles.Count}");
+                Log.Information($"Group roles: {_selectedGroup.GroupRoles.Count}");
+                Log.Information($"User roles: {_userRoles.Count}");
 
                 _userRoles.Add(_selectedGroup.GroupRoles.Find(gr => gr.Name == "Everyone").Id);
 
@@ -331,38 +333,38 @@ namespace VRC_Favourite_Manager.ViewModels
 
                 if (!CanCreateGroupInstance)
                 {
-                    Debug.WriteLine("User does not have the required permissions to create a group instance.");
+                    Log.Information("User does not have the required permissions to create a group instance.");
                     Message = "You do not have the required permissions to create a group instance.";
                 }
                 else
                 {
-                    Debug.WriteLine("User has the required permissions to create a group instance.");
+                    Log.Information("User has the required permissions to create a group instance.");
                 }
             }
             catch (Exception ex)
             {
                 Message = $"An error occurred: {ex.Message}";
-                Debug.WriteLine($"An error occurred: {ex.Message}");
+                Log.Information($"An error occurred: {ex.Message}");
             }
             finally
             {
                 IsLoading = false;
                 IsGroupRolesLoadingComplete = true;
-                Debug.WriteLine("Group roles loaded.");
-                Debug.WriteLine($"User roles: {_userRoles.Count}");
-                Debug.WriteLine(CanCreateGroupInstance
+                Log.Information("Group roles loaded.");
+                Log.Information($"User roles: {_userRoles.Count}");
+                Log.Information(CanCreateGroupInstance
                     ? "User can create group instance."
                     : "User cannot create group instance.");
-                Debug.WriteLine(CanCreateRestricted
+                Log.Information(CanCreateRestricted
                     ? "User can create restricted group instance."
                     : "User cannot create restricted group instance.");
-                Debug.WriteLine(CanCreateGroupOnly
+                Log.Information(CanCreateGroupOnly
                     ? "User can create group only group instance."
                     : "User cannot create group only group instance.");
-                Debug.WriteLine(CanCreateGroupPlus
+                Log.Information(CanCreateGroupPlus
                     ? "User can create group plus group instance."
                     : "User cannot create group plus group instance.");
-                Debug.WriteLine(CanCreateGroupPublic
+                Log.Information(CanCreateGroupPublic
                     ? "User can create public group instance."
                     : "User cannot create public group instance.");
 
@@ -389,7 +391,7 @@ namespace VRC_Favourite_Manager.ViewModels
             }
             foreach(var permission in permissions)
             {
-                Debug.WriteLine($"Permission: {permission}");
+                Log.Information($"Permission: {permission}");
             }
 
             CanCreateRestricted = permissions.Contains("group-instance-restricted-create") || permissions.Contains("*");
@@ -404,7 +406,7 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public void SelectRolesChanged()
         {
-            Debug.WriteLine("Checkbox updated");
+            Log.Information("Checkbox updated");
 
             EveryoneIsSelected = false;
 
@@ -412,8 +414,8 @@ namespace VRC_Favourite_Manager.ViewModels
             var isNonManagementRoleSelected =
                 SelectRoles.Where(role => !role.IsManagementRole).Any(role => role.IsSelected);
 
-            Debug.WriteLine($"Any role selected: {isAnyRoleSelected}");
-            Debug.WriteLine($"Non management role selected: {isNonManagementRoleSelected}");
+            Log.Information($"Any role selected: {isAnyRoleSelected}");
+            Log.Information($"Non management role selected: {isNonManagementRoleSelected}");
 
             if (isAnyRoleSelected)
             {
@@ -461,7 +463,7 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public void AccessTypeSelected(string instanceType)
         {
-            Debug.WriteLine("Access type selected" + instanceType);
+            Log.Information("Access type selected" + instanceType);
 
             IsRoleRestricted = false;
             switch (instanceType)
@@ -486,7 +488,7 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public void RolesSelected()
         {
-            Debug.WriteLine("Roles selected");
+            Log.Information("Roles selected");
             _selectedRoles.Clear();
             if(EveryoneIsSelected)
             {
@@ -523,10 +525,6 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public async void CreateInstanceAsync()
         {
-            if (!_selectedRoles.Any())
-            {
-                _selectedRoles.Add(_selectedGroup.GroupRoles.Find(gr => gr.Name == "Everyone").Id);
-            }
             await _vrChatApiService.CreateGroupInstanceAsync(_selectedWorld.WorldId, _selectedGroup.Id, Region,
                 _groupAccessType.ToLower(), _selectedRoles, _isQueueEnabled);
         }

@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
 using System.Linq;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace VRC_Favourite_Manager.Views
 {
@@ -18,7 +19,6 @@ namespace VRC_Favourite_Manager.Views
     {
         private FolderPageViewModel _viewModel => (FolderPageViewModel)this.DataContext;
         private List<WorldModel> selectedItems;
-        private string folderName;
 
 
         public FolderPage()
@@ -32,7 +32,9 @@ namespace VRC_Favourite_Manager.Views
             RenameButton.Visibility = Visibility.Collapsed;
             MultiClickGrid.Visibility = Visibility.Collapsed;
 
-            if (Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
+            string languageCode = Application.Current.Resources["languageCode"] as string;
+
+            if (languageCode == "ja")
             {
                 this.MultiSelectButton.Content = "‘I‘ð";
                 this.MultiSelectButton_Cancel.Content = "ƒLƒƒƒ“ƒZƒ‹";
@@ -78,13 +80,12 @@ namespace VRC_Favourite_Manager.Views
         private void FolderRename_Start(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
             _viewModel.IsRenaming = true;
-            folderName = _viewModel.FolderName;
         }
 
         private void FolderRename_Cancel(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
-            _viewModel.IsRenaming = false;
-            _viewModel.FolderName = folderName;
+            _viewModel.RenameCancel();
+
         }
 
         private void TextBox_KeyDown(object sender, KeyRoutedEventArgs e)
@@ -92,7 +93,6 @@ namespace VRC_Favourite_Manager.Views
             if (e.Key == Windows.System.VirtualKey.Enter)
             {
                 _viewModel.RenameFolder(FolderNameTextBox.Text);
-                _viewModel.IsRenaming = false;
             }
         }
 
@@ -121,7 +121,7 @@ namespace VRC_Favourite_Manager.Views
 
         private void ViewDetails_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
-            Debug.WriteLine("ViewDetails_Click");
+            Log.Information("ViewDetails_Click");
 
             if (sender is FrameworkElement { DataContext: WorldModel selectedWorld })
             {

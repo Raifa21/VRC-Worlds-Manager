@@ -4,6 +4,7 @@ using System.Diagnostics;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Common;
 using CommunityToolkit.Mvvm.Messaging;
+using Serilog;
 
 namespace VRC_Favourite_Manager.ViewModels
 {
@@ -37,14 +38,15 @@ namespace VRC_Favourite_Manager.ViewModels
 
 
             UpdateWorlds();
+            string languageCode = Application.Current.Resources["languageCode"] as string;
 
-            ViewDetailsText = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "詳細" : "View Details";
-            RestoreText = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja" ? "復元" : "Restore";
+            ViewDetailsText = languageCode == "ja" ? "詳細" : "View Details";
+            RestoreText = languageCode == "ja" ? "復元" : "Restore";
 
 
             WeakReferenceMessenger.Default.Register<FolderUpdatedMessage>(this, (r, m) =>
             {
-                Debug.WriteLine("Folder updated");
+                Log.Information("Folder updated");
                 UpdateWorlds();
             });
         }
@@ -66,8 +68,8 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public void RestoreWorld(WorldModel world)
         {
-            _folderManager.RemoveFromFolder(world, "Hidden");
             _folderManager.AddToFolder(world, "Unclassified");
+            _folderManager.RemoveFromFolder(world, "Hidden");
             UpdateWorlds();
         }
 

@@ -5,6 +5,7 @@ using System;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml.Documents;
 using VRC_Favourite_Manager.Common;
+using System.Threading.Tasks;
 
 namespace VRC_Favourite_Manager.Views
 {
@@ -13,8 +14,9 @@ namespace VRC_Favourite_Manager.Views
         public SettingsPage()
         {
             this.InitializeComponent();
+            string languageCode = Application.Current.Resources["languageCode"] as string;
 
-            RefreshPage(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
+            RefreshPage(languageCode);
         }
 
         private void Language_Checked(object sender, RoutedEventArgs e)
@@ -39,10 +41,15 @@ namespace VRC_Favourite_Manager.Views
                     ChangeApplicationLanguage(languageCode);
                 }
             }
+
         }
 
-        private void RefreshPage(string languageCode)
+        private async void RefreshPage(string languageCode)
         {
+            if (this.SettingsTitle == null)
+            {
+                await Task.Delay(100);
+            }
             if (languageCode == "ja")
             {
                 this.SettingsTitle.Text = "設定";
@@ -56,7 +63,6 @@ namespace VRC_Favourite_Manager.Views
                 this.WorldManagementTitle.Text = "ワールド管理";
                 this.HiddenFolder.Content = "非表示フォルダ";
                 this.ResetButton.Content = "リセット";
-
             }
             else
             {
@@ -69,14 +75,14 @@ namespace VRC_Favourite_Manager.Views
                 this.LookingForTranslators.Text = "Support for other languages will be added later. Requests for supported languages can be made";
                 this.HyperlinkText.Text = "here.";
                 this.WorldManagementTitle.Text = "Manage Worlds";
-                this.HiddenFolder.Content = "Hidden Folder";
+                this.HiddenFolder.Content = "Hidden Folder"; 
                 this.ResetButton.Content = "Reset";
             }
         }
 
         private void ChangeApplicationLanguage(string languageCode)
-        {
-            Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = languageCode;
+        { 
+            Application.Current.Resources["languageCode"] = languageCode;
             WeakReferenceMessenger.Default.Send(new LanguageChangedMessage(languageCode));
             RefreshPage(languageCode);
         }

@@ -11,8 +11,9 @@ namespace VRC_Favourite_Manager.Views
         {
             this.InitializeComponent();
             this.DataContext = new SettingsPageViewModel();
+            string languageCode = Application.Current.Resources["languageCode"] as string;
 
-            if (Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
+            if (languageCode == "ja")
             {
                 this.ConfirmButton.Content = "リセット";
                 this.DeleteWorlds.Text = "フォルダをリセット";
@@ -23,7 +24,7 @@ namespace VRC_Favourite_Manager.Views
             {
                 this.ConfirmButton.Content = "Confirm";
                 this.DeleteWorlds.Text = "Reset Folders";
-                this.ConfirmMessage.Text = "Are you sure you want to reset?";
+                this.ConfirmMessage.Text = "Are you sure you want to reset all data?";
                 this.ConfirmMessage2.Text = "This action cannot be undone.";
             }
         }

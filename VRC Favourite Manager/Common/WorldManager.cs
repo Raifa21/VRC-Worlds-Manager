@@ -2,8 +2,8 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
+using Serilog;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Services;
 
@@ -57,13 +57,13 @@ namespace VRC_Favourite_Manager.Common
                 }
                 else
                 {
-                    Debug.WriteLine("No worlds found in the config file. Performing initial scan.");
+                    Log.Information("No worlds found in the config file. Performing initial scan.");
                     await InitialScanAsync();
                 }
             }
             else
             {
-                Debug.WriteLine("No config file found. Performing initial scan.");
+                Log.Information("No config file found. Performing initial scan.");
                 await InitialScanAsync();
             }
         }
@@ -108,37 +108,30 @@ namespace VRC_Favourite_Manager.Common
             {
                 _existingWorldIds.Add(world.WorldId);
             }
-
-            var worlds = await _vrChatAPIService.GetFavoriteWorldsAsync(100, 0);
-            foreach (var world in worlds)
+            int page = 0;
+            bool hasMore = true;
+            while (hasMore)
             {
-                if (!_existingWorldIds.Contains(world.WorldId))
+                var worlds = await _vrChatAPIService.GetFavoriteWorldsAsync(100, page * 100);
+                foreach (var world in worlds)
                 {
-                    if (world.WorldId != "???")
+                    if (!_existingWorldIds.Contains(world.WorldId))
                     {
-                        _worlds.Add(world);
-                        _existingWorldIds.Add(world.WorldId);
-                        _folderManager.AddToFolder(world, "Unclassified");
-                    }
-                }
-                else
-                {
-                    if (!_worlds.Contains(world))
-                    {
-                        var oldWorld = _worlds.FirstOrDefault(w => w.WorldId == world.WorldId);
-                        if (oldWorld != null)
+                        if (world.WorldId != "???")
                         {
-                            oldWorld.AuthorName = world.AuthorName;
-                            oldWorld.Capacity = world.Capacity;
-                            oldWorld.Description = world.Description;
-                            oldWorld.Favorites = world.Favorites;
-                            oldWorld.LastUpdate = world.LastUpdate;
-                            oldWorld.ThumbnailImageUrl = world.ThumbnailImageUrl;
-                            oldWorld.Visits = world.Visits;
-                            oldWorld.WorldName = world.WorldName;
+                            _worlds.Add(world);
+                            _existingWorldIds.Add(world.WorldId);
+                            _folderManager.AddToFolder(world, "Unclassified");
                         }
                     }
                 }
+
+                if (worlds.Count < 100)
+                {
+                    hasMore = false;
+                }
+
+                page++;
             }
 
             SaveWorlds();

@@ -2,6 +2,7 @@
 using Microsoft.UI.Xaml.Data;
 using System;
 using System.Diagnostics;
+using Serilog;
 
 namespace VRC_Favourite_Manager.Common
 {
@@ -11,7 +12,7 @@ namespace VRC_Favourite_Manager.Common
         {
             if (value is bool boolValue)
             {
-                Debug.WriteLine($"BooleanToVisibilityConverter: {boolValue}");
+                Log.Information($"BooleanToVisibilityConverter: {boolValue}");
                 return boolValue ? Visibility.Visible : Visibility.Collapsed;
             }
             return Visibility.Collapsed;

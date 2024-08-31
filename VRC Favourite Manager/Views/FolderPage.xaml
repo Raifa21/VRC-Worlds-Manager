@@ -5,11 +5,19 @@
     xmlns:viewModels="using:VRC_Favourite_Manager.ViewModels"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
-    xmlns:core="using:Microsoft.Xaml.Interactions.Core">
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:common="using:VRC_Favourite_Manager.Common">
 
     <Page.DataContext>
         <viewModels:FolderPageViewModel/>
     </Page.DataContext>
+
+
+    <Page.Resources>
+        <common:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <common:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
+        <common:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+    </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" x:Name="Grid">
         <Button x:Name="RefreshButton" Click ="Refresh_Clicked" Margin="10,12,25,0" Padding="5" BorderThickness="1" BorderBrush="Transparent" Background="Transparent" CornerRadius="8" HorizontalAlignment="Right" VerticalAlignment="Top">
@@ -41,6 +49,7 @@
             </Interactivity:Interaction.Behaviors>
             <!-- TextBlock displayed when not renaming -->
             <TextBlock x:Name="FolderNameTextBlock" 
+                       Visibility="{Binding IsRenaming, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
                        Text="{Binding FolderName}" 
                        FontSize="24" 
                        FontWeight="Bold" 
@@ -75,7 +84,7 @@
             <!-- TextBox displayed when renaming -->
             <TextBox x:Name="FolderNameTextBox" 
                      Text="{Binding FolderName, Mode=TwoWay}" 
-                     Visibility="Collapsed" 
+                     Visibility="{Binding IsRenaming, Converter={StaticResource BooleanToVisibilityConverter}}" 
                      Foreground="Gray"
                      KeyDown="TextBox_KeyDown" 
                      Margin="20 10"
@@ -134,13 +143,13 @@
                                     Click="Remove_Click"/>
                             </MenuFlyout>
                         </StackPanel.ContextFlyout>
-                        <Viewbox Width="240" Height="180">
-                            <Grid Width="240" Height="180">
-                                <Image Source="{Binding ThumbnailImageUrl}" Stretch="Fill" Width="240" Height="180"/>
+                        <Viewbox Width="246" Height="184.5">
+                            <Grid Width="246" Height="184.5">
+                                <Image Source="{Binding ThumbnailImageUrl}" Stretch="Fill" Width="246" Height="184.5"/>
                             </Grid>
                         </Viewbox>
-                        <TextBlock Text="{Binding WorldName}" FontWeight="Bold" TextTrimming="CharacterEllipsis" Width="240"/>
-                        <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='By {0}'}" TextTrimming="CharacterEllipsis" Width="240"/>
+                        <TextBlock Text="{Binding WorldName}" FontWeight="Bold" TextTrimming="CharacterEllipsis" Width="246"/>
+                        <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='By {0}'}" TextTrimming="CharacterEllipsis" Width="246"/>
                     </StackPanel>
                 </DataTemplate>
             </muxc:GridView.ItemTemplate>
@@ -159,13 +168,13 @@
                                     Click="MultiRemove_Click"/>
                             </MenuFlyout>
                         </StackPanel.ContextFlyout>
-                        <Viewbox Width="240" Height="180">
-                            <Grid Width="240" Height="180">
-                                <Image Source="{Binding ThumbnailImageUrl}" Stretch="Fill" Width="240" Height="180"/>
+                        <Viewbox Width="246" Height="184.5">
+                            <Grid Width="246" Height="184.5">
+                                <Image Source="{Binding ThumbnailImageUrl}" Stretch="Fill" Width="246" Height="184.5"/>
                             </Grid>
                         </Viewbox>
-                        <TextBlock Text="{Binding WorldName}" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='By {0}'}"/>
+                        <TextBlock Text="{Binding WorldName}" FontWeight="Bold" TextTrimming="CharacterEllipsis" Width="246"/>
+                        <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='By {0}'}" TextTrimming="CharacterEllipsis" Width="246"/>
                     </StackPanel>
                 </DataTemplate>
             </muxc:GridView.ItemTemplate>

@@ -13,6 +13,6 @@
         <TextBlock x:Name="ConfirmMessage" Margin="2,30,0,0" TextWrapping="WrapWholeWords"/>
         <TextBlock x:Name="ConfirmMessage2" Margin="2,50,0,0" TextWrapping="WrapWholeWords"/>
 
-        <Button x:Name="ConfirmButton" Click="ConfirmButton_Click" Margin="0,25,0,0" Width="220"  VerticalAlignment="Bottom" Background="Red" />
+        <Button x:Name="ConfirmButton" Click="ConfirmButton_Click" Margin="0,25,0,0" Width="220"  VerticalAlignment="Bottom" Background="Red" Foreground="White" />
     </Grid>
 </ContentDialog>

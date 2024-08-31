@@ -13,6 +13,9 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+# Encryption Service (for security reasons)
+VRC Favourite Manager\Services\ConfigService.cs
+
 # Mono auto generated files
 mono_crash.*
 
@@ -361,3 +364,4 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/VRC Favourite Manager/Services/ConfigService.cs

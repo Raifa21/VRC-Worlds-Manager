@@ -16,7 +16,7 @@
                        FontSize="24" 
                        FontWeight="Bold" 
                        Margin="20 10"/>
-        <Button x:Name="MultiSelectButton" Margin="10,10,75,0" Content="Select" HorizontalAlignment="Right" VerticalAlignment="Top">
+        <Button x:Name="MultiSelectButton" Margin="10,10,25,0" Content="Select" HorizontalAlignment="Right" VerticalAlignment="Top">
             <Interactivity:Interaction.Behaviors>
                 <core:EventTriggerBehavior EventName="Click">
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=SingleClickGrid}" PropertyName="Visibility" Value="Collapsed"/>
@@ -26,7 +26,7 @@
                 </core:EventTriggerBehavior>
             </Interactivity:Interaction.Behaviors>
         </Button>
-        <Button x:Name="MultiSelectButton_Cancel" Margin="10,10,75,0" HorizontalAlignment="Right" VerticalAlignment="Top" Visibility="Collapsed" Click="GridView_ClearSelection">
+        <Button x:Name="MultiSelectButton_Cancel" Margin="10,10,25,0" HorizontalAlignment="Right" VerticalAlignment="Top" Visibility="Collapsed" Click="GridView_ClearSelection">
             <Interactivity:Interaction.Behaviors>
                 <core:EventTriggerBehavior EventName="Click">
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=SingleClickGrid}" PropertyName="Visibility" Value="Visible"/>
@@ -50,13 +50,13 @@
                                     Click="RestoreWorld_Click"/>
                             </MenuFlyout>
                         </StackPanel.ContextFlyout>
-                        <Viewbox Width="240" Height="180">
-                            <Grid Width="240" Height="180">
-                                <Image Source="{Binding ThumbnailImageUrl}" Stretch="Fill" Width="240" Height="180"/>
+                        <Viewbox Width="246" Height="184.5">
+                            <Grid Width="246" Height="184.5">
+                                <Image Source="{Binding ThumbnailImageUrl}" Stretch="Fill" Width="246" Height="184.5"/>
                             </Grid>
                         </Viewbox>
-                        <TextBlock Text="{Binding WorldName}" FontWeight="Bold" TextTrimming="CharacterEllipsis" Width="240"/>
-                        <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='By {0}'}" TextTrimming="CharacterEllipsis" Width="240"/>
+                        <TextBlock Text="{Binding WorldName}" FontWeight="Bold" TextTrimming="CharacterEllipsis" Width="246"/>
+                        <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='By {0}'}" TextTrimming="CharacterEllipsis" Width="246"/>
                     </StackPanel>
                 </DataTemplate>
             </muxc:GridView.ItemTemplate>
@@ -72,13 +72,13 @@
                                     Click="MultiRestoreWorld_Click"/>
                             </MenuFlyout>
                         </StackPanel.ContextFlyout>
-                        <Viewbox Width="240" Height="180">
-                            <Grid Width="240" Height="180">
-                                <Image Source="{Binding ThumbnailImageUrl}" Stretch="Fill" Width="240" Height="180"/>
+                        <Viewbox Width="246" Height="184.5">
+                            <Grid Width="246" Height="184.5">
+                                <Image Source="{Binding ThumbnailImageUrl}" Stretch="Fill" Width="246" Height="184.5"/>
                             </Grid>
                         </Viewbox>
-                        <TextBlock Text="{Binding WorldName}" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='By {0}'}"/>
+                        <TextBlock Text="{Binding WorldName}" FontWeight="Bold" TextTrimming="CharacterEllipsis" Width="246"/>
+                        <TextBlock Text="{Binding AuthorName, Converter={StaticResource StringFormatConverter}, ConverterParameter='By {0}'}" TextTrimming="CharacterEllipsis" Width="246"/>
                     </StackPanel>
                 </DataTemplate>
             </muxc:GridView.ItemTemplate>

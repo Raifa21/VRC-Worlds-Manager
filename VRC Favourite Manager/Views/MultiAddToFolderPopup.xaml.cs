@@ -14,7 +14,9 @@ namespace VRC_Favourite_Manager.Views
             this.DataContext = new MultiAddToFolderPopupViewModel(selectedWorlds);
 
 
-            if(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride == "ja")
+            string languageCode = Application.Current.Resources["languageCode"] as string;
+
+            if (languageCode == "ja")
             {
                 this.SelectFolders.Text = "フォルダに追加";
                 this.SelectedText.Text = "選択されたワールド： ";

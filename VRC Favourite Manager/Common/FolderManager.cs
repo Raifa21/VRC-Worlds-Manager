@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using CommunityToolkit.Mvvm.Messaging;
+using Serilog;
 using VRC_Favourite_Manager.Models;
 
 namespace VRC_Favourite_Manager.Common
@@ -46,10 +47,6 @@ namespace VRC_Favourite_Manager.Common
             _jsonManager = new JsonManager();
             _folders = new ObservableCollection<FolderModel>();
             LoadFolders();
-            foreach (var folder in _folders)
-            {
-                Debug.WriteLine(folder.Name);
-            }
         }
 
         public void LoadFolders()
@@ -59,7 +56,7 @@ namespace VRC_Favourite_Manager.Common
                 var savedFolders = _jsonManager.LoadFolders();
                 if (savedFolders != null && savedFolders.Count > 0)
                 {
-                    Debug.WriteLine("Loading folders");
+                    Log.Information("Loading folders");
                     foreach (var folder in savedFolders)
                     {
                         _folders.Add(folder);
@@ -75,7 +72,7 @@ namespace VRC_Favourite_Manager.Common
                 }
                 else
                 {
-                    Debug.WriteLine("No folders found");
+                    Log.Information("No folders found");
                     AddFolder("Unclassified");
                     AddFolder("Hidden");
                     SaveFolders();
@@ -83,7 +80,7 @@ namespace VRC_Favourite_Manager.Common
             }
             else
             {
-                Debug.WriteLine("File not found");
+                Log.Information("File not found");
                 AddFolder("Unclassified");
                 AddFolder("Hidden");
                 SaveFolders();
@@ -91,7 +88,7 @@ namespace VRC_Favourite_Manager.Common
         }
         public void InitializeFolders(ObservableCollection<WorldModel> worlds)
         {
-            Debug.WriteLine("Initializing folders");
+            Log.Information("Initializing folders");
             var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
             if (unclassifiedFolder != null)
             {
@@ -111,19 +108,17 @@ namespace VRC_Favourite_Manager.Common
             }
             SaveFolders();
             WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
-            Debug.WriteLine("Folders initialized");
+            Log.Information("Folders initialized");
         }
 
         public void AddToFolder(WorldModel world, string folderName)
         {
-            Debug.WriteLine($"Adding {world.WorldName} to {folderName}");
             var folder = _folders.FirstOrDefault(f => f.Name == folderName);
             if (folder != null)
             {
                 var existingWorld = folder.Worlds.FirstOrDefault(w => w.WorldId == world.WorldId);
                 if (existingWorld != null)
                 {
-                    Debug.WriteLine("World already exists in folder");
                     // Update existing world details
                     existingWorld.AuthorName = world.AuthorName;
                     existingWorld.Capacity = world.Capacity;
@@ -136,7 +131,6 @@ namespace VRC_Favourite_Manager.Common
                 }
                 else
                 {
-                    Debug.WriteLine("Adding to folder");
                     // Insert new world at the top
                     folder.Worlds.Insert(0, world);
                 }
@@ -171,21 +165,39 @@ namespace VRC_Favourite_Manager.Common
 
             WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
         }
+        public void UpdateWorldInFolders(WorldModel world)
+        {
+            foreach (var folder in _folders)
+            {
+                var existingWorld = folder.Worlds.FirstOrDefault(w => w.WorldId == world.WorldId);
+                if (existingWorld != null)
+                {
+                    existingWorld.AuthorName = world.AuthorName;
+                    existingWorld.Capacity = world.Capacity;
+                    existingWorld.Description = world.Description;
+                    existingWorld.Favorites = world.Favorites;
+                    existingWorld.LastUpdate = world.LastUpdate;
+                    existingWorld.ThumbnailImageUrl = world.ThumbnailImageUrl;
+                    existingWorld.Visits = world.Visits;
+                    existingWorld.WorldName = world.WorldName;
+                    if (folder.Name == SelectedFolder?.Name)
+                    {
+                        SelectedFolder = folder;
+                        WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
+                    }
+                }
+            }
+            
+        }
 
         public void RemoveFromFolder(WorldModel world, string folderName)
         {
-            Debug.WriteLine($"Removing {world.WorldName} from {folderName}");
             var folder = _folders.First(f => f.Name == folderName);
             var worldToRemove = folder.Worlds.FirstOrDefault(w => w.WorldId == world.WorldId);
             if (worldToRemove != null)
             {
                 folder.Worlds.Remove(worldToRemove);
             }
-            else
-            {
-                Debug.WriteLine("World not found in folder");
-            }
-            Debug.WriteLine($"Worlds in {folderName}: {folder.Worlds.Count}");
             var PlaceWorldInUnclassified = true;
             foreach(var f in _folders)
             {
@@ -198,7 +210,7 @@ namespace VRC_Favourite_Manager.Common
             if (PlaceWorldInUnclassified)
             {
                 var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
-                unclassifiedFolder?.Worlds.Add(world);
+                unclassifiedFolder?.Worlds.Insert(0, world);
                 if (SelectedFolder?.Name == "Unclassified")
                 {
                     _selectedFolder = unclassifiedFolder;
@@ -218,7 +230,7 @@ namespace VRC_Favourite_Manager.Common
         public void MoveToHiddenFolder(WorldModel world)
         {
             //add to hidden folder
-            _folders.First(f => f.Name == "Hidden").Worlds.Add(world);
+            _folders.First(f => f.Name == "Hidden").Worlds.Insert(0, world);
 
 
             foreach (var folder in _folders)
@@ -257,8 +269,10 @@ namespace VRC_Favourite_Manager.Common
             return folderName;
         }
 
-        public void RemoveFolder(FolderModel folder)
+        public void RemoveFolder(string folderName)
         {
+            Log.Information($"Removing folder {folderName}");
+            var folder = _folders.FirstOrDefault(f => f.Name == folderName);
             foreach (var world in folder.Worlds)
             {
                 var PlaceWorldInUnclassified = true;
@@ -273,7 +287,7 @@ namespace VRC_Favourite_Manager.Common
                 if(PlaceWorldInUnclassified)
                 {
                     var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
-                    unclassifiedFolder?.Worlds.Add(world);
+                    unclassifiedFolder?.Worlds.Insert(0, world);
                 }
             }
             _folders.Remove(folder);
@@ -286,16 +300,22 @@ namespace VRC_Favourite_Manager.Common
             WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
         }
 
-        public void RenameFolder(string newName, string oldName)
+        public string RenameFolder(string newName, string oldName)
         {
-            if (newName == oldName) return;
-            if (oldName != "Unclassified")
+            if (newName == oldName) return oldName;
+            if (oldName != "Unclassified" && oldName != "Hidden")
             {
+                var _userInputHandler = new UserInputHandler();
+                newName = _userInputHandler.SanitizeUserInput(newName);
+                if(string.IsNullOrWhiteSpace(newName))
+                {
+                    return oldName;
+                }
                 var index = 0;
                 var name = newName;
                 while (_folders.Any(f => f.Name == newName))
                 {
-                    if (newName == oldName) return;
+                    if (newName == oldName) return oldName;
                     index++;
                     newName = $"{name} ({index})";
                 }
@@ -312,7 +332,9 @@ namespace VRC_Favourite_Manager.Common
 
                 WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
             }
+            Log.Information($"Renaming {oldName} to {newName}");
             SaveFolders();
+            return newName;
         }
 
         private void SaveFolders()
@@ -333,12 +355,14 @@ namespace VRC_Favourite_Manager.Common
         {
             SelectedFolder = folder;
             OnPropertyChanged(nameof(SelectedFolder));
-            Debug.WriteLine($"Selected folder: {SelectedFolder.Name}");
+            Log.Information($"Selected folder: {SelectedFolder.Name}");
         }
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+
     }
     public class FolderUpdatedMessage(ObservableCollection<FolderModel> folders)
     {

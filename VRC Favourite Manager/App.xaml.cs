@@ -1,6 +1,9 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
+using Windows.UI.WebUI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Serilog;
 using Tomlyn;
 using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Services;
@@ -14,26 +17,31 @@ namespace VRC_Favourite_Manager
         private VRChatAPIService _VRChatAPIService;
         private string authToken;
         private string twoFactorAuthToken;
-        public MainWindow mainWindow;
-        private string languageCode;
+        public string languageCode { get; set; }
+
+        public MainWindow MainWindow { get; private set; }
 
         public App()
         {
-            this.InitializeComponent();
 
-            
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .WriteTo.File("app.log", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+
+            this.InitializeComponent();
         }
 
         protected override async void OnLaunched(LaunchActivatedEventArgs args)
         {
-            System.Diagnostics.Debug.WriteLine("Application Started.");
+            Log.Information("Application Started.");
             InitialiseService();
 
             ReadConfig();
-            
 
 
-            mainWindow = new MainWindow();
+
+            MainWindow = new MainWindow();
             Frame rootFrame = new Frame();
             try
             {
@@ -45,38 +53,38 @@ namespace VRC_Favourite_Manager
                 {
                     if (await _VRChatAPIService.VerifyAuthTokenAsync(authToken, twoFactorAuthToken))
                     {
-                        try
+                        if(await _VRChatAPIService.VerifyLoginWithAuthTokenAsync(authToken, twoFactorAuthToken))
                         {
-                            if(await _VRChatAPIService.VerifyLoginWithAuthTokenAsync(authToken, twoFactorAuthToken))
-                            {
-                                System.Diagnostics.Debug.WriteLine("Login successful.");
-                                rootFrame.Navigate(typeof(MainPage), args.Arguments);
-                            }
-                            
+                            Log.Information("Login successful.");
+                            rootFrame.Navigate(typeof(MainPage), args.Arguments);
                         }
-                        catch (VRCNotLoggedInException)
-                        {
-                            System.Diagnostics.Debug.WriteLine("Error verifying API key.");
-                            rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
-                        }
-                        
                     }
                     else
                     {
-                        System.Diagnostics.Debug.WriteLine("Error verifying API key.");
+                        Log.Information("Error verifying API key.");
                         rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
                     }
                 }
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Error reading API key from config file.");
+                Log.Information("TypeInitializationException: " + ex.Message);
+                Log.Information("Stack Trace: " + ex.StackTrace);
+
+                // Check if there is an inner exception
+                if (ex.InnerException != null)
+                {
+                    // Log the inner exception details
+                    Log.Information("Inner Exception: " + ex.InnerException.Message);
+                    Log.Information("Inner Exception Stack Trace: " + ex.InnerException.StackTrace);
+                }
+                Log.Information("Error reading API key from config file.");
                 rootFrame.Navigate(typeof(AuthenticationPage), args.Arguments);
             }
-            
-            
-            mainWindow.Content = rootFrame;
-            mainWindow.Activate();
+
+
+            MainWindow.Content = rootFrame;
+            MainWindow.Activate();
         }
 
         /// <summary>
@@ -85,10 +93,11 @@ namespace VRC_Favourite_Manager
         private void ReadConfig()
         {
             var configManager = new ConfigManager();
+            var configService = new ConfigService();
 
             if (!configManager.ConfigExists())
             {
-                System.Diagnostics.Debug.WriteLine("Config file not found.");
+                Log.Information("Config file not found.");
                 return;
             }
             try
@@ -101,20 +110,21 @@ namespace VRC_Favourite_Manager
                         this.authToken = toml["auth"].ToString();
                         this.twoFactorAuthToken = toml["twoFactorAuth"].ToString();
                     }
-                    catch (System.Exception)
+                    catch (System.Exception e)
                     {
-                        System.Diagnostics.Debug.WriteLine("Error reading API key from config file.");
+                        Log.Information("Error reading API key from config file.");
+                        Log.Information(e.Message);
                     }
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine("API key not found in config file.");
+                    Log.Information("API key not found in config file.");
                 }
 
             }
             catch (FileNotFoundException)
             {
-                System.Diagnostics.Debug.WriteLine("Config file not found.");
+                Log.Information("Config file not found.");
             }
 
         }
@@ -127,6 +137,7 @@ namespace VRC_Favourite_Manager
             Application.Current.Resources["VRChatAPIService"] = new VRChatAPIService();
             Application.Current.Resources["FolderManager"] = new FolderManager();
             Application.Current.Resources["WorldManager"] = new WorldManager();
+            Application.Current.Resources["languageCode"] = "ja";
             _VRChatAPIService = (VRChatAPIService)Application.Current.Resources["VRChatAPIService"];
         }
 

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
+using Serilog;
 using VRC_Favourite_Manager.Models;
+using VRC_Favourite_Manager.Services;
 
 namespace VRC_Favourite_Manager.Common
 {
@@ -28,15 +30,17 @@ namespace VRC_Favourite_Manager.Common
 
         public List<WorldModel> LoadWorlds()
         {
-            var json = File.ReadAllText(_worldPath);
+            var _configService = new ConfigService();
+            var json = _configService.LoadToken(_worldPath);
             return JsonSerializer.Deserialize<List<WorldModel>>(json);
         }
 
         public void SaveWorlds(IEnumerable<WorldModel> worlds)
         {
             var json = JsonSerializer.Serialize(worlds);
-            File.WriteAllText(_worldPath, json);
-            Debug.WriteLine("File written to: " + _worldPath);
+            var _configService = new ConfigService();
+            _configService.SaveToken(json, _worldPath);
+            Log.Information("File written to: " + _worldPath);
         }
         public bool FolderConfigExists()
         {
@@ -45,15 +49,17 @@ namespace VRC_Favourite_Manager.Common
 
         public List<FolderModel> LoadFolders()
         {
-            var json = File.ReadAllText(_folderPath);
+            var _configService = new ConfigService();
+            var json = _configService.LoadToken(_folderPath);
             return JsonSerializer.Deserialize<List<FolderModel>>(json);
         }
 
         public void SaveFolders(IEnumerable<FolderModel> folders)
         {
             var json = JsonSerializer.Serialize(folders);
-            File.WriteAllText(_folderPath, json);
-            Debug.WriteLine("File written to: " + _folderPath);
+            var _configService = new ConfigService();
+            _configService.SaveToken(json, _folderPath);
+            Log.Information("File written to: " + _folderPath);
         }
 
     }
