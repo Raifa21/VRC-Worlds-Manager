@@ -17,14 +17,12 @@ Manage and organize your VRChat worlds with VRC Worlds Manager.
 ## Installation
 
 Download the latest release of VRC Favorite Manager in the releases tab.
-Alternatively, download the application from here:https://raifaworks.booth.pm/items/6053937
-
-[WIP]
+Alternatively, download the application from here: https://raifaworks.booth.pm/items/6053937
 
 ## Features
 
 - World management with folders
-- Generate world instances
+- Generation of world instances
 - Automatic world adding via VRChat API
 
 ## Contributing
@@ -38,7 +36,7 @@ Contributions are welcome! Please follow these steps to contribute:
 5. Push to the branch (`git push origin feature-branch`)
 6. Open a pull request
 
-Please note that the file responsibe for encrypting/decrypting (Services/ConfigService.cs) has been removed from version control for security reasons. 
+Please note that the class responsibe for encrypting/decrypting (Services/ConfigService.cs) has been removed from version control for security reasons. 
 Please create your own AES encryption script to run locally.
 
 ## License
