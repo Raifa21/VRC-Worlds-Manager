@@ -12,7 +12,7 @@ namespace VRC_Favourite_Manager.Common
         public ConfigManager()
         {
             var appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var appFolder = Path.Combine(appDataFolder, "VRC_Favourite_Manager");
+            var appFolder = Path.Combine(appDataFolder, "VRC_Worlds_Manager");
             Directory.CreateDirectory(appFolder);
             _configFilePath = Path.Combine(appFolder, "Config.toml");
         }

@@ -7,7 +7,9 @@ using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Models;
 using Microsoft.UI.Xaml.Navigation;
 using System;
+using System.IO;
 using Serilog;
+using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace VRC_Favourite_Manager.Views
 {
@@ -33,6 +35,22 @@ namespace VRC_Favourite_Manager.Views
             {
                 FoldersItem.MenuItems.Add(folder);
             }
+            string exeFolder = AppContext.BaseDirectory;
+            Log.Information("Exe folder: " + exeFolder);
+            string svgPath = Path.Combine(exeFolder, "Icons", "Saturn.svg");
+            Log.Information("SVG path: " + svgPath);
+            var svgImageSource = new SvgImageSource(new Uri(svgPath));
+            Saturn.Source = svgImageSource;
+
+            string gearPath = Path.Combine(exeFolder, "Icons", "Gear.svg");
+            var gearImageSource = new SvgImageSource(new Uri(gearPath));
+            Gear.Source = gearImageSource;
+
+            string logoutPath = Path.Combine(exeFolder, "Icons", "Logout.svg");
+            var logoutImageSource = new SvgImageSource(new Uri(logoutPath));
+            Logout.Source = logoutImageSource;
+
+
 
             GenerateFolders();
             foreach(var folder in folders)

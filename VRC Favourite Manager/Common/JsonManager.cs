@@ -17,7 +17,7 @@ namespace VRC_Favourite_Manager.Common
         public JsonManager()
         {
             var localFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var appFolder = Path.Combine(localFolder, "VRC_Favourite_Manager");
+            var appFolder = Path.Combine(localFolder, "VRC_Worlds_Manager");
             Directory.CreateDirectory(appFolder);
             _worldPath = Path.Combine(appFolder, "worlds.json");
             _folderPath = Path.Combine(appFolder, "folders.json");

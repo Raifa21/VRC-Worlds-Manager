@@ -14,7 +14,7 @@
             <NavigationView.MenuItems>
                 <NavigationViewItem x:Name="AllWorldsItem" Tag="AllWorldsPage">
                     <NavigationViewItem.Icon>
-                        <ImageIcon Source="../Icons/Saturn.svg"/>
+                        <ImageIcon x:Name="Saturn" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem x:Name="FoldersItem" >
@@ -31,12 +31,12 @@
                 </NavigationViewItem>
                 <NavigationViewItem x:Name="SettingsItem" Tag="SettingsPage">
                     <NavigationViewItem.Icon>
-                        <ImageIcon Source="../Icons/Gear.svg"/>
+                        <ImageIcon x:Name="Gear"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem x:Name="LogoutItem" Tag="Logout">
                     <NavigationViewItem.Icon>
-                        <ImageIcon Source="../Icons/Logout.svg" />
+                        <ImageIcon x:Name="Logout" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.FooterMenuItems>

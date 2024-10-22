@@ -38,13 +38,13 @@ namespace VRC_Favourite_Manager.Services
     }
     public class VRChatAPIService : IVRChatAPIService
     {
-        public HttpClient _Client;
+        private HttpClient _Client;
 
         private CookieContainer _cookieContainer;
 
-        public string _authToken;
+        private string _authToken;
 
-        public string _twoFactorAuthToken;
+        private string _twoFactorAuthToken;
 
         private string _userId;
 
@@ -72,7 +72,7 @@ namespace VRC_Favourite_Manager.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, "https://vrchat.com/api/1/auth");
 
                 request.Headers.Add("Accept", "application/json");
-                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.0 Raifa");
+                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.1 Raifa");
                 request.Headers.Add("Cookie", $"auth={authToken};twoFactorAuth={twoFactorAuthToken}");
                 var response = await _Client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
@@ -111,7 +111,7 @@ namespace VRC_Favourite_Manager.Services
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, "https://vrchat.com/api/1/auth/user?");
                 request.Headers.Add("Accept", "application/json");
-                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.0 Raifa");
+                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.1 Raifa");
                 request.Headers.Add("Cookie", $"auth={authToken};twoFactorAuth={twoFactorAuthToken}");
                 var response = await _Client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
@@ -134,7 +134,7 @@ namespace VRC_Favourite_Manager.Services
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, "https://vrchat.com/api/1/auth/user?");
                 request.Headers.Add("Accept", "application/json");
-                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.0 Raifa");
+                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.1 Raifa");
                 request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
                 var response = await _Client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
@@ -171,7 +171,7 @@ namespace VRC_Favourite_Manager.Services
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, "https://vrchat.com/api/1/auth/user?");
                 request.Headers.Add("Accept", "application/json");
-                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.0 Raifa");
+                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.1 Raifa");
                 request.Headers.Add("Authorization", CreateAuthString(username, password));
                 Log.Information(request.RequestUri.ToString());
                 if (!string.IsNullOrEmpty(_twoFactorAuthToken))
@@ -297,7 +297,7 @@ namespace VRC_Favourite_Manager.Services
                     request = new HttpRequestMessage(HttpMethod.Post, "https://vrchat.com/api/1/auth/twofactorauth/totp/verify");
                 }
                 request.Headers.Add("Accept", "application/json");
-                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.0 Raifa");
+                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.1 Raifa");
                 request.Headers.Add("Cookie", $"auth={_authToken}");
                 var content = new StringContent($"{{\n  \"code\": \"{twoFactorCode}\"\n}}", Encoding.UTF8, "application/json");
 
@@ -370,7 +370,7 @@ namespace VRC_Favourite_Manager.Services
 
                 var request = new HttpRequestMessage(HttpMethod.Put, "https://vrchat.com/api/1/logout");
                 request.Headers.Add("Accept", "application/json");
-                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.0 Raifa");
+                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.1 Raifa");
                 request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
                 var response = await _Client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
@@ -412,7 +412,7 @@ namespace VRC_Favourite_Manager.Services
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, $"https://vrchat.com/api/1/worlds/favorites?n={n}&offset={offset}");
                 request.Headers.Add("Accept", "application/json");
-                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.0 Raifa");
+                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.1 Raifa");
                 request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
                 Log.Information(request.RequestUri.ToString());
                 var response = await _Client.SendAsync(request);
@@ -466,7 +466,7 @@ namespace VRC_Favourite_Manager.Services
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, $"https://vrchat.com/api/1/worlds/{worldId}");
                 request.Headers.Add("Accept", "application/json");
-                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.0 Raifa");
+                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.1 Raifa");
                 request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
                 var response = await _Client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
@@ -505,30 +505,32 @@ namespace VRC_Favourite_Manager.Services
             {
                 var request = new HttpRequestMessage(HttpMethod.Post, "https://vrchat.com/api/1/instances");
                 request.Headers.Add("Accept", "application/json");
-                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.0 Raifa");
+                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.1 Raifa");
                 request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
+
+                Debug.WriteLine(instanceType);
 
                 string type;
                 string ownerIdNullable;
                 string canRequestInvite;
                 switch (instanceType)
                 {
-                    case "public":
+                    case "Public":
                         type = "public";
                         canRequestInvite = "false";
                         ownerIdNullable = null;
                         break;
-                    case "friends+":
+                    case "Friends+":
                         type = "hidden";
                         canRequestInvite = "false";
                         ownerIdNullable = _userId;
                         break;
-                    case "friends":
+                    case "Friends":
                         type = "friends";
                         canRequestInvite = "false";
                         ownerIdNullable = _userId;
                         break;
-                    case "invite+":
+                    case "Invite+":
                         type = "private";
                         canRequestInvite = "true";
                         ownerIdNullable = _userId;
@@ -549,10 +551,20 @@ namespace VRC_Favourite_Manager.Services
 
                 Log.Information($"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"{type}\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"{ownerIdNullable}\",\n  \"queueEnabled\": false,\n  \"canRequestInvite\": {canRequestInvite}\n }}");
 
-                var content = new StringContent(
-                    $"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"{type}\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"{ownerIdNullable}\",\n  \"queueEnabled\": false,\n  \"canRequestInvite\": {canRequestInvite}\n }}",
-                    null, "application/json");
-                request.Content = content;
+                if(ownerIdNullable == null)
+                {
+                    var content = new StringContent(
+                        $"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"{type}\",\n  \"region\": \"{region}\",\n  \"queueEnabled\": false,\n  \"canRequestInvite\": {canRequestInvite}\n }}",
+                        null, "application/json");
+                    request.Content = content;
+                }
+                else
+                {
+                    var content = new StringContent(
+                        $"{{\n  \"worldId\": \"{worldId}\",\n  \"type\": \"{type}\",\n  \"region\": \"{region}\",\n  \"ownerId\": \"{ownerIdNullable}\",\n  \"queueEnabled\": false,\n  \"canRequestInvite\": {canRequestInvite}\n }}",
+                        null, "application/json");
+                    request.Content = content;
+                }
 
 
                 var response = await _Client.SendAsync(request);
@@ -568,6 +580,7 @@ namespace VRC_Favourite_Manager.Services
             }
             catch (HttpRequestException e)
             {
+                Debug.WriteLine("Error: " + e.Message);
                 Log.Information("Error: " + e.Message);
                 throw new VRCNotLoggedInException();
             }
@@ -592,7 +605,7 @@ namespace VRC_Favourite_Manager.Services
             {
                 var request = new HttpRequestMessage(HttpMethod.Post, "https://vrchat.com/api/1/instances");
                 request.Headers.Add("Accept", "application/json");
-                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.0 Raifa");
+                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.1 Raifa");
                 request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
 
                 region = region.ToLower();
@@ -606,10 +619,10 @@ namespace VRC_Favourite_Manager.Services
                 string groupAccessType;
                 switch (instanceType)
                 {
-                    case "group":
+                    case "Group":
                         groupAccessType = "members";
                         break;
-                    case "group+":
+                    case "Group+":
                         groupAccessType = "plus";
                         break;
                     default:
@@ -679,7 +692,7 @@ namespace VRC_Favourite_Manager.Services
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, $"https://vrchat.com/api/1/users/{_userId}/groups");
                 request.Headers.Add("Accept", "application/json");
-                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.0 Raifa");
+                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.1 Raifa");
                 request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
                 var response = await _Client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
@@ -705,7 +718,7 @@ namespace VRC_Favourite_Manager.Services
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, $"https://vrchat.com/api/1/groups/{groupId}/roles");
                 request.Headers.Add("Accept", "application/json");
-                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.0 Raifa");
+                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.1 Raifa");
                 request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
                 var response = await _Client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
@@ -745,7 +758,7 @@ namespace VRC_Favourite_Manager.Services
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, $"https://vrchat.com/api/1/groups/{groupId}/members/{_userId}");
                 request.Headers.Add("Accept", "application/json");
-                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.0 Raifa");
+                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.1 Raifa");
                 request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
                 var response = await _Client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
@@ -773,7 +786,7 @@ namespace VRC_Favourite_Manager.Services
             {
                 var request = new HttpRequestMessage(HttpMethod.Post, $"https://vrchat.com/api/1/invite/myself/to/{worldId}:{instanceId}");
                 request.Headers.Add("Accept", "application/json");
-                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.0 Raifa");
+                request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.0.1 Raifa");
                 request.Headers.Add("Cookie", $"auth={_authToken};twoFactorAuth={_twoFactorAuthToken}");
 
 

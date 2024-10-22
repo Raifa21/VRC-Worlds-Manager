@@ -7,7 +7,9 @@ using System.Windows.Input;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Common;
 using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.UI.Xaml.Controls;
 using Serilog;
+using System.Linq;
 
 namespace VRC_Favourite_Manager.ViewModels
 {
@@ -110,10 +112,23 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public void UpdateWorlds()
         {
-            Worlds.Clear();
-            if (_folderManager.SelectedFolder != null)
+            if (_folderManager.SelectedFolder == null) return;
+
+            var updatedWorlds = _folderManager.SelectedFolder.Worlds.ToList();
+
+            // Remove any worlds that are no longer in the updated list
+            for (int i = Worlds.Count - 1; i >= 0; i--)
             {
-                foreach (var world in _folderManager.SelectedFolder.Worlds)
+                if (!updatedWorlds.Contains(Worlds[i]))
+                {
+                    Worlds.RemoveAt(i);
+                }
+            }
+
+            // Add new worlds that don't exist in the current list
+            foreach (var world in updatedWorlds)
+            {
+                if (!Worlds.Contains(world))
                 {
                     Worlds.Add(world);
                 }

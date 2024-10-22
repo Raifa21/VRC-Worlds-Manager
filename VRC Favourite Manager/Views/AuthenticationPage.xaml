@@ -19,7 +19,7 @@
             <TextBlock x:Name="Legal3" TextWrapping="WrapWholeWords" Margin="0,0,0,30" Width="320" HorizontalAlignment="Left" Foreground="DimGray"/>
             <Button x:Name="LoginButton" Command="{Binding LoginCommand}" HorizontalAlignment="Right" />
         </StackPanel>
-        <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}" Margin="-70,350,0,0" Width="280" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}" Margin="-70,340,0,0" Width="280" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" />
         <Button BorderThickness="0" Background="Transparent" Margin="0,0,20,20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="ChangeLang_Click">
             <FontIcon Glyph="&#xE774;" />
         </Button>

@@ -15,18 +15,11 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
 	  <EnableMsixTooling>true</EnableMsixTooling>
 	  <WindowsPackageType>None</WindowsPackageType>
+	  <ApplicationIcon>Assets\vrchat_2023_11_04_08_55_35_417_7680x4320_RmH_icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Content Remove="Assets\24.png" />
-    <Content Remove="Assets\88.png" />
     <Content Remove="Assets\LockScreenLogo.scale-200.png" />
-    <Content Remove="Assets\SplashScreen.scale-200.png" />
-    <Content Remove="Assets\Square150x150Logo.scale-200.png" />
-    <Content Remove="Assets\Square44x44Logo.scale-200.png" />
-    <Content Remove="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Remove="Assets\StoreLogo.png" />
-    <Content Remove="Assets\vrchat_2023_11_04_08_55_35_417_7680x4320_icon %283%29.png" />
-    <Content Remove="Assets\vrchat_2023_11_04_08_55_35_417_7680x4320_RmH_icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Common\SrkYocOB_400x400.jpg" />
@@ -50,16 +43,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\SplashScreen.scale-200.png" />
     <Resource Include="Assets\LockScreenLogo.scale-200.png" />
-    <Resource Include="Assets\Square150x150Logo.scale-200.png" />
-    <Resource Include="Assets\Square44x44Logo.scale-200.png" />
-    <Resource Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Resource Include="Assets\StoreLogo.png" />
     <Resource Include="Assets\Wide310x150Logo.scale-200.png" />
-    <Content Include="Icons\Gear.svg" />
-    <Content Include="Icons\Logout.svg" />
-    <Content Include="Icons\Saturn.svg" />
+    <Content Include="Icons\Gear.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Icons\Logout.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Icons\Saturn.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -156,20 +151,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Assets\24.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\88.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\vrchat_2023_11_04_08_55_35_417_7680x4320_icon (3).png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\vrchat_2023_11_04_08_55_35_417_7680x4320_RmH_icon.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Update="Common\ConfigManager.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
@@ -179,6 +160,23 @@
     <Compile Update="Services\ConfigService.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="Assets\24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\88.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\SrkYocOB_400x400.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\vrchat_2023_11_04_08_55_35_417_7680x4320_icon %283%29.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\vrchat_2023_11_04_08_55_35_417_7680x4320_RmH_icon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <Target Name="_RemoveFrameworkReferences" BeforeTargets="_ConvertItems;_CalculateInputsForGenerateCurrentProjectAppxManifest">
