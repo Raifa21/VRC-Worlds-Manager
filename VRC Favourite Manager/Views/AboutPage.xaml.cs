@@ -1,4 +1,8 @@
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media.Imaging;
+using System;
+using System.IO;
 
 namespace VRC_Favourite_Manager.Views
 {
@@ -7,6 +11,9 @@ namespace VRC_Favourite_Manager.Views
         public AboutPage()
         {
             this.InitializeComponent();
+            string exeFolder = AppContext.BaseDirectory;
+            string imagePath = Path.Combine(exeFolder, "Assets", "SrkYocOB_400x400.jpg");
+            Icon.ImageSource = new BitmapImage(new Uri(imagePath));
 
             string languageCode = Application.Current.Resources["languageCode"] as string;
 

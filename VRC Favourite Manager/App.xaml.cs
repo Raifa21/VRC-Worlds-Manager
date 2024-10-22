@@ -9,6 +9,7 @@ using VRC_Favourite_Manager.Common;
 using VRC_Favourite_Manager.Services;
 using VRC_Favourite_Manager.ViewModels;
 using VRC_Favourite_Manager.Views;
+using System;
 
 namespace VRC_Favourite_Manager
 {
@@ -23,10 +24,13 @@ namespace VRC_Favourite_Manager
 
         public App()
         {
+            var appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var logFolder = Path.Combine(appDataFolder, "VRC_Worlds_Manager", "Logs");
+            Directory.CreateDirectory(logFolder);
 
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
-                .WriteTo.File("app.log", rollingInterval: RollingInterval.Day)
+                .WriteTo.File(Path.Combine(appDataFolder, "VRC_Worlds_Manager", "Logs", "Log.log"), rollingInterval: RollingInterval.Day)
                 .CreateLogger();
 
             this.InitializeComponent();

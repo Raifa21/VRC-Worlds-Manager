@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using System.Diagnostics;
+using Serilog;
 using VRC_Favourite_Manager.Common;
 
 namespace VRC_Favourite_Manager.ViewModels

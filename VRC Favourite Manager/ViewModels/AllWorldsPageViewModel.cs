@@ -7,6 +7,7 @@ using System.Windows.Input;
 using VRC_Favourite_Manager.Models;
 using VRC_Favourite_Manager.Common;
 using CommunityToolkit.Mvvm.Messaging;
+using Serilog;
 
 namespace VRC_Favourite_Manager.ViewModels
 {
