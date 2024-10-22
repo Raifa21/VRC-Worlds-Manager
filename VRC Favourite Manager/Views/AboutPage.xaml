@@ -65,9 +65,8 @@
         </Grid>
         <Grid Margin="20,420,0,0" Height="80" Width="530" HorizontalAlignment="Right" VerticalAlignment="Top">
             <TextBlock Text="Supporters" FontSize="18" FontWeight="Bold" HorizontalAlignment="Right" Margin="0,0,20,0" />
-            <TextBlock Text="59" Foreground="#e649d6" Margin="0,35,360,0" HorizontalAlignment="Right"/>
             <TextBlock Text="ネフィリア" Foreground="#e649d6" Margin="0,35,290,0" HorizontalAlignment="Right"/>
-            <TextBlock Text="東雲りん" Foreground="#e649d6" Margin="0,35,220,0" HorizontalAlignment="Right"/>
+            <TextBlock Text="ことは しろ" Foreground="#e649d6" Margin="0,35,290,0" HorizontalAlignment="Right"/>
             <TextBlock Text="おこめのおいしいお店" Foreground="#e649d6" Margin="0,35,90,0" HorizontalAlignment="Right" />
             <TextBlock Text="朝霧魅玲" Foreground="#e649d6" Margin="0,35,20,0" HorizontalAlignment="Right" />
             <TextBlock Margin="0,60,20,0" HorizontalAlignment="Right">
