@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 using Serilog;
 using VRC_Favourite_Manager.Models;
-using VRC_Favourite_Manager.Services;
 
 namespace VRC_Favourite_Manager.Common
 {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using Tomlyn;
-using VRC_Favourite_Manager.Services;
 
 namespace VRC_Favourite_Manager.Common
 {
@@ -38,7 +37,7 @@ namespace VRC_Favourite_Manager.Common
             }
             else
             {
-                var toml = Toml.ToModel(Toml.Parse(ReadConfig()));
+                var toml = Toml.Parse(ReadConfig()).ToModel();
                 if (toml.ContainsKey(key))
                 {
                     toml[key] = token;
@@ -58,7 +57,7 @@ namespace VRC_Favourite_Manager.Common
         {
             if (ConfigExists())
             {
-                var toml = Toml.ToModel(Toml.Parse(ReadConfig()));
+                var toml = Toml.Parse(ReadConfig()).ToModel();
                 if (toml.ContainsKey("auth"))
                 {
                     toml.Remove("auth");

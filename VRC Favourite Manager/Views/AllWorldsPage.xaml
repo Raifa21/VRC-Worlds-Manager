@@ -20,8 +20,10 @@
         <Button x:Name="MultiSelectButton" Margin="10,10,75,0" Content="Select" HorizontalAlignment="Right" VerticalAlignment="Top">
             <Interactivity:Interaction.Behaviors>
                 <core:EventTriggerBehavior EventName="Click">
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=SingleClickGrid}" PropertyName="Visibility" Value="Collapsed"/>
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiClickGrid}" PropertyName="Visibility" Value="Visible"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=SingleClickGrid}" PropertyName="Opacity" Value="0"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiClickGrid}" PropertyName="Opacity" Value="1"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=SingleClickGrid}" PropertyName="IsHitTestVisible" Value="False"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiClickGrid}" PropertyName="IsHitTestVisible" Value="True"/>
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiSelectButton_Cancel}" PropertyName="Visibility" Value="Visible"/>
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiSelectButton}" PropertyName="Visibility" Value="Collapsed"/>
                 </core:EventTriggerBehavior>
@@ -30,17 +32,19 @@
         <Button x:Name="MultiSelectButton_Cancel" Margin="10,10,75,0" HorizontalAlignment="Right" VerticalAlignment="Top" Visibility="Collapsed" Click="GridView_ClearSelection">
             <Interactivity:Interaction.Behaviors>
                 <core:EventTriggerBehavior EventName="Click">
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=SingleClickGrid}" PropertyName="Visibility" Value="Visible"/>
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiClickGrid}" PropertyName="Visibility" Value="Collapsed"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=SingleClickGrid}" PropertyName="Opacity" Value="1"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiClickGrid}" PropertyName="Opacity" Value="0"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=SingleClickGrid}" PropertyName="IsHitTestVisible" Value="True"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiClickGrid}" PropertyName="IsHitTestVisible" Value="False"/>
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiSelectButton_Cancel}" PropertyName="Visibility" Value="Collapsed"/>
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiSelectButton}" PropertyName="Visibility" Value="Visible"/>
                 </core:EventTriggerBehavior>
             </Interactivity:Interaction.Behaviors>
         </Button>
-        <muxc:GridView x:Name="SingleClickGrid" ItemsSource="{Binding Worlds}" Margin="10,50,10,0" IsItemClickEnabled="True" ItemClick="GridView_ItemClick" >
+        <muxc:GridView x:Name="SingleClickGrid" ItemsSource="{Binding Worlds}" Margin="10,50,10,0" IsItemClickEnabled="True" ItemClick="GridView_ItemClick" Opacity="1" IsHitTestVisible="True" Loaded="SingleClickGrid_Loaded">
             <muxc:GridView.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Margin="10"> 
+                    <StackPanel Margin="10">
                         <StackPanel.ContextFlyout>
                             <MenuFlyout>
                                 <MenuFlyoutItem 
@@ -65,7 +69,7 @@
                 </DataTemplate>
             </muxc:GridView.ItemTemplate>
         </muxc:GridView>
-        <muxc:GridView x:Name="MultiClickGrid" ItemsSource="{Binding Worlds}" Margin="10,50,10,0" IsItemClickEnabled="True" SelectionMode="Multiple" SelectionChanged="GridView_SelectionChanged" Visibility="Collapsed">
+        <muxc:GridView x:Name="MultiClickGrid" ItemsSource="{Binding Worlds}" Margin="10,50,10,0" IsItemClickEnabled="True" SelectionMode="Multiple" SelectionChanged="GridView_SelectionChanged" Opacity="0" IsHitTestVisible="False" Loaded="MultiClickGrid_Loaded">
             <muxc:GridView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Margin="10">

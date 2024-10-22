@@ -143,6 +143,8 @@ namespace VRC_Favourite_Manager.Views
             }
         }
 
+
+
         private async void Delete_Click(object sender, RoutedEventArgs e)
         {
             var menuItem = sender as MenuFlyoutItem;
