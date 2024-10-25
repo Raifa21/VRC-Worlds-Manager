@@ -36,6 +36,7 @@ namespace VRC_Favourite_Manager.ViewModels
             _worldManager.LoadWorldsAsync();
             FoldersNavigationViewItems = GetFoldersNavigationViewItems();
             _folderManager.PropertyChanged += OnFolderManagerPropertyChanged;
+
         }
 
         private async Task LogoutCommandAsync()
@@ -47,6 +48,12 @@ namespace VRC_Favourite_Manager.ViewModels
             rootFrame.Navigate(typeof(AuthenticationPage));
             mainWindow.Content = rootFrame;
             mainWindow.Activate();
+        }
+
+        public void AddFolder()
+        {
+            var newFolderName = "New Folder";
+            newFolderName = _folderManager.AddFolder(newFolderName);
         }
 
         private void OnFolderManagerPropertyChanged(object sender, PropertyChangedEventArgs e)

@@ -86,6 +86,7 @@ namespace VRC_Favourite_Manager.Views
                     this.AboutItem.Content = "このアプリについて";
                     this.SettingsItem.Content = "設定";
                     this.LogoutItem.Content = "ログアウト";
+                    this.AddFolder.Text = "フォルダを追加";
                 }
                 else
                 {
@@ -94,6 +95,7 @@ namespace VRC_Favourite_Manager.Views
                     this.AboutItem.Content = "About";
                     this.SettingsItem.Content = "Settings";
                     this.LogoutItem.Content = "Logout";
+                    this.AddFolder.Text = "Add Folder";
                 }
             }
             catch (System.Exception)
@@ -129,7 +131,8 @@ namespace VRC_Favourite_Manager.Views
 
                     MenuFlyoutItem delete = new MenuFlyoutItem
                     {
-                        Text = "Delete folder",
+                        // Text should be localized
+                        Text = languageCode == "ja" ? "フォルダを削除" : "Delete folder",
                         Tag = folderName
                     };
                     delete.Click += Delete_Click;
@@ -157,6 +160,11 @@ namespace VRC_Favourite_Manager.Views
                 await deletePopup.ShowAsync();
                 GenerateFolders();
             }
+        }
+
+        private async void AddFolder_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.AddFolder();
         }
 
         private void NavigationView_SelectionChanged(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)

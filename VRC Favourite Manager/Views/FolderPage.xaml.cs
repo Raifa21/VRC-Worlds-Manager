@@ -38,11 +38,22 @@ namespace VRC_Favourite_Manager.Views
             {
                 this.MultiSelectButton.Content = "選択";
                 this.MultiSelectButton_Cancel.Content = "キャンセル";
+                this.SortButton_DateAdded.Text = "追加日付";
+                this.SortButton_WorldName.Text = "ワールド名";
+                this.SortButton_Author.Text = "作者名";
+                this.SortButton_Favorites.Text = "お気に入り数";
+                this.SortButton_LastUpdated.Text = "最終更新";
+
             }
             else
             {
                 this.MultiSelectButton.Content = "Select";
                 this.MultiSelectButton_Cancel.Content = "Cancel";
+                this.SortButton_DateAdded.Text = "Date Added";
+                this.SortButton_WorldName.Text = "World Name";
+                this.SortButton_Author.Text = "Author";
+                this.SortButton_Favorites.Text = "Favorites";
+                this.SortButton_LastUpdated.Text = "Last Updated";
             }
         }
 

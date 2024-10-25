@@ -17,10 +17,17 @@
                         <ImageIcon x:Name="Saturn" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem x:Name="FoldersItem" >
+                <NavigationViewItem x:Name="FoldersItem">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xED44;" />
                     </NavigationViewItem.Icon>
+                    <NavigationViewItem.ContextFlyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem 
+                                x:Name="AddFolder"
+                                Click="AddFolder_Click"/>
+                        </MenuFlyout>
+                    </NavigationViewItem.ContextFlyout>
                 </NavigationViewItem>
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>

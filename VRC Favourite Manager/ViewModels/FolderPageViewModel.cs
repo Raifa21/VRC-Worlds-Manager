@@ -51,6 +51,19 @@ namespace VRC_Favourite_Manager.ViewModels
                 OnPropertyChanged(nameof(FolderName));
             }
         }
+
+        private string _sortString;
+        public string SortString
+        {
+            get => _sortString;
+            set
+            {
+                _sortString = value;
+                OnPropertyChanged(nameof(SortString));
+            }
+        }
+
+        public ICommand SortWorldsCommand { get; }
         public ICommand MoveWorldCommand { get; }
         public ICommand AddFolderCommand { get; }
 
@@ -60,6 +73,7 @@ namespace VRC_Favourite_Manager.ViewModels
         public string MoveToAnotherFolderText { get; set; }
         public string RemoveFromFolderText { get; set; }
         public bool IsUnclassified { get; set; }
+        public string CurrentFolderTag { get; set; }
 
         public FolderPageViewModel()
         {
@@ -73,10 +87,14 @@ namespace VRC_Favourite_Manager.ViewModels
             string languageCode = Application.Current.Resources["languageCode"] as string;
             ChangeFolderNameLang = (FolderName == "Unclassified" && languageCode == "ja");
 
+            SortWorldsCommand = new RelayCommand<string>(SortWorlds);
             MoveWorldCommand = new RelayCommand<Tuple<WorldModel, string>>(MoveWorld);
             AddFolderCommand = new RelayCommand<string>(AddFolder);
 
             UpdateWorlds();
+
+            CurrentFolderTag = "DateAdded";
+            SortString = languageCode == "ja" ? "追加日付" : "Date Added";
 
             ViewDetailsText = languageCode == "ja" ? "詳細" : "View Details";
             MoveToAnotherFolderText = languageCode == "ja" ? "別のフォルダに移動" : "Move to another folder";
@@ -132,6 +150,76 @@ namespace VRC_Favourite_Manager.ViewModels
                 {
                     Worlds.Add(world);
                 }
+            }
+        }
+
+
+        public void SortWorlds(string tag)
+        {
+            Debug.WriteLine("Sorting worlds by " + tag);
+            string languageCode = Application.Current.Resources["languageCode"] as string;
+            switch (tag)
+            {
+                case "DateAdded":
+                    SortString = languageCode == "ja" ? "追加日付" : "Date Added";
+                    if(CurrentFolderTag == "DateAdded")
+                    {
+                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => w.DateAdded));
+                    }
+                    else
+                    {
+                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.DateAdded));
+                        CurrentFolderTag = "DateAdded";
+                    }
+                    break;
+                case "Name":
+                    SortString = languageCode == "ja" ? "ワールド名" : "World Name";
+                    if(CurrentFolderTag == "Name")
+                    {
+                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => w.Name));
+                    }
+                    else
+                    {
+                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.Name));
+                        CurrentFolderTag = "Name";
+                    }
+                    break;
+                case "Author":
+                    SortString = languageCode == "ja" ? "作者名" : "Author";
+                    if(CurrentFolderTag == "Author")
+                    {
+                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => w.Author));
+                    }
+                    else
+                    {
+                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.Author));
+                        CurrentFolderTag = "Author";
+                    }
+                    break;
+                case "Favorites":
+                    SortString = languageCode == "ja" ? "お気に入り数" : "Favorites";
+                    if(CurrentFolderTag == "Favorites")
+                    {
+                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => w.Favorites));
+                    }
+                    else
+                    {
+                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.Favorites));
+                        CurrentFolderTag = "Favorites";
+                    }
+                    break;
+                case "DateUpdated":
+                    SortString = languageCode == "ja" ? "最終更新" : "Last Updated";
+                    if(CurrentFolderTag == "DateUpdated")
+                    {
+                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => w.DateUpdated));
+                    }
+                    else
+                    {
+                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.DateUpdated));
+                        CurrentFolderTag = "DateUpdated";
+                    }
+                    break;
             }
         }
 

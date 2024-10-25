@@ -20,9 +20,6 @@
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" x:Name="Grid">
-        <Button x:Name="RefreshButton" Click ="Refresh_Clicked" Margin="10,12,25,0" Padding="5" BorderThickness="1" BorderBrush="Transparent" Background="Transparent" CornerRadius="8" HorizontalAlignment="Right" VerticalAlignment="Top">
-            <FontIcon Glyph="&#xE72C;" FontSize="16"/>
-        </Button>
         <StackPanel Orientation="Horizontal">
             <Interactivity:Interaction.Behaviors>
                 <core:DataTriggerBehavior Binding="{Binding FolderName}" ComparisonCondition="Equal" Value="Unclassified">
@@ -31,16 +28,12 @@
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=RenameButton}" PropertyName="Visibility" Value="Collapsed"/>
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=RemoveFlyout}" PropertyName="Visibility" Value="Collapsed" />
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=RefreshButton}" PropertyName="Visibility" Value="Visible"/>
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiSelectButton}" PropertyName="Margin" Value="10,10,75,0" />
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiSelectButton_Cancel}" PropertyName="Margin" Value="10,10,75,0" />
                 </core:DataTriggerBehavior>
                 <core:DataTriggerBehavior Binding="{Binding FolderName}" ComparisonCondition="NotEqual" Value="Unclassified">
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility" Value="Visible"/>
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBox}" PropertyName="Visibility" Value="Collapsed"/>
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=RenameButton}" PropertyName="Visibility" Value="Visible"/>
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=RefreshButton}" PropertyName="Visibility" Value="Collapsed"/>
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiSelectButton}" PropertyName="Margin" Value="10,10,25,0" />
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiSelectButton_Cancel}" PropertyName="Margin" Value="10,10,25,0" />
                 </core:DataTriggerBehavior>
                 <core:DataTriggerBehavior Binding="{Binding ChangeFolderNameLang}" ComparisonCondition="Equal" Value="true">
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility"  Value="Collapsed" />
@@ -61,7 +54,7 @@
                        FontSize="24" 
                        FontWeight="Bold" 
                        Margin="20 10"/>
-                <!-- Button displayed when not renaming -->
+            <!-- Button displayed when not renaming -->
             <!-- Button hidden when file is "Unclassified" -->
             <Button x:Name="RenameButton"
                     Visibility="Collapsed" 
@@ -105,31 +98,46 @@
                 </Interactivity:Interaction.Behaviors>
             </TextBox>
         </StackPanel>
-
-        <Button x:Name="MultiSelectButton" Margin="10,10,75,0" Content="Select" HorizontalAlignment="Right" VerticalAlignment="Top">
-            <Interactivity:Interaction.Behaviors>
-                <core:EventTriggerBehavior EventName="Click">
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=SingleClickGrid}" PropertyName="Opacity" Value="0"/>
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiClickGrid}" PropertyName="Opacity" Value="1"/>
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=SingleClickGrid}" PropertyName="IsHitTestVisible" Value="False"/>
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiClickGrid}" PropertyName="IsHitTestVisible" Value="True"/>
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiSelectButton_Cancel}" PropertyName="Visibility" Value="Visible"/>
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiSelectButton}" PropertyName="Visibility" Value="Collapsed"/>
-                </core:EventTriggerBehavior>
-            </Interactivity:Interaction.Behaviors>
-        </Button>
-        <Button x:Name="MultiSelectButton_Cancel" Margin="10,10,75,0" HorizontalAlignment="Right" VerticalAlignment="Top" Visibility="Collapsed" Click="GridView_ClearSelection">
-            <Interactivity:Interaction.Behaviors>
-                <core:EventTriggerBehavior EventName="Click">
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=SingleClickGrid}" PropertyName="Opacity" Value="1"/>
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiClickGrid}" PropertyName="Opacity" Value="0"/>
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=SingleClickGrid}" PropertyName="IsHitTestVisible" Value="True"/>
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiClickGrid}" PropertyName="IsHitTestVisible" Value="False"/>
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiSelectButton_Cancel}" PropertyName="Visibility" Value="Collapsed"/>
-                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiSelectButton}" PropertyName="Visibility" Value="Visible"/>
-                </core:EventTriggerBehavior>
-            </Interactivity:Interaction.Behaviors>
-        </Button>
+        <StackPanel Orientation="Horizontal" Margin="0,5,25,0" Padding="0,0,0,20" HorizontalAlignment="Right" VerticalAlignment="Top" Height="60">
+            <Button Margin="0,0,15,0" Content="{Binding SortString}" Padding="15,0,15,2" Height="32" x:Name="SortButton" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <Button.Flyout>
+                    <MenuFlyout x:Name="SortButtonFlyout">
+                        <MenuFlyoutItem Tag="DateAdded" x:Name="SortButton_DateAdded" Command="{Binding SortWorldsCommand}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}"/>
+                        <MenuFlyoutItem Tag="Name" x:Name="SortButton_WorldName" Command="{Binding SortWorldsCommand}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}"/>
+                        <MenuFlyoutItem Tag="Author" x:Name="SortButton_Author" Command="{Binding SortWorldsCommand}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}"/>
+                        <MenuFlyoutItem Tag="Favorites" x:Name="SortButton_Favorites" Command="{Binding SortWorldsCommand}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}"/>
+                        <MenuFlyoutItem Tag="DateUpdated" x:Name="SortButton_LastUpdated" Command="{Binding SortWorldsCommand}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}"/>
+                    </MenuFlyout>
+                </Button.Flyout>
+            </Button>
+            <Button x:Name="MultiSelectButton" Margin="0,0,5,0" Padding="10,5" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <Interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="Click">
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=SingleClickGrid}" PropertyName="Opacity" Value="0"/>
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiClickGrid}" PropertyName="Opacity" Value="1"/>
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=SingleClickGrid}" PropertyName="IsHitTestVisible" Value="False"/>
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiClickGrid}" PropertyName="IsHitTestVisible" Value="True"/>
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiSelectButton_Cancel}" PropertyName="Visibility" Value="Visible"/>
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiSelectButton}" PropertyName="Visibility" Value="Collapsed"/>
+                    </core:EventTriggerBehavior>
+                </Interactivity:Interaction.Behaviors>
+            </Button>
+            <Button  x:Name="MultiSelectButton_Cancel" Click="GridView_ClearSelection" Visibility="Collapsed" Margin="15,0,15,2" Padding="10,5" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <Interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="Click">
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=SingleClickGrid}" PropertyName="Opacity" Value="1"/>
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiClickGrid}" PropertyName="Opacity" Value="0"/>
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=SingleClickGrid}" PropertyName="IsHitTestVisible" Value="True"/>
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiClickGrid}" PropertyName="IsHitTestVisible" Value="False"/>
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiSelectButton_Cancel}" PropertyName="Visibility" Value="Collapsed"/>
+                        <core:ChangePropertyAction TargetObject="{Binding ElementName=MultiSelectButton}" PropertyName="Visibility" Value="Visible"/>
+                    </core:EventTriggerBehavior>
+                </Interactivity:Interaction.Behaviors>
+            </Button>
+            <Button x:Name="RefreshButton" Click ="Refresh_Clicked" Padding="15,2,5,0" Margin="0" Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <FontIcon Glyph="&#xE72C;" FontSize="16"/>
+            </Button>
+        </StackPanel>
         <muxc:GridView x:Name="SingleClickGrid" ItemsSource="{Binding Worlds}" Margin="10,50,10,0" IsItemClickEnabled="True" ItemClick="GridView_ItemClick" Opacity="1" IsHitTestVisible="True" Loaded="SingleClickGrid_Loaded">
             <muxc:GridView.ItemTemplate>
                 <DataTemplate>
