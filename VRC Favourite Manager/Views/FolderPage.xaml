@@ -39,6 +39,10 @@
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility"  Value="Collapsed" />
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderUnclassified_JP}" PropertyName="Visibility"  Value="Visible" />
                 </core:DataTriggerBehavior>
+                <core:DataTriggerBehavior Binding="{Binding ChangeFolderNameLang}" ComparisonCondition="NotEqual" Value="true">
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility"  Value="Visible" />
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderUnclassified_JP}" PropertyName="Visibility"  Value="Collapsed" />
+                </core:DataTriggerBehavior>
             </Interactivity:Interaction.Behaviors>
             <!-- TextBlock displayed when not renaming -->
             <TextBlock x:Name="FolderNameTextBlock" 
@@ -46,7 +50,7 @@
                        Text="{Binding FolderName}" 
                        FontSize="24" 
                        FontWeight="Bold" 
-                       Margin="20 10"/>
+                       Margin="20 9" MaxWidth="280" TextTrimming="CharacterEllipsis"/>
             <TextBlock x:Name="FolderUnclassified_JP"
                        Text="未分類"
                        Visibility="Collapsed"
@@ -75,29 +79,34 @@
                 </Interactivity:Interaction.Behaviors>
             </Button>
             <!-- TextBox displayed when renaming -->
-            <TextBox x:Name="FolderNameTextBox" 
-                     Text="{Binding FolderName, Mode=TwoWay}" 
-                     Visibility="{Binding IsRenaming, Converter={StaticResource BooleanToVisibilityConverter}}" 
-                     Foreground="Gray"
-                     KeyDown="TextBox_KeyDown" 
-                     Margin="20 10"
-                     VerticalAlignment="Top"
-                     Height="20"
-                     LostFocus="FolderRename_Cancel">
-                <Interactivity:Interaction.Behaviors>
-                    <core:EventTriggerBehavior EventName="LostFocus">
-                        <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBox}" PropertyName="Visibility" Value="Collapsed"/>
-                        <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility" Value="Visible"/>
-                        <core:ChangePropertyAction TargetObject="{Binding ElementName=RenameButton}" PropertyName="Visibility" Value="Visible"/>
-                    </core:EventTriggerBehavior>
-                    <core:EventTriggerBehavior EventName="ContextMenuClosing">
-                        <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBox}" PropertyName="Visibility" Value="Collapsed"/>
-                        <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility" Value="Visible"/>
-                        <core:ChangePropertyAction TargetObject="{Binding ElementName=RenameButton}" PropertyName="Visibility" Value="Visible"/>
-                    </core:EventTriggerBehavior>
-                </Interactivity:Interaction.Behaviors>
-            </TextBox>
+            <Border x:Name="FolderNameTextBox" Visibility="{Binding IsRenaming, Converter={StaticResource BooleanToVisibilityConverter}}" Height="31" MaxWidth="300" BorderThickness="1" BorderBrush="LightGray" CornerRadius="3" VerticalAlignment="Top" Margin="20 9">
+                <TextBox 
+                    Text="{Binding FolderName, Mode=TwoWay}"
+                    x:Name="FolderNameTextBox_Text"
+                    Foreground="Gray"
+                    MaxWidth="300"
+                    KeyDown="TextBox_KeyDown" 
+                    LostFocus="FolderRename_Cancel"
+                    PlaceholderText="{Binding FolderName}"
+                    VerticalAlignment="Center">
+                    <Interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="LostFocus">
+                            <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBox}" PropertyName="Visibility" Value="Collapsed"/>
+                            <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility" Value="Visible"/>
+                            <core:ChangePropertyAction TargetObject="{Binding ElementName=RenameButton}" PropertyName="Visibility" Value="Visible"/>
+                        </core:EventTriggerBehavior>
+                        <core:EventTriggerBehavior EventName="ContextMenuClosing">
+                            <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBox}" PropertyName="Visibility" Value="Collapsed"/>
+                            <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility" Value="Visible"/>
+                            <core:ChangePropertyAction TargetObject="{Binding ElementName=RenameButton}" PropertyName="Visibility" Value="Visible"/>
+                        </core:EventTriggerBehavior>
+                    </Interactivity:Interaction.Behaviors>
+                </TextBox>
+            </Border>
         </StackPanel>
+        <Border Width="400" Height="31" HorizontalAlignment="Center" VerticalAlignment="Top" Padding="0,0,0,0" Margin="0,10,0,0" BorderThickness="1" BorderBrush="LightGray" CornerRadius="3">
+            <TextBox BorderThickness="0" Background="White" Width="400" Height="31" HorizontalAlignment="Center" VerticalAlignment="Center" Text="" TextChanging="TextBox_OnTextChanging"   />
+        </Border>
         <StackPanel Orientation="Horizontal" Margin="0,5,25,0" Padding="0,0,0,20" HorizontalAlignment="Right" VerticalAlignment="Top" Height="60" x:Name="ActionPanel">
             <Button Margin="0,0,0,0" Content="{Binding SortString}" Padding="10,0,50,2" Height="32" x:Name="SortButton" HorizontalAlignment="Left" VerticalAlignment="Center">
                 <Button.Flyout>
@@ -153,7 +162,7 @@
                 <FontIcon Glyph="&#xE72C;" FontSize="16"/>
             </Button>
         </StackPanel>
-        <muxc:GridView x:Name="SingleClickGrid" ItemsSource="{Binding Worlds}" Margin="10,50,10,0" IsItemClickEnabled="True" ItemClick="GridView_ItemClick" Opacity="1" IsHitTestVisible="True" Loaded="SingleClickGrid_Loaded">
+        <muxc:GridView x:Name="SingleClickGrid" ItemsSource="{Binding SearchWorldsCollection}" Margin="10,50,10,0" IsItemClickEnabled="True" ItemClick="GridView_ItemClick" Opacity="1" IsHitTestVisible="True" Loaded="SingleClickGrid_Loaded">
             <muxc:GridView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Margin="10"> 
@@ -181,7 +190,7 @@
                 </DataTemplate>
             </muxc:GridView.ItemTemplate>
         </muxc:GridView>
-        <muxc:GridView x:Name="MultiClickGrid" ItemsSource="{Binding Worlds}" Margin="10,50,10,0" IsItemClickEnabled="True" SelectionMode="Multiple" SelectionChanged="GridView_SelectionChanged" Opacity="0" IsHitTestVisible="False" Loaded="MultiClickGrid_Loaded">
+        <muxc:GridView x:Name="MultiClickGrid" ItemsSource="{Binding SearchWorldsCollection}" Margin="10,50,10,0" IsItemClickEnabled="True" SelectionMode="Multiple" SelectionChanged="GridView_SelectionChanged" Opacity="0" IsHitTestVisible="False" Loaded="MultiClickGrid_Loaded">
             <muxc:GridView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Margin="10">

@@ -75,6 +75,8 @@ namespace VRC_Favourite_Manager.ViewModels
             }
         }
 
+        public ObservableCollection<WorldModel> SearchWorldsCollection { get; private set; }
+
         public float DefaultRotation { get; } = 180;
         public float InverseRotation { get; } = 0;
         public Vector3 DefaultTransformation { get; } = new Vector3(16, 15, 0);
@@ -94,6 +96,7 @@ namespace VRC_Favourite_Manager.ViewModels
         public string RemoveFromFolderText { get; set; }
         public bool IsUnclassified { get; set; }
         public string CurrentFolderTag { get; set; }
+        public string SearchName { get; set; }
 
         public FolderPageViewModel()
         {
@@ -101,12 +104,12 @@ namespace VRC_Favourite_Manager.ViewModels
             _worldManager = Application.Current.Resources["WorldManager"] as WorldManager;
 
             Worlds = new ObservableCollection<WorldModel>();
+            SearchWorldsCollection = new ObservableCollection<WorldModel>();
             FolderName = _folderManager?.SelectedFolder?.Name;
             _isRenaming = false;
 
             string languageCode = Application.Current.Resources["languageCode"] as string;
             ChangeFolderNameLang = (FolderName == "Unclassified" && languageCode == "ja");
-
             SortWorldsCommand = new RelayCommand<string>(SortWorlds);
             InverseSortCommand = new RelayCommand(InverseSortOrder);
             MoveWorldCommand = new RelayCommand<Tuple<WorldModel, string>>(MoveWorld);
@@ -149,6 +152,8 @@ namespace VRC_Favourite_Manager.ViewModels
         {
             Log.Information("Selected folder changed");
             UpdateWorlds();
+            FolderName = _folderManager.SelectedFolder.Name;
+            ChangeFolderNameLang = (FolderName == "Unclassified" && Application.Current.Resources["languageCode"] as string == "ja");
         }
 
         public void UpdateWorlds()
@@ -174,6 +179,30 @@ namespace VRC_Favourite_Manager.ViewModels
                     Worlds.Add(world);
                 }
             }
+            SearchWorld();
+        }
+
+        public void SearchWorld()
+        {
+            Debug.WriteLine("Searching for " + SearchName);
+            SearchWorldsCollection.Clear();  // Clear the existing items
+
+            if (string.IsNullOrEmpty(SearchName))
+            {
+                foreach (var world in Worlds)
+                {
+                    SearchWorldsCollection.Add(world); // Add all items back if search is empty
+                }
+            }
+            else
+            {
+                foreach (var world in Worlds.Where(w => w.WorldName.ToLower().Contains(SearchName.ToLower())))
+                {
+                    SearchWorldsCollection.Add(world); // Add only matching items
+                }
+            }
+
+            Debug.WriteLine("Search results: " + SearchWorldsCollection.Count);
         }
 
 
@@ -187,7 +216,6 @@ namespace VRC_Favourite_Manager.ViewModels
                     SortString = languageCode == "ja" ? "追加日付" : "Date Added";
                     if(CurrentFolderTag == "DateAdded")
                     {
-                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => w.DateAdded));
                         InverseSortOrder();
                     }
                     else
@@ -201,12 +229,11 @@ namespace VRC_Favourite_Manager.ViewModels
                     SortString = languageCode == "ja" ? "ワールド名" : "World Name";
                     if(CurrentFolderTag == "Name")
                     {
-                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => w.Name));
                         InverseSortOrder();
                     }
                     else
                     {
-                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.Name));
+                        Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.WorldName));
                         SortAscending = true;
                         CurrentFolderTag = "Name";
                     }
@@ -215,12 +242,11 @@ namespace VRC_Favourite_Manager.ViewModels
                     SortString = languageCode == "ja" ? "作者名" : "Author";
                     if(CurrentFolderTag == "Author")
                     {
-                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => w.Author));
                         InverseSortOrder();
                     }
                     else
                     {
-                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.Author));
+                        Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.AuthorName));
                         SortAscending = true;
                         CurrentFolderTag = "Author";
                     }
@@ -229,12 +255,11 @@ namespace VRC_Favourite_Manager.ViewModels
                     SortString = languageCode == "ja" ? "お気に入り数" : "Favorites";
                     if(CurrentFolderTag == "Favorites")
                     {
-                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => w.Favorites));
                         InverseSortOrder();
                     }
                     else
                     {
-                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.Favorites));
+                        Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.Favorites));
                         SortAscending = true;
                         CurrentFolderTag = "Favorites";
                     }
@@ -243,7 +268,6 @@ namespace VRC_Favourite_Manager.ViewModels
                     SortString = languageCode == "ja" ? "最終更新" : "Last Updated";
                     if(CurrentFolderTag == "DateUpdated")
                     {
-                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => w.DateUpdated));
                         InverseSortOrder();
                     }
                     else
@@ -254,11 +278,66 @@ namespace VRC_Favourite_Manager.ViewModels
                     }
                     break;
             }
+            SearchWorld();
         }
 
         public void InverseSortOrder()
         {
             SortAscending = !SortAscending;
+            switch (CurrentFolderTag)
+            {
+                case "DateAdded":
+                    if (!SortAscending)
+                    {
+                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => w.DateAdded));
+                    }
+                    else
+                    {
+                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.DateAdded));
+                    }
+                    break;
+                case "Name":
+                    if (!SortAscending)
+                    {
+                        Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => w.WorldName));
+                    }
+                    else
+                    {
+                        Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.WorldName));
+                    }
+                    break;
+                case "Author":
+                    if (!SortAscending)
+                    {
+                        Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => w.AuthorName));
+                    }
+                    else
+                    {
+                        Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.AuthorName));
+                    }
+                    break;
+                case "Favorites":
+                    if (!SortAscending)
+                    {
+                        Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => w.Favorites));
+                    }
+                    else
+                    {
+                        Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.Favorites));
+                    }
+                    break;
+                case "DateUpdated":
+                    if (!SortAscending)
+                    {
+                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => w.DateUpdated));
+                    }
+                    else
+                    {
+                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.DateUpdated));
+                    }
+                    break;
+            }
+            SearchWorld();
         }
 
         private void MoveWorld(Tuple<WorldModel,string> tuple)

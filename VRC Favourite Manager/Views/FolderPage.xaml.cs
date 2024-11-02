@@ -81,6 +81,18 @@ namespace VRC_Favourite_Manager.Views
             }
         }
 
+        public void ChangeFolderNameLang()
+        {
+            if (Application.Current.Resources["languageCode"] as string == "ja")
+            {
+                FolderNameTextBlock.Text = "–¢•ª—Þ";
+            }
+            else
+            {
+                FolderNameTextBlock.Text = "Unclassified";
+            }
+        }
+
 
         ScrollViewer _singleClickScrollViewer;
         ScrollViewer _multiClickScrollViewer;
@@ -167,7 +179,7 @@ namespace VRC_Favourite_Manager.Views
         {
             if (e.Key == Windows.System.VirtualKey.Enter)
             {
-                _viewModel.RenameFolder(FolderNameTextBox.Text);
+                _viewModel.RenameFolder(FolderNameTextBox_Text.Text);
             }
         }
 
@@ -272,5 +284,10 @@ namespace VRC_Favourite_Manager.Views
             _viewModel.Dispose();
         }
 
+        private void TextBox_OnTextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
+        {
+            _viewModel.SearchName = sender.Text;
+            _viewModel.SearchWorld();
+        }
     }
 }

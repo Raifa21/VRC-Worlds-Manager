@@ -1,4 +1,6 @@
-﻿namespace VRC_Favourite_Manager.Models
+﻿using System;
+
+namespace VRC_Favourite_Manager.Models
 {
     public class WorldModel
     {
@@ -12,6 +14,8 @@
         public string Description { get; set; }
         public int? Visits { get; set; }
         public int Favorites { get; set; }
+        public DateTime? DateAdded { get; set; }
+        public string? Platform { get; set; }
         
     }
 
