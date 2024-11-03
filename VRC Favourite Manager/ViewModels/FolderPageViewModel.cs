@@ -116,6 +116,7 @@ namespace VRC_Favourite_Manager.ViewModels
             AddFolderCommand = new RelayCommand<string>(AddFolder);
 
             UpdateWorlds();
+            SearchWorld();
 
             CurrentFolderTag = "DateAdded";
             SortString = languageCode == "ja" ? "追加日付" : "Date Added";
@@ -171,6 +172,15 @@ namespace VRC_Favourite_Manager.ViewModels
                 }
             }
 
+            // Remove any worlds from the SearchWorldsCollection
+            for (int i = SearchWorldsCollection.Count - 1; i >= 0; i--)
+            {
+                if (!updatedWorlds.Contains(SearchWorldsCollection[i]))
+                {
+                    SearchWorldsCollection.RemoveAt(i);
+                }
+            }
+
             // Add new worlds that don't exist in the current list
             foreach (var world in updatedWorlds)
             {
@@ -179,7 +189,6 @@ namespace VRC_Favourite_Manager.ViewModels
                     Worlds.Add(world);
                 }
             }
-            SearchWorld();
         }
 
         public void SearchWorld()
@@ -356,6 +365,7 @@ namespace VRC_Favourite_Manager.ViewModels
         {
             await _worldManager.CheckForNewWorldsAsync();
             UpdateWorlds();
+            SearchWorld();
         }
         public void Dispose()
         {
