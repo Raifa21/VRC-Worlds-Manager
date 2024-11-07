@@ -10,6 +10,7 @@ using System;
 using System.IO;
 using Serilog;
 using Microsoft.UI.Xaml.Media.Imaging;
+using System.ComponentModel;
 
 namespace VRC_Favourite_Manager.Views
 {
@@ -139,13 +140,13 @@ namespace VRC_Favourite_Manager.Views
 
                     flyout.Items.Add(delete);
 
+
                     folder.ContextFlyout = flyout;
                 }
 
                 FoldersItem.MenuItems.Add(folder);
             }
         }
-
 
 
         private async void Delete_Click(object sender, RoutedEventArgs e)
@@ -166,6 +167,8 @@ namespace VRC_Favourite_Manager.Views
         {
             viewModel.AddFolder();
         }
+
+
 
         private void NavigationView_SelectionChanged(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)
         {
