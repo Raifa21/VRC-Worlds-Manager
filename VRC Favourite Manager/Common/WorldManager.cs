@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -78,6 +79,7 @@ namespace VRC_Favourite_Manager.Common
                 {
                     if(world.WorldId != "???")
                     {
+                        world.DateAdded = DateTime.Now;
                         _worlds.Add(world);
                         _existingWorldIds.Add(world.WorldId);
                     }
@@ -118,6 +120,7 @@ namespace VRC_Favourite_Manager.Common
                     {
                         if (world.WorldId != "???")
                         {
+                            world.DateAdded = DateTime.Now;
                             _worlds.Add(world);
                             _existingWorldIds.Add(world.WorldId);
                             _folderManager.AddToFolder(world, "Unclassified");

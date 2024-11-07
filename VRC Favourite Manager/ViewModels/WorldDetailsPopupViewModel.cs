@@ -1,5 +1,7 @@
-﻿using System.Globalization;
+﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using Windows.Foundation.Metadata;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
 using VRC_Favourite_Manager.Common;
@@ -84,6 +86,27 @@ namespace VRC_Favourite_Manager.ViewModels
             set => SetProperty(ref _lastUpdate, value);
         }
 
+        private bool _isWindowsOnly;
+        public bool IsWindowsOnly
+        {
+            get => _isWindowsOnly;
+            set => SetProperty(ref _isWindowsOnly, value);
+        }
+
+        private bool _isAndroidOnly;
+        public bool IsAndroidOnly
+        {
+            get => _isAndroidOnly;
+            set => SetProperty(ref _isAndroidOnly, value);
+        }
+
+        private bool _isWindowsAndAndroid;
+        public bool IsWindowsAndAndroid
+        {
+            get => _isWindowsAndAndroid;
+            set => SetProperty(ref _isWindowsAndAndroid, value);
+        }
+
         public WorldDetailsPopupViewModel(WorldModel selectedWorld)
         {
             _vrChatApiService = Application.Current.Resources["VRChatAPIService"] as VRChatAPIService;
@@ -116,9 +139,12 @@ namespace VRC_Favourite_Manager.ViewModels
                         break;
                     }
                 }
-
                 return;
             }
+
+            var platform = world.UnityPackages.Select(unityPackage => unityPackage.Platform).ToHashSet();
+
+
             CanCreateInstance = world.ReleaseStatus == "public";
             ThumbnailImageUrl = world.ThumbnailImageUrl;
             WorldName = world.Name;
@@ -139,7 +165,8 @@ namespace VRC_Favourite_Manager.ViewModels
                 LastUpdate = LastUpdate,
                 Description = Description,
                 Visits = Visits,
-                Favorites = Favorites
+                Favorites = Favorites,
+                Platform = platform
             };
             _folderManager.UpdateWorldInFolders(worldModel);
 

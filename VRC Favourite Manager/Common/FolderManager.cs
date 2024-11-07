@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.Messaging;
@@ -93,6 +94,7 @@ namespace VRC_Favourite_Manager.Common
             {
                 foreach (var world in worlds)
                 {
+                    world.DateAdded = DateTime.Now;
                     unclassifiedFolder.Worlds.Add(world);
                 }
             }
@@ -118,7 +120,6 @@ namespace VRC_Favourite_Manager.Common
                 var existingWorld = folder.Worlds.FirstOrDefault(w => w.WorldId == world.WorldId);
                 if (existingWorld != null)
                 {
-                    // Update existing world details
                     existingWorld.AuthorName = world.AuthorName;
                     existingWorld.Capacity = world.Capacity;
                     existingWorld.Description = world.Description;
@@ -127,9 +128,11 @@ namespace VRC_Favourite_Manager.Common
                     existingWorld.ThumbnailImageUrl = world.ThumbnailImageUrl;
                     existingWorld.Visits = world.Visits;
                     existingWorld.WorldName = world.WorldName;
+                    existingWorld.Platform = world.Platform;
                 }
                 else
                 {
+                    world.DateAdded = DateTime.Now;
                     // Insert new world at the top
                     folder.Worlds.Insert(0, world);
                 }
@@ -179,6 +182,7 @@ namespace VRC_Favourite_Manager.Common
                     existingWorld.ThumbnailImageUrl = world.ThumbnailImageUrl;
                     existingWorld.Visits = world.Visits;
                     existingWorld.WorldName = world.WorldName;
+                    existingWorld.Platform = world.Platform;
                     if (folder.Name == SelectedFolder?.Name)
                     {
                         SelectedFolder = folder;
@@ -186,8 +190,9 @@ namespace VRC_Favourite_Manager.Common
                     }
                 }
             }
-            
         }
+
+
 
         public void RemoveFromFolder(WorldModel world, string folderName)
         {

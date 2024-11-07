@@ -437,6 +437,7 @@ namespace VRC_Favourite_Manager.Services
                         Description = world.Description,
                         Visits = world.Visits,
                         Favorites = world.Favorites,
+                        Platform = world.UnityPackages.Select(unityPackage => unityPackage.Platform).ToHashSet()
                     };
                     worldModels.Add(worldModel);
                 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace VRC_Favourite_Manager.Models
 {
@@ -15,7 +16,7 @@ namespace VRC_Favourite_Manager.Models
         public int? Visits { get; set; }
         public int Favorites { get; set; }
         public DateTime? DateAdded { get; set; }
-        public string? Platform { get; set; }
+        public HashSet<string>? Platform { get; set; }
         
     }
 
