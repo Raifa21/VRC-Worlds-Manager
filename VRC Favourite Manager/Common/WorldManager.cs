@@ -136,7 +136,27 @@ namespace VRC_Favourite_Manager.Common
                 page++;
             }
 
+            AddTimestampsToWorlds();
             SaveWorlds();
+        }
+
+        public void AddTimestampsToWorlds()
+        {
+            foreach (var folder in _folderManager.Folders)
+            {
+                DateTime currentTime = DateTime.Now.AddDays(-1); // Start with 1 day before
+
+                // Iterate through each world in the folder
+                foreach (var world in folder.Worlds)
+                {
+                    //use default or null check to see if the world doesn't have a date set
+                    if (world.DateAdded == null || world.DateAdded == default(DateTime))
+                    {
+                        world.DateAdded = currentTime;
+                        currentTime = currentTime.AddMinutes(-1); // Increment by 1 minute for the next world
+                    }
+                }
+            }
         }
 
         public void RemoveWorld(WorldModel world)

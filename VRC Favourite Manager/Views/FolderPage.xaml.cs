@@ -83,14 +83,7 @@ namespace VRC_Favourite_Manager.Views
 
         public void ChangeFolderNameLang()
         {
-            if (Application.Current.Resources["languageCode"] as string == "ja")
-            {
-                FolderNameTextBlock.Text = "ñ¢ï™óﬁ";
-            }
-            else
-            {
-                FolderNameTextBlock.Text = "Unclassified";
-            }
+            FolderNameTextBlock.Text = Application.Current.Resources["languageCode"] as string == "ja" ? "ñ¢ï™óﬁ" : "Unclassified";
         }
 
 
@@ -288,6 +281,46 @@ namespace VRC_Favourite_Manager.Views
         {
             _viewModel.SearchName = sender.Text;
             _viewModel.SearchWorld();
+        }
+
+        private async void AddWorldButton_Clicked(object sender, RoutedEventArgs e)
+        {
+            // Create a new ContentDialog for input
+            ContentDialog dialog = new ContentDialog
+            {
+                XamlRoot = this.XamlRoot, // Required for desktop apps
+                Title = Application.Current.Resources["languageCode"] as string == "ja" ? "ÉèÅ[ÉãÉhÇí«â¡" : "Add World",
+                Height = 120
+            };
+
+            // Create a TextBox for the dialog content
+            TextBox inputTextBox = new TextBox
+            {
+                PlaceholderText = "https://vrchat.com/home/world/",
+                Height = 20
+            };
+
+            dialog.Content = inputTextBox;
+
+            // Show the dialog
+            var result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                // Retrieve input and handle folder addition logic
+                string folderName = inputTextBox.Text;
+                if (!string.IsNullOrEmpty(folderName))
+                {
+                    // Implement folder addition logic here
+                    Console.WriteLine($"Folder to add: {folderName}");
+                }
+            }
+        }
+
+
+        private void ShareFolderButton_Clicked(object sender, RoutedEventArgs e)
+        {
+            _viewModel.ShareFolder();
         }
     }
 }

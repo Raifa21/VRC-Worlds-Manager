@@ -91,12 +91,15 @@ namespace VRC_Favourite_Manager.ViewModels
 
         public bool ChangeFolderNameLang{ get; set; }
 
+        public string AddWorldFolderText { get; set; }
+        public string ShareFolderText { get; set; }
         public string ViewDetailsText { get; set; }
         public string MoveToAnotherFolderText { get; set; }
         public string RemoveFromFolderText { get; set; }
         public bool IsUnclassified { get; set; }
         public string CurrentFolderTag { get; set; }
         public string SearchName { get; set; }
+
 
         public FolderPageViewModel()
         {
@@ -123,6 +126,8 @@ namespace VRC_Favourite_Manager.ViewModels
             SortAscending = true;
 
 
+            AddWorldFolderText = languageCode == "ja" ? "ワールドを追加" : "Add World";
+            ShareFolderText = languageCode == "ja" ? "フォルダを共有" : "Share Folder";
             ViewDetailsText = languageCode == "ja" ? "詳細" : "View Details";
             MoveToAnotherFolderText = languageCode == "ja" ? "別のフォルダに移動" : "Move to another folder";
             RemoveFromFolderText = languageCode == "ja" ? "フォルダから削除" : "Remove from folder";
@@ -189,6 +194,8 @@ namespace VRC_Favourite_Manager.ViewModels
                     Worlds.Add(world);
                 }
             }
+
+            
         }
 
         public void SearchWorld()
@@ -200,14 +207,20 @@ namespace VRC_Favourite_Manager.ViewModels
             {
                 foreach (var world in Worlds)
                 {
+                    Debug.WriteLine("Adding " + world.WorldName);
                     SearchWorldsCollection.Add(world); // Add all items back if search is empty
                 }
+
             }
             else
             {
-                foreach (var world in Worlds.Where(w => w.WorldName.ToLower().Contains(SearchName.ToLower())))
+                foreach (var world in Worlds)
                 {
-                    SearchWorldsCollection.Add(world); // Add only matching items
+                    if (world.WorldName.ToLower().Contains(SearchName.ToLower()) ||
+                        world.AuthorName.ToLower().Contains(SearchName.ToLower()))
+                    {
+                        SearchWorldsCollection.Add(world); // Add only matching items
+                    }
                 }
             }
 
@@ -229,7 +242,7 @@ namespace VRC_Favourite_Manager.ViewModels
                     }
                     else
                     {
-                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.DateAdded));
+                        Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => w.DateAdded));
                         SortAscending = true;
                         CurrentFolderTag = "DateAdded";
                     }
@@ -268,7 +281,7 @@ namespace VRC_Favourite_Manager.ViewModels
                     }
                     else
                     {
-                        Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.Favorites));
+                        Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => w.Favorites));
                         SortAscending = true;
                         CurrentFolderTag = "Favorites";
                     }
@@ -281,7 +294,7 @@ namespace VRC_Favourite_Manager.ViewModels
                     }
                     else
                     {
-                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.DateUpdated));
+                        Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => DateTime.Parse(w.LastUpdate)));
                         SortAscending = true;
                         CurrentFolderTag = "DateUpdated";
                     }
@@ -298,11 +311,11 @@ namespace VRC_Favourite_Manager.ViewModels
                 case "DateAdded":
                     if (!SortAscending)
                     {
-                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => w.DateAdded));
+                        Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.DateAdded));
                     }
                     else
                     {
-                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.DateAdded));
+                        Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => w.DateAdded));
                     }
                     break;
                 case "Name":
@@ -328,21 +341,21 @@ namespace VRC_Favourite_Manager.ViewModels
                 case "Favorites":
                     if (!SortAscending)
                     {
-                        Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => w.Favorites));
+                        Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.Favorites));
                     }
                     else
                     {
-                        Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.Favorites));
+                        Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => w.Favorites));
                     }
                     break;
                 case "DateUpdated":
                     if (!SortAscending)
                     {
-                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => w.DateUpdated));
+                        Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => DateTime.Parse(w.LastUpdate)));
                     }
                     else
                     {
-                        //Worlds = new ObservableCollection<WorldModel>(Worlds.OrderBy(w => w.DateUpdated));
+                        Worlds = new ObservableCollection<WorldModel>(Worlds.OrderByDescending(w => DateTime.Parse(w.LastUpdate)));
                     }
                     break;
             }
@@ -360,16 +373,28 @@ namespace VRC_Favourite_Manager.ViewModels
             _folderManager.AddFolder(folderName);
             UpdateWorlds();
         }
+        public void AddWorld()
+        {
+            throw new NotImplementedException();
+        }
+        public void ShareFolder()
+        {
+            throw new NotImplementedException();
+        }
 
         public async Task RefreshWorldsAsync()
         {
             await _worldManager.CheckForNewWorldsAsync();
             UpdateWorlds();
             SearchWorld();
+            CurrentFolderTag = "Name";
+            SortAscending = true;
+            SortWorlds("DateAdded");
         }
         public void Dispose()
         {
             WeakReferenceMessenger.Default.Unregister<FolderUpdatedMessage>(this);
         }
+
     }
 }

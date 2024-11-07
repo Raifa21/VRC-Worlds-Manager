@@ -28,12 +28,14 @@
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=RenameButton}" PropertyName="Visibility" Value="Collapsed"/>
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=RemoveFlyout}" PropertyName="Visibility" Value="Collapsed" />
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=RefreshButton}" PropertyName="Visibility" Value="Visible"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=ShareFolderButton}" PropertyName="Visibility" Value="Collapsed" />
                 </core:DataTriggerBehavior>
                 <core:DataTriggerBehavior Binding="{Binding FolderName}" ComparisonCondition="NotEqual" Value="Unclassified">
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility" Value="Visible"/>
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBox}" PropertyName="Visibility" Value="Collapsed"/>
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=RenameButton}" PropertyName="Visibility" Value="Visible"/>
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=RefreshButton}" PropertyName="Visibility" Value="Collapsed"/>
+                    <core:ChangePropertyAction TargetObject="{Binding ElementName=ShareFolderButton}" PropertyName="Visibility" Value="Visible" />
                 </core:DataTriggerBehavior>
                 <core:DataTriggerBehavior Binding="{Binding ChangeFolderNameLang}" ComparisonCondition="Equal" Value="true">
                     <core:ChangePropertyAction TargetObject="{Binding ElementName=FolderNameTextBlock}" PropertyName="Visibility"  Value="Collapsed" />
@@ -104,9 +106,10 @@
                 </TextBox>
             </Border>
         </StackPanel>
-        <Border Width="400" Height="31" HorizontalAlignment="Center" VerticalAlignment="Top" Padding="0,0,0,0" Margin="0,10,0,0" BorderThickness="1" BorderBrush="LightGray" CornerRadius="3">
-            <TextBox BorderThickness="0" Background="White" Width="400" Height="31" HorizontalAlignment="Center" VerticalAlignment="Center" Text="" TextChanging="TextBox_OnTextChanging"   />
+        <Border Width="400" Height="31" HorizontalAlignment="Center" VerticalAlignment="Top" Padding="0,0,0,0" Margin="0,10,0,0" BorderThickness="1" Background="White" BorderBrush="LightGray" CornerRadius="3">
+            <TextBox BorderThickness="0" Background="Transparent" Width="370" Height="31" HorizontalAlignment="Center" VerticalAlignment="Center" Text="" TextChanging="TextBox_OnTextChanging"  BorderBrush="Transparent" Margin="30,0,0,0" CornerRadius="3"/>
         </Border>
+        <FontIcon Glyph="&#xE721;" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,17,360,0" FontSize="16"/>
         <StackPanel Orientation="Horizontal" Margin="0,5,25,0" Padding="0,0,0,20" HorizontalAlignment="Right" VerticalAlignment="Top" Height="60" x:Name="ActionPanel">
             <Button Margin="0,0,0,0" Content="{Binding SortString}" Padding="10,0,50,2" Height="32" x:Name="SortButton" HorizontalAlignment="Left" VerticalAlignment="Center">
                 <Button.Flyout>
@@ -161,6 +164,19 @@
             <Button x:Name="RefreshButton" Click ="Refresh_Clicked" Padding="15,2,5,0" Margin="0" Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" VerticalAlignment="Center">
                 <FontIcon Glyph="&#xE72C;" FontSize="16"/>
             </Button>
+            <Button x:Name="MainButton" Padding="15,2,5,0" Margin="0" Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" VerticalAlignment="Center" >
+                <FontIcon Glyph="&#xE712;" />
+                <Button.Flyout>
+                    <MenuFlyout x:Name="AdditionalButtonFlyout">
+                        <!-- Add World button, will show the custom flyout -->
+                        <MenuFlyoutItem x:Name="AddWorldButton" Text="{Binding AddWorldFolderText}" Click="AddWorldButton_Clicked" />
+
+                        <!-- Share Folder button as usual -->
+                        <MenuFlyoutItem x:Name="ShareFolderButton" Text="{Binding ShareFolderText}" Click="ShareFolderButton_Clicked" />
+                    </MenuFlyout>
+                </Button.Flyout>
+            </Button>
+
         </StackPanel>
         <muxc:GridView x:Name="SingleClickGrid" ItemsSource="{Binding SearchWorldsCollection}" Margin="10,50,10,0" IsItemClickEnabled="True" ItemClick="GridView_ItemClick" Opacity="1" IsHitTestVisible="True" Loaded="SingleClickGrid_Loaded">
             <muxc:GridView.ItemTemplate>
