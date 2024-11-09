@@ -29,12 +29,15 @@
     <None Remove="MainWindow.xaml" />
     <None Remove="Views\AboutPage.xaml" />
     <None Remove="Views\AddToFolderPopup.xaml" />
+    <None Remove="Views\AddWorldPopup.xaml" />
     <None Remove="Views\AuthenticationPage.xaml" />
     <None Remove="Views\CreateGroupInstancePopup.xaml" />
     <None Remove="Views\FolderPage.xaml" />
+    <None Remove="Views\ImportFolderPopup.xaml" />
     <None Remove="Views\MultiAddToFolderPopup.xaml" />
     <None Remove="Views\RemovePopup.xaml" />
     <None Remove="Views\SettingsPage.xaml" />
+    <None Remove="Views\ShareFolderPopup.xaml" />
     <None Remove="Views\TwoFactorAuthPopup.xaml" />
     <None Remove="Views\WorldDetailsPopup.xaml" />
   </ItemGroup>
@@ -86,6 +89,12 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+    <Page Update="Views\ImportFolderPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\ShareFolderPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\DeletePopup.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <Generator>MSBuild:Compile</Generator>

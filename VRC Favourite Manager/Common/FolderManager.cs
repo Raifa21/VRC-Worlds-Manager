@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.Messaging;
 using Serilog;
 using VRC_Favourite_Manager.Models;
+using VRC_Favourite_Manager.Views;
 
 namespace VRC_Favourite_Manager.Common
 {
@@ -140,6 +143,7 @@ namespace VRC_Favourite_Manager.Common
                 if (folderName != "Unclassified")
                 {
                     var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
+                    Debug.WriteLine("Removing");
                     unclassifiedFolder?.Worlds.Remove(world);
                     if(SelectedFolder?.Name == "Unclassified")
                     {
@@ -388,6 +392,34 @@ namespace VRC_Favourite_Manager.Common
         }
 
 
+        public void ImportFolder(FolderModel folder)
+        {
+            var index = 0;
+            string pattern = @"\s*\(\d+\)$";
+            folder.Name = Regex.Replace(folder.Name, pattern, "");
+            
+
+            var name = folder.Name;
+
+            Debug.WriteLine(folder.Name);
+
+            while (_folders.Any(f => f.Name == folder.Name))
+            {
+                index++;
+                folder.Name = $"{name} ({index})";
+                Debug.WriteLine(folder.Name);
+            }
+            _folders.Add(folder);
+
+            foreach (var world in folder.Worlds)
+            {
+                var unclassifiedFolder = _folders.FirstOrDefault(f => f.Name == "Unclassified");
+                unclassifiedFolder?.Worlds.Remove(unclassifiedFolder.Worlds.FirstOrDefault(w => w.WorldId == world.WorldId));
+            }
+
+            WeakReferenceMessenger.Default.Send(new FolderUpdatedMessage(_folders));
+            SaveFolders();
+        }
     }
     public class FolderUpdatedMessage(ObservableCollection<FolderModel> folders)
     {

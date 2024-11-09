@@ -11,6 +11,9 @@ using Microsoft.UI.Xaml.Controls;
 using Serilog;
 using System.Linq;
 using System.Numerics;
+using VRC_Favourite_Manager.Services;
+using ABI.System;
+using System.Globalization;
 
 namespace VRC_Favourite_Manager.ViewModels
 {
@@ -138,6 +141,15 @@ namespace VRC_Favourite_Manager.ViewModels
             {
                 Log.Information("Folder updated");
                 OnFolderUpdated();
+            });
+
+            WeakReferenceMessenger.Default.Register<SelectedFolderUpdatedMessage>(this, (r, m) =>
+            {
+                OnFolderUpdated();
+                SearchWorld();
+                CurrentFolderTag = "Name";
+                SortAscending = true;
+                SortWorlds("DateAdded");
             });
         }
 
@@ -373,13 +385,75 @@ namespace VRC_Favourite_Manager.ViewModels
             _folderManager.AddFolder(folderName);
             UpdateWorlds();
         }
-        public void AddWorld()
+        public async void AddWorld(string worldUri)
         {
-            throw new NotImplementedException();
-        }
-        public void ShareFolder()
-        {
-            throw new NotImplementedException();
+            // call the API to get the world by ID, async
+            if (Application.Current.Resources["VRChatAPIService"] is VRChatAPIService vrChatApiService)
+            {
+                var result = await vrChatApiService.GetWorldByIdAsync(worldUri);
+                if(result == null)
+                {
+                    Log.Information("World not found.");
+                    return;
+                }
+                var worldModel = new Models.WorldModel
+                {
+                    ThumbnailImageUrl = result.ThumbnailImageUrl,
+                    WorldName = result.Name,
+                    WorldId = result.Id,
+                    AuthorName = result.AuthorName,
+                    AuthorId = result.AuthorId,
+                    Capacity = result.Capacity,
+                    LastUpdate = result.UpdatedAt.ToString(CultureInfo.InvariantCulture)?[..10],
+                    Description = result.Description,
+                    Visits = result.Visits,
+                    Favorites = result.Favorites,
+                    Platform = result.UnityPackages.Select(unityPackage => unityPackage.Platform).ToHashSet()
+                };
+                worldModel.DateAdded = DateTime.Now;
+                if (_folderManager.SelectedFolder.Worlds.Any(w => w.WorldId == worldModel.WorldId))
+                {
+                    Debug.WriteLine("World already exists in folder");
+                    return;
+                }
+                if (_folderManager.SelectedFolder.Name == "Unclassified")
+                {
+                    Debug.WriteLine("Adding world to unclassified");
+                    _folderManager.AddToFolder(worldModel, "Unclassified");
+                    //check if world exists in any other folder, if so remove it
+                    foreach (var folder in _folderManager.Folders)
+                    {
+                        if (folder.Name != "Unclassified")
+                        {
+                            if (folder.Worlds.Any(w => w.WorldId == worldModel.WorldId))
+                            {
+                                Debug.WriteLine("Removing from: " + folder.Name);
+                                _folderManager.RemoveFromFolder(worldModel, folder.Name);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine("Adding world to selected folder");
+                    //check if world exists in unclassified, if so remove it
+                    _folderManager.AddToFolder(worldModel, _folderManager.SelectedFolder.Name);
+                    if (_folderManager.Folders.Any(f => f.Name == "Unclassified"))
+                    {
+                        var unclassifiedFolder = _folderManager.Folders.First(f => f.Name == "Unclassified");
+                        if (unclassifiedFolder.Worlds.Any(w => w.WorldId == worldModel.WorldId))
+                        {
+                            Debug.WriteLine("Removing from unclassified");
+                            _folderManager.RemoveFromFolder(worldModel, "Unclassified");
+                        }
+                    }
+                }
+            }
+            UpdateWorlds();
+            SearchWorld();
+            CurrentFolderTag = "Name";
+            SortAscending = true;
+            SortWorlds("DateAdded");
         }
 
         public async Task RefreshWorldsAsync()
@@ -391,10 +465,17 @@ namespace VRC_Favourite_Manager.ViewModels
             SortAscending = true;
             SortWorlds("DateAdded");
         }
+
+        public string GenerateShareCode()
+        {
+            var configService = new ConfigService();
+            return configService.EncodeFolderData(_folderManager.SelectedFolder);
+        }
+
         public void Dispose()
         {
             WeakReferenceMessenger.Default.Unregister<FolderUpdatedMessage>(this);
+            WeakReferenceMessenger.Default.Unregister<SelectedFolderUpdatedMessage>(this);
         }
-
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using System;
+using Microsoft.UI.Xaml;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -74,6 +75,21 @@ namespace VRC_Favourite_Manager.ViewModels
         public void SelectedFolderChanged(FolderModel folder)
         {
             _folderManager.ChangeSelectedFolder(folder);
+        }
+
+        public void ImportFolder(string folderCode)
+        {
+            try
+            {
+                var configService = new ConfigService();
+                var folder = configService.DecodeFolderData(folderCode);
+                _folderManager.ImportFolder(folder);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Error importing folder");
+                throw;
+            }
         }
     }
 }

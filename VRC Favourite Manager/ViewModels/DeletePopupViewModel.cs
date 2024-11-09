@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Serilog;
 using VRC_Favourite_Manager.Common;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace VRC_Favourite_Manager.ViewModels
 {
@@ -18,6 +19,13 @@ namespace VRC_Favourite_Manager.ViewModels
         public void Delete_Click(string folderName)
         {
             _folderManager.RemoveFolder(folderName);
+            //send a SelectedFolderUpdatedMessage message
+            WeakReferenceMessenger.Default.Send(new SelectedFolderUpdatedMessage());
         }
+    }
+
+    public class SelectedFolderUpdatedMessage
+    {
+        public string FolderName { get; set; }
     }
 }

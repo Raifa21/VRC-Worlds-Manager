@@ -169,7 +169,7 @@ namespace VRC_Favourite_Manager.Services
         {
             try
             {
-                var request = new HttpRequestMessage(HttpMethod.Get, "https://api.vrchat.cloud/api/api/1/auth/user?");
+                var request = new HttpRequestMessage(HttpMethod.Get, "https://api.vrchat.cloud/api/1/auth/user?");
                 request.Headers.Add("Accept", "application/json");
                 request.Headers.Add("User-Agent", "VRC Worlds Manager/v1.1.0 Raifa");
                 request.Headers.Add("Authorization", CreateAuthString(username, password));

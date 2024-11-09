@@ -26,6 +26,9 @@
                             <MenuFlyoutItem 
                                 x:Name="AddFolder"
                                 Click="AddFolder_Click"/>
+                            <MenuFlyoutItem 
+                                x:Name="ImportFolder"
+                                Click="ImportFolder_Click"/>
                         </MenuFlyout>
                     </NavigationViewItem.ContextFlyout>
                 </NavigationViewItem>
