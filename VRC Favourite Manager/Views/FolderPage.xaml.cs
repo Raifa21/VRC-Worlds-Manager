@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
 using System.Linq;
 using System.Threading.Tasks;
+using ABI.Microsoft.UI.Xaml.Documents;
 using Serilog;
 using Microsoft.UI.Xaml.Media;
 
@@ -285,42 +286,19 @@ namespace VRC_Favourite_Manager.Views
 
         private async void AddWorldButton_Clicked(object sender, RoutedEventArgs e)
         {
-            // Create a new ContentDialog for input
-            ContentDialog dialog = new ContentDialog
-            {
-                XamlRoot = this.XamlRoot, // Required for desktop apps
-                Title = Application.Current.Resources["languageCode"] as string == "ja" ? "ÉèÅ[ÉãÉhÇí«â¡" : "Add World",
-                Height = 120
-            };
-
-            // Create a TextBox for the dialog content
-            TextBox inputTextBox = new TextBox
-            {
-                PlaceholderText = "https://vrchat.com/home/world/",
-                Height = 20
-            };
-
-            dialog.Content = inputTextBox;
-
-            // Show the dialog
-            var result = await dialog.ShowAsync();
-
-            if (result == ContentDialogResult.Primary)
-            {
-                // Retrieve input and handle folder addition logic
-                string folderName = inputTextBox.Text;
-                if (!string.IsNullOrEmpty(folderName))
-                {
-                    // Implement folder addition logic here
-                    Console.WriteLine($"Folder to add: {folderName}");
-                }
-            }
+            Debug.WriteLine("AddWorldButton_Clicked");
+            var addWorldPopup = new AddWorldPopup(_viewModel);
+            addWorldPopup.XamlRoot = this.XamlRoot;
+            Debug.WriteLine("ShowAsync");
+            await addWorldPopup.ShowAsync();
         }
-
 
         private void ShareFolderButton_Clicked(object sender, RoutedEventArgs e)
         {
-            _viewModel.ShareFolder();
+            Debug.WriteLine("ShareFolderButton_Clicked");
+            var shareFolderPopup = new ShareFolderPopup(_viewModel);
+            shareFolderPopup.XamlRoot = this.XamlRoot;
+            shareFolderPopup.ShowAsync();
         }
     }
 }

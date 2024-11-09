@@ -149,7 +149,7 @@
                     </core:EventTriggerBehavior>
                 </Interactivity:Interaction.Behaviors>
             </Button>
-            <Button  x:Name="MultiSelectButton_Cancel" Click="GridView_ClearSelection" Visibility="Collapsed" Margin="15,0,15,2" Padding="10,5" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <Button  x:Name="MultiSelectButton_Cancel" Click="GridView_ClearSelection" Visibility="Collapsed" Margin="0,0,5,0" Padding="10,5" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center">
                 <Interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="Click">
                         <core:ChangePropertyAction TargetObject="{Binding ElementName=SingleClickGrid}" PropertyName="Opacity" Value="1"/>

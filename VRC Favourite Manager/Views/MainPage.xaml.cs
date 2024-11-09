@@ -88,6 +88,7 @@ namespace VRC_Favourite_Manager.Views
                     this.SettingsItem.Content = "設定";
                     this.LogoutItem.Content = "ログアウト";
                     this.AddFolder.Text = "フォルダを追加";
+                    this.ImportFolder.Text = "フォルダをインポート";
                 }
                 else
                 {
@@ -97,6 +98,7 @@ namespace VRC_Favourite_Manager.Views
                     this.SettingsItem.Content = "Settings";
                     this.LogoutItem.Content = "Logout";
                     this.AddFolder.Text = "Add Folder";
+                    this.ImportFolder.Text = "Import Folder";
                 }
             }
             catch (System.Exception)
@@ -211,6 +213,14 @@ namespace VRC_Favourite_Manager.Views
             // Unregister the message subscription
             WeakReferenceMessenger.Default.Unregister<LanguageChangedMessage>(this);
             WeakReferenceMessenger.Default.Unregister<FolderUpdatedMessage>(this);
+        }
+
+        private void ImportFolder_Click(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("ShareFolderButton_Clicked");
+            var shareFolderPopup = new ImportFolderPopup(viewModel);
+            shareFolderPopup.XamlRoot = this.XamlRoot;
+            shareFolderPopup.ShowAsync();
         }
     }
 }
