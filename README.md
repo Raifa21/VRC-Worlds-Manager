@@ -1,5 +1,8 @@
 # VRC Worlds Manager
 
+> [!NOTE]  
+> VRC Worlds Manager has been discontinued, and has been replaced with [VRC Worlds Manager v2.](https://github.com/Raifa21/VRC-Worlds-Manager-v2)
+
 [日本語のバージョンはこちら](./README.JP.md)
 
 Manage and organize your VRChat worlds with VRC Worlds Manager.
