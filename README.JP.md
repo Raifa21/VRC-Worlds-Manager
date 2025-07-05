@@ -1,5 +1,8 @@
 # VRC Worlds Manager
 
+> [!NOTE]  
+> [VRC Worlds Manager v2](https://github.com/Raifa21/VRC-Worlds-Manager-v2)にて今後の開発は行われます。
+
 [English version is here](./README.md)
 
 VRC Worlds Managerを使用して、お気に入りのVRChatワールドを管理・整理しましょう。
